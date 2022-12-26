@@ -1,11 +1,14 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { CategorySubscriber } from 'src/modules/category/entities/category.entity';
 import { CompanySubscriber } from 'src/modules/company/entities/company.entity';
 import { EmployeeSubscriber } from 'src/modules/employee/entities/employee.entity';
+import { ItemSubscriber } from 'src/modules/item/entities/item.entity';
 import {
   DataSource,
   EntitySubscriberInterface,
   EventSubscriber,
   LoadEvent,
+  MixedList,
 } from 'typeorm';
 
 interface DatabaseConfigProps {
@@ -17,6 +20,14 @@ interface DatabaseConfigProps {
 export const databaseConfig = (): TypeOrmModuleOptions => {
   let config: TypeOrmModuleOptions;
 
+  const subscribers: MixedList<string | any> = [
+    CompanySubscriber,
+    EmployeeSubscriber,
+    DatabaseSubscriber,
+    CategorySubscriber,
+    ItemSubscriber,
+  ];
+
   const options: DatabaseConfigProps = {
     development: {
       type: 'mysql',
@@ -27,7 +38,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
       port: Number(process.env.DB_PORT),
       autoLoadEntities: true,
       synchronize: true,
-      subscribers: [CompanySubscriber, EmployeeSubscriber, DatabaseSubscriber],
+      subscribers: subscribers,
       logging: true,
     },
     test: {
@@ -39,7 +50,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
       port: Number(process.env.DB_PORT),
       autoLoadEntities: true,
       synchronize: true,
-      subscribers: [CompanySubscriber, EmployeeSubscriber, DatabaseSubscriber],
+      subscribers: subscribers,
       logging: true,
     },
     production: {
@@ -51,7 +62,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
       port: Number(process.env.DB_PORT),
       autoLoadEntities: true,
       synchronize: true,
-      subscribers: [CompanySubscriber, EmployeeSubscriber, DatabaseSubscriber],
+      subscribers: subscribers,
       logging: true,
     },
   };

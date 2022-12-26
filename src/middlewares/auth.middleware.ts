@@ -14,7 +14,6 @@ export class AuthMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     const accessToken = req.headers['authorization']?.toString().split(' ')[1];
-
     if (!accessToken) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
@@ -27,9 +26,12 @@ export class AuthMiddleware implements NestMiddleware {
         throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
       });
 
-    const employee = await Employee.findOneBy({ id: payload.id });
+    const employee = await Employee.findOne({
+      where: { id: payload.id },
+      relations: { company: true },
+    });
 
-    if (!employee.isActive) {
+    if (!employee?.isActive) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 

@@ -34,11 +34,11 @@ export class EmployeeService {
     return new EmployeeDto(employeeData);
   }
 
-  async findAll(): Promise<EmployeeDto[]> {
+  async findAll(employeeLoged: Employee): Promise<EmployeeDto[]> {
     const employees = await Employee.find({
-      // where: {
-      //   company: { prefix: 'FG' },
-      // },
+      where: {
+        company: { id: employeeLoged.company.id },
+      },
     });
 
     return employees.map((employee) => new EmployeeDto(employee));

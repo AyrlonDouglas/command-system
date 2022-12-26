@@ -11,11 +11,13 @@ import { EmployeeService } from './employee.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Employee } from './entities/employee.entity';
 
 @ApiTags('Employee')
 @Controller('employee')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
+
   @ApiBearerAuth()
   @Post()
   create(@Body() createEmployeeDto: CreateEmployeeDto) {
@@ -24,8 +26,8 @@ export class EmployeeController {
 
   @ApiBearerAuth()
   @Get()
-  findAll() {
-    return this.employeeService.findAll();
+  findAll(@Body('employeeLogged') employeeLogged: Employee) {
+    return this.employeeService.findAll(employeeLogged);
   }
 
   // @Get(':id')

@@ -8,6 +8,9 @@ import {
   EventSubscriber,
   EntitySubscriberInterface,
   InsertEvent,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { EEmployeeTypes, TEmployeeTypes } from 'src/helper/enum/employeeTypes';
 
@@ -39,6 +42,15 @@ export class Employee extends BaseEntity {
 
   @ManyToOne(() => Company, (company) => company.employees)
   company: Company;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deleteddAt: Date;
 }
 
 @EventSubscriber()

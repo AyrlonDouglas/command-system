@@ -9,6 +9,8 @@ import { AuthController } from './modules/auth/auth.controller';
 import { databaseConfig } from './config/database.config';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { JwtService } from '@nestjs/jwt';
+import { CategoryModule } from './modules/category/category.module';
+import { ItemModule } from './modules/item/item.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { JwtService } from '@nestjs/jwt';
     CompanyModule,
     EmployeeModule,
     AuthModule,
+    CategoryModule,
+    ItemModule,
   ],
   controllers: [AuthController],
   providers: [JwtService],

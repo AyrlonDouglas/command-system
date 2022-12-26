@@ -16,6 +16,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { EEmployeeTypes } from '../../../helper/enum/employeeTypes';
 
 import * as bcrypt from 'bcrypt';
+import { Item } from 'src/modules/item/entities/item.entity';
 
 @Entity()
 export class Company extends BaseEntity {
@@ -51,6 +52,9 @@ export class Company extends BaseEntity {
 
   @OneToMany(() => Employee, (employee) => employee.company)
   employees: Employee[];
+
+  @OneToMany(() => Item, (item) => item.company)
+  items: Item[];
 }
 
 @EventSubscriber()
@@ -59,13 +63,35 @@ export class CompanySubscriber implements EntitySubscriberInterface {
     return Company;
   }
   async beforeInsert(event: InsertEvent<Company>): Promise<any> {
-    const company = await event.manager.findOne(Company, {
+    const companyWithSamePrefix = await event.manager.findOne(Company, {
       where: { prefix: event.entity.prefix },
     });
 
-    if (company) {
+    if (companyWithSamePrefix) {
       throw new HttpException(
-        'Já existe empresa com este prefixo.',
+        'Já existe empresa com este prefixo cadastrada.',
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const companyWithSameCNPJ = await event.manager.findOne(Company, {
+      where: { cnpj: event.entity.cnpj },
+    });
+
+    if (companyWithSameCNPJ) {
+      throw new HttpException(
+        'Já existe empresa com este CNPJ cadastrada.',
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const companyWithSameName = await event.manager.findOne(Company, {
+      where: { name: event.entity.name },
+    });
+
+    if (companyWithSameName) {
+      throw new HttpException(
+        'Já existe empresa com este nome cadastrada.',
         HttpStatus.CONFLICT,
       );
     }
