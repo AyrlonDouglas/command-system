@@ -13,6 +13,7 @@ import {
   InsertEvent,
 } from 'typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { EEmployeeTypes } from '../../../helper/enum/employeeTypes';
 
 import * as bcrypt from 'bcrypt';
 
@@ -65,7 +66,7 @@ export class CompanySubscriber implements EntitySubscriberInterface {
     if (company) {
       throw new HttpException(
         'Já existe empresa com este prefixo.',
-        HttpStatus.BAD_GATEWAY,
+        HttpStatus.CONFLICT,
       );
     }
   }
@@ -77,7 +78,7 @@ export class CompanySubscriber implements EntitySubscriberInterface {
       firstName: 'Admin',
       lastName: event.entity.prefix,
       password: pass,
-      type: 'admin',
+      type: EEmployeeTypes.ADMIN,
     });
   }
 }

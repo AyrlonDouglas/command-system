@@ -9,8 +9,4 @@ export class AuthLoginDto {
   @ApiProperty({ description: "Employee's pass", example: 'alterpassnow' })
   @IsString()
   password: string;
-
-  @ApiProperty({ description: "Employee's companyId", example: 1 })
-  @IsNumber()
-  companyId: number;
 }
