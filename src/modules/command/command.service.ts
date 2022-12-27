@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { Employee } from '../employee/entities/employee.entity';
 import { Order } from '../order/entities/order.entity';
+import { Table } from '../table/entities/table.entity';
 import { CommandDto } from './dto/command.dto';
 import { CreateCommandDto } from './dto/create-command.dto';
 import { UpdateCommandDto } from './dto/update-command.dto';
@@ -19,7 +20,16 @@ export class CommandService {
     command.employee = employeeLogged;
 
     if (createCommandDto.tableId) {
-      command.tableId = createCommandDto.tableId;
+      const table = await Table.findOne({
+        where: {
+          id: createCommandDto.tableId,
+          company: { id: employeeLogged.company.id },
+        },
+      });
+      if (!table) {
+        throw new HttpException('Mesa não existe.', HttpStatus.BAD_REQUEST);
+      }
+      command.table = table;
     }
 
     const commandData = await command.save();

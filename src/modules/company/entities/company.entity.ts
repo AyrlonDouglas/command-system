@@ -17,6 +17,7 @@ import { EEmployeeTypes } from '../../../helper/enum/employeeTypes';
 
 import * as bcrypt from 'bcrypt';
 import { Item } from 'src/modules/item/entities/item.entity';
+import { Table } from 'src/modules/table/entities/table.entity';
 
 @Entity()
 export class Company extends BaseEntity {
@@ -48,13 +49,16 @@ export class Company extends BaseEntity {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deleteddAt: Date;
+  deletedAt: Date;
 
   @OneToMany(() => Employee, (employee) => employee.company)
   employees: Employee[];
 
   @OneToMany(() => Item, (item) => item.company)
   items: Item[];
+
+  @OneToMany(() => Table, (table) => table.company)
+  tables: Table[];
 }
 
 @EventSubscriber()

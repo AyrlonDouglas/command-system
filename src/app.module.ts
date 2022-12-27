@@ -14,6 +14,7 @@ import { ItemModule } from './modules/item/item.module';
 import { OrderModule } from './modules/order/order.module';
 import { CommandModule } from './modules/command/command.module';
 import { OrderItemModule } from './modules/order-item/order-item.module';
+import { TableModule } from './modules/table/table.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { OrderItemModule } from './modules/order-item/order-item.module';
     OrderModule,
     CommandModule,
     OrderItemModule,
+    TableModule,
   ],
   controllers: [AuthController],
   providers: [JwtService],

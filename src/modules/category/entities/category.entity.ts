@@ -30,7 +30,7 @@ export class Category extends BaseEntity {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deleteddAt: Date;
+  deletedAt: Date;
 
   @OneToMany(() => Item, (item) => item.category)
   items: Item[];

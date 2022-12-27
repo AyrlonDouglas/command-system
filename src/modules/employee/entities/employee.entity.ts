@@ -55,7 +55,7 @@ export class Employee extends BaseEntity {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deleteddAt: Date;
+  deletedAt: Date;
 }
 
 @EventSubscriber()

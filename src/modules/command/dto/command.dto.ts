@@ -1,11 +1,12 @@
 import { Employee } from 'src/modules/employee/entities/employee.entity';
 import { Order } from 'src/modules/order/entities/order.entity';
+import { Table } from 'src/modules/table/entities/table.entity';
 import { Command } from '../entities/command.entity';
 
 export class CommandDto {
   readonly id: number;
 
-  readonly tableId?: number;
+  readonly table: Table;
 
   readonly employee: Employee;
 
@@ -27,8 +28,8 @@ export class CommandDto {
       (prev, current) => prev + current.amount,
       0,
     );
-    if (command.tableId) {
-      this.tableId = command.tableId;
+    if (command.table) {
+      this.table = command.table;
     }
   }
 }

@@ -18,6 +18,10 @@ import {
   DeleteDateColumn,
   CreateDateColumn,
   BaseEntity,
+  EventSubscriber,
+  EntitySubscriberInterface,
+  InsertEvent,
+  UpdateEvent,
 } from 'typeorm';
 import { IItems } from '../dto/create-order.dto';
 
@@ -26,10 +30,14 @@ export class Order extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ default: 0 })
+  @Column({ default: 0, type: 'float' })
   amount: number;
 
-  @Column({ default: EStatusOrderTypes.WAITING })
+  @Column({
+    default: EStatusOrderTypes.WAITING,
+    type: 'enum',
+    enum: EStatusOrderTypes,
+  })
   status: TStatusOrderTypes;
 
   @ManyToOne(() => Command, (command) => command.orders)
@@ -45,7 +53,7 @@ export class Order extends BaseEntity {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deleteddAt: Date;
+  deletedAt: Date;
 
   static async addItemToOrder(order: Order, item: IItems, employee: Employee) {
     const itemSearch = await Item.findOne({
@@ -65,11 +73,31 @@ export class Order extends BaseEntity {
 
     order.amount = order.amount + itemSearch.price * item.quantity;
     await order.save();
+  }
+}
 
-    // const order = await Order.findOne({ where: { id: orderId } });
+@EventSubscriber()
+export class OrderSubscriber implements EntitySubscriberInterface {
+  listenTo() {
+    return Order;
+  }
 
-    // order.amount = order.amount + itemSearch.price * item.quantity;
+  beforeUpdate(event: UpdateEvent<Order>): void | Promise<any> {
+    let includeStatus = false;
 
-    // await order.save();
+    for (const status in EStatusOrderTypes) {
+      if (EStatusOrderTypes[status] === event.entity.status) {
+        includeStatus = true;
+      }
+    }
+
+    if (!includeStatus && event.entity.status) {
+      throw new HttpException(
+        `Status fora do padrão de uso, utilize um desses: ${Object.values(
+          EStatusOrderTypes,
+        ).map((status) => ' ' + status)}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

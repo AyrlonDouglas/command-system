@@ -1,5 +1,6 @@
 import { Employee } from 'src/modules/employee/entities/employee.entity';
 import { Order } from 'src/modules/order/entities/order.entity';
+import { Table } from 'src/modules/table/entities/table.entity';
 import {
   BaseEntity,
   Column,
@@ -26,10 +27,10 @@ export class Command extends BaseEntity {
   @Column()
   requesterName: string;
 
-  @Column({ nullable: true }) // FAZER RELAÇÃO
-  tableId?: number;
+  @ManyToOne(() => Table, (table) => table.commands)
+  table: Table;
 
-  @OneToMany(() => Order, (order) => order.command) // FAZER RELAÇÃO
+  @OneToMany(() => Order, (order) => order.command)
   orders: Order[];
 
   @CreateDateColumn()
@@ -39,5 +40,5 @@ export class Command extends BaseEntity {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deleteddAt: Date;
+  deletedAt: Date;
 }

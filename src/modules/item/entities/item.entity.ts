@@ -28,7 +28,7 @@ export class Item extends BaseEntity {
   @Column()
   description: string;
 
-  @Column()
+  @Column({ type: 'float' })
   price: number;
 
   @Column({ default: true })
@@ -50,7 +50,7 @@ export class Item extends BaseEntity {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deleteddAt: Date;
+  deletedAt: Date;
 }
 
 @EventSubscriber()

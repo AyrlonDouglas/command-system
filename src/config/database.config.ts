@@ -3,6 +3,7 @@ import { CategorySubscriber } from 'src/modules/category/entities/category.entit
 import { CompanySubscriber } from 'src/modules/company/entities/company.entity';
 import { EmployeeSubscriber } from 'src/modules/employee/entities/employee.entity';
 import { ItemSubscriber } from 'src/modules/item/entities/item.entity';
+import { OrderSubscriber } from 'src/modules/order/entities/order.entity';
 import {
   DataSource,
   EntitySubscriberInterface,
@@ -26,6 +27,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
     DatabaseSubscriber,
     CategorySubscriber,
     ItemSubscriber,
+    OrderSubscriber,
   ];
 
   const options: DatabaseConfigProps = {
@@ -39,7 +41,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
       autoLoadEntities: true,
       synchronize: true,
       subscribers: subscribers,
-      logging: true,
+      // logging: true,
       dropSchema: process.env.DB_RESET === 'true',
     },
     test: {
@@ -52,7 +54,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
       autoLoadEntities: true,
       synchronize: true,
       subscribers: subscribers,
-      logging: true,
+      // logging: true,
       dropSchema: process.env.DB_RESET === 'true',
     },
     production: {
@@ -65,7 +67,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
       autoLoadEntities: true,
       synchronize: true,
       subscribers: subscribers,
-      logging: true,
+      // logging: true,
       dropSchema: false, // SEMPRE DEIXAR FALSE!!!
     },
   };

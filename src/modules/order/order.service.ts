@@ -26,8 +26,8 @@ export class OrderService {
     if (!command) {
       throw new HttpException('Comanda não existe', HttpStatus.BAD_REQUEST);
     }
-    const order = new Order();
 
+    const order = new Order();
     order.command = command;
 
     const orderData = await order.save();
