@@ -27,6 +27,9 @@ export class Command extends BaseEntity {
   @Column()
   requesterName: string;
 
+  @Column({ default: true })
+  isActive: boolean;
+
   @ManyToOne(() => Table, (table) => table.commands)
   table: Table;
 

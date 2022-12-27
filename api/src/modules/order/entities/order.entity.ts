@@ -40,6 +40,9 @@ export class Order extends BaseEntity {
   })
   status: TStatusOrderTypes;
 
+  @Column({ default: false })
+  canceled: boolean;
+
   @ManyToOne(() => Command, (command) => command.orders)
   command: Command;
 

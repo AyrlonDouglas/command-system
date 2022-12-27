@@ -18,12 +18,15 @@ export class CommandDto {
 
   readonly totalCost: number;
 
+  readonly isActive: boolean;
+
   constructor(command: Command) {
     this.id = command.id;
     this.employee = command.employee;
     this.orders = command.orders;
     this.requesterCpf = command.requesterCPF;
     this.requesterName = command.requesterName;
+    this.isActive = command.isActive;
     this.totalCost = command?.orders?.reduce(
       (prev, current) => prev + current.amount,
       0,

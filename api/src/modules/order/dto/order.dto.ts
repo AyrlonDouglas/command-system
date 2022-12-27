@@ -16,6 +16,8 @@ export class OrderDto {
 
   readonly command: Command;
 
+  readonly canceled: boolean;
+
   readonly orderItems: OrderItem[];
 
   constructor(order: Order) {
@@ -24,5 +26,6 @@ export class OrderDto {
     this.status = order.status;
     this.command = order.command;
     this.orderItems = order.orderItems;
+    this.canceled = order.canceled;
   }
 }
