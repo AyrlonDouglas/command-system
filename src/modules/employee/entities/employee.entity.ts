@@ -11,8 +11,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { EEmployeeTypes, TEmployeeTypes } from 'src/helper/enum/employeeTypes';
+import { Command } from 'src/modules/command/entities/command.entity';
 
 @Entity()
 export class Employee extends BaseEntity {
@@ -42,6 +44,9 @@ export class Employee extends BaseEntity {
 
   @ManyToOne(() => Company, (company) => company.employees)
   company: Company;
+
+  @OneToMany(() => Command, (command) => command.employee)
+  commands: Command[];
 
   @CreateDateColumn()
   createdAt: Date;

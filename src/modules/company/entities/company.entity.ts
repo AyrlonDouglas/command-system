@@ -106,5 +106,13 @@ export class CompanySubscriber implements EntitySubscriberInterface {
       password: pass,
       type: EEmployeeTypes.ADMIN,
     });
+
+    await event.manager.insert(Employee, {
+      company: event.entity,
+      firstName: 'Bot',
+      lastName: event.entity.prefix,
+      password: pass,
+      type: EEmployeeTypes.BOT,
+    });
   }
 }

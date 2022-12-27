@@ -11,6 +11,9 @@ import { AuthMiddleware } from './middlewares/auth.middleware';
 import { JwtService } from '@nestjs/jwt';
 import { CategoryModule } from './modules/category/category.module';
 import { ItemModule } from './modules/item/item.module';
+import { OrderModule } from './modules/order/order.module';
+import { CommandModule } from './modules/command/command.module';
+import { OrderItemModule } from './modules/order-item/order-item.module';
 
 @Module({
   imports: [
@@ -21,6 +24,9 @@ import { ItemModule } from './modules/item/item.module';
     AuthModule,
     CategoryModule,
     ItemModule,
+    OrderModule,
+    CommandModule,
+    OrderItemModule,
   ],
   controllers: [AuthController],
   providers: [JwtService],
@@ -32,6 +38,7 @@ export class AppModule implements NestModule {
       .exclude(
         { path: '/auth/login', method: RequestMethod.POST },
         { path: '/company', method: RequestMethod.POST },
+        { path: '/company', method: RequestMethod.GET },
       )
       .forRoutes('');
   }

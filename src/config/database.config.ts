@@ -40,6 +40,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
       synchronize: true,
       subscribers: subscribers,
       logging: true,
+      dropSchema: process.env.DB_RESET === 'true',
     },
     test: {
       type: 'mysql',
@@ -52,6 +53,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
       synchronize: true,
       subscribers: subscribers,
       logging: true,
+      dropSchema: process.env.DB_RESET === 'true',
     },
     production: {
       type: 'mysql',
@@ -64,6 +66,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
       synchronize: true,
       subscribers: subscribers,
       logging: true,
+      dropSchema: false, // SEMPRE DEIXAR FALSE!!!
     },
   };
 

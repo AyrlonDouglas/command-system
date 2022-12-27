@@ -1,5 +1,7 @@
 import { Category } from 'src/modules/category/entities/category.entity';
 import { Company } from 'src/modules/company/entities/company.entity';
+import { OrderItem } from 'src/modules/order-item/entities/order-item.entity';
+import { Order } from 'src/modules/order/entities/order.entity';
 import { Item } from '../entities/item.entity';
 
 export class ItemDto {
@@ -17,6 +19,8 @@ export class ItemDto {
 
   readonly company: Company;
 
+  readonly orderItems: OrderItem[];
+
   constructor(item: Item) {
     this.id = item.id;
     this.name = item.name;
@@ -25,5 +29,6 @@ export class ItemDto {
     this.category = item.category;
     this.avaliable = item.avaliable;
     this.company = item.company;
+    this.orderItems = item.orderItems;
   }
 }

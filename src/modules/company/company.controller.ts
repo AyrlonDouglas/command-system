@@ -22,7 +22,7 @@ export class CompanyController {
     return this.companyService.create(createCompanyDto);
   }
 
-  @ApiBearerAuth()
+  // @ApiBearerAuth()
   @Get()
   findAll() {
     return this.companyService.findAll();
