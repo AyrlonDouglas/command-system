@@ -1,12 +1,10 @@
 import { PaletteMode } from "@mui/material";
-import { createTheme, useTheme } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 
-export default function theme(mode: PaletteMode | undefined) {
+export default function theme(mode?: PaletteMode | undefined) {
 	let colors;
 
-	if (mode === "light") {
-		colors = {};
-	} else {
+	if (mode === "dark") {
 		colors = {
 			background: {
 				paper: "#1C1C1C",
@@ -15,12 +13,14 @@ export default function theme(mode: PaletteMode | undefined) {
 			primary: { main: "#00C496" },
 			secondary: { main: "#008dd5" },
 		};
+	} else {
+		colors = {};
 	}
 
 	return createTheme({
-		typography: {
-			fontFamily: "Inter, sans-serif",
-		},
+		// typography: {
+		// 	fontFamily: "Inter, sans-serif",
+		// },
 		palette: {
 			mode,
 			...colors,

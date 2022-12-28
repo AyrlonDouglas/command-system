@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./privateRoute";
 import Home from "../pages/home";
 
@@ -12,6 +12,7 @@ export default function SwitchRoutes() {
 	return (
 		<Routes>
 			<Route path="/" element={<Home />} />
+			<Route path="*" element={<h1>404 NOT FOUND</h1>} />
 			{/* <Route path="/login" element={<Login />} /> */}
 			{/* <Route
         path="/"
