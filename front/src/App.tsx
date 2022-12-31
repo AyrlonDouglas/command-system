@@ -1,23 +1,38 @@
 import { useState } from "react";
-import Routes from "./routes";
+//ROUTES
 import { BrowserRouter } from "react-router-dom";
-import { CssBaseline, PaletteMode, ThemeProvider } from "@mui/material";
-import { LOCAL } from "./helper/constants/localStorage";
+import Routes from "./routes";
+//MUI
+import { CssBaseline, PaletteMode, ThemeProvider, Box } from "@mui/material";
 import theme from "./theme";
-import { Box, alpha } from "@mui/system";
-import { red } from "@mui/material/colors";
+//HELPER
+import "react-toastify/dist/ReactToastify.css";
+import { LOCAL } from "./helper/constants/localStorage";
+import { Provider } from "react-redux";
+import store from "./store";
+import { ToastContainer } from "react-toastify";
+
 export default function App() {
 	const color = localStorage.getItem(LOCAL.colorMode) || "light";
 	const [colorMode, setColorMode] = useState<PaletteMode>(color as PaletteMode);
 
 	return (
-		<ThemeProvider theme={theme(colorMode)}>
-			<BrowserRouter>
-				<CssBaseline />
-				<Box sx={{ background: alpha(red[50], 0.5), minWidth: "100%", minHeight: "100vh" }}>
-					<Routes />
-				</Box>
-			</BrowserRouter>
-		</ThemeProvider>
+		<Provider store={store}>
+			<ThemeProvider theme={theme(colorMode)}>
+				<ToastContainer theme={colorMode} />
+				<BrowserRouter>
+					<CssBaseline />
+					<Box
+						sx={{
+							background: theme(colorMode).palette.background.default,
+							minWidth: "100%",
+							minHeight: "100vh",
+						}}
+					>
+						<Routes />
+					</Box>
+				</BrowserRouter>
+			</ThemeProvider>
+		</Provider>
 	);
 }
