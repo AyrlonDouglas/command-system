@@ -13,7 +13,7 @@ type Credentials = {
 function* login({ payload }: Credentials) {
 	try {
 		const response: AxiosResponse = yield call(api.post, "/auth/login", payload);
-		toast("Seja bem-vindo!");
+		toast.success("Seja bem-vindo!");
 
 		localStorage.setItem(LOCAL.token, response.data.token);
 

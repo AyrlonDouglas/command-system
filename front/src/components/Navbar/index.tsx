@@ -21,12 +21,11 @@ import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
-import theme from "../../theme";
 import Button from "@mui/material/Button";
 
 export default function NavBar() {
 	const [openDrawer, setOpenDrawer] = useState(false);
-	const match = useMediaQuery(theme().breakpoints.down("md"));
+	const match = useMediaQuery((theme) => theme.breakpoints.down("md"));
 	const navigate = useNavigate();
 
 	const itemsNav = [

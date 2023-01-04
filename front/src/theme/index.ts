@@ -25,9 +25,9 @@ export default function theme(mode?: PaletteMode | undefined) {
 		};
 	} else {
 		colors = {
-			background: { default: "#FFF7F1" },
+			background: { paper: "#f7f7f7", default: "#fff" },
 			// primary: { main: "#C23E14" },
-			primary: { main: "#EE6123" },
+			primary: { main: "#de1a1a" },
 			terciary: { main: "#fcd581" },
 		};
 	}

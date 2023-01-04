@@ -17,6 +17,8 @@ export class ItemDto {
 
   readonly avaliable: boolean;
 
+  readonly imagePath: string;
+
   readonly company: Company;
 
   readonly orderItems: OrderItem[];
@@ -30,5 +32,6 @@ export class ItemDto {
     this.avaliable = item.avaliable;
     this.company = item.company;
     this.orderItems = item.orderItems;
+    this.imagePath = item.imagePath;
   }
 }

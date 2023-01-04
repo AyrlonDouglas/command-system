@@ -25,7 +25,7 @@ export class Item extends BaseEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ type: 'mediumtext' })
   description: string;
 
   @Column({ type: 'float' })
@@ -33,6 +33,9 @@ export class Item extends BaseEntity {
 
   @Column({ default: true })
   avaliable: boolean;
+
+  @Column({ nullable: true })
+  imagePath: string;
 
   @ManyToOne(() => Category, (category) => category.items)
   category: Category;

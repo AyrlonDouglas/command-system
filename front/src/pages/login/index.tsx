@@ -24,6 +24,8 @@ import * as yup from "yup";
 // REDUX E SAGAS
 import { loginRequest } from "../../store/ducks/login/slice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { LOCAL } from "../../helper/constants/localStorage";
+import { Navigate } from "react-router-dom";
 
 interface ISignIn {
 	password: string;
@@ -38,7 +40,8 @@ const schema = yup.object({
 export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
 	const loginState = useAppSelector((state) => state.login);
-	console.log("loginState", loginState);
+	const token = localStorage.getItem(LOCAL.token);
+
 	const handleShowPassword = () => {
 		setShowPassword((state) => !state);
 	};
@@ -62,18 +65,19 @@ export default function Login() {
 		},
 	});
 
-	const singIn = (data: any) => {
-		const { employeeCode, password } = data as ISignIn;
+	const singIn = (data: ISignIn) => {
+		const { employeeCode, password } = data;
 		dispatch(loginRequest({ employeeCode, password }));
 	};
 
 	return (
 		<>
+			{token && <Navigate to={"/orders/management"} />}
 			<NavBar />
 			<Container sx={{ marginTop: "1rem", minHeight: "calc(100vh - 9rem)" }}>
 				<Grid container spacing={2}>
 					<Grid xs={12} sm={6} sx={{ display: { xs: "none", sm: "flex" } }}>
-						<ImageFood src="https://source.unsplash.com/random/?food" />
+						<ImageFood src={"https://source.unsplash.com/random/?food&q=0"} />
 					</Grid>
 					<Grid xs={12} sm={6}>
 						<Grid

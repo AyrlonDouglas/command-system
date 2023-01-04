@@ -33,6 +33,8 @@ export class ItemService {
   async findAll(employeeLoged: Employee) {
     const items = await Item.find({
       where: { company: { id: employeeLoged.company.id } },
+      relations: { category: true },
+      select: { category: { id: true, name: true } },
     });
     return items.map((item) => new ItemDto(item));
   }

@@ -1,31 +1,31 @@
-import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
+
 // sagas
 import loginSaga from "./ducks/login/saga";
-// import userSaga from "./ducks/user/saga";
-// import professionalSaga from "./ducks/professional/saga";
+import itemsSaga from "./ducks/items/saga";
+import categoriesSaga from "./ducks/categories/saga";
 
 // reducers
 import loginReducer from "./ducks/login/slice";
-// import userReducer from "./ducks/user/slice";
-// import professionalReducer from "./ducks/professional/slice";
+import itemsReducer from "./ducks/items/slice";
+import categoriesReducer from "./ducks/categories/slice";
+
 const saga = createSagaMiddleware();
 
 const store = configureStore({
 	reducer: {
-		// user: userReducer,
 		login: loginReducer,
-		// professional: professionalReducer,
+		items: itemsReducer,
+		categories: categoriesReducer,
 	},
 	middleware: [saga],
 });
 saga.run(loginSaga);
-// saga.run(userSaga);
-// saga.run(professionalSaga);
+saga.run(itemsSaga);
+saga.run(categoriesSaga);
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;
 
 export default store;

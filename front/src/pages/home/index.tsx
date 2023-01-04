@@ -1,25 +1,15 @@
 //MUI
-import { Container, Unstable_Grid2 as Grid, Typography, Button, Box } from "@mui/material";
-import { styled } from "@mui/system";
+import { Container, Unstable_Grid2 as Grid, Typography, Button, Box, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 //COMPONENTS
 import NavBar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { ColorRed, ImageFood } from "./styles";
 // IMAGES
 import BurguerImage from "../../assets/images/burger.jpg";
 import DrinkImage from "../../assets/images/drink.jpg";
 import ChickenImage from "../../assets/images/chicken.jpg";
 import PizzaImage from "../../assets/images/pizza.jpg";
-
-const ColorRed = styled("span")(({ theme }) => ({ color: theme.palette.primary.main }));
-
-const ImageFood = styled("img")(({ theme }) => ({
-	width: "10rem",
-	height: "10rem",
-	objectFit: "cover",
-	borderRadius: "100%",
-	boxShadow: theme.shadows["10"],
-}));
 
 const cardsFood = [
 	{ image: BurguerImage, title: "Hambúrgueres", subTitle: "Surpreendendes combinações" },
@@ -34,14 +24,20 @@ export default function Home() {
 	return (
 		<>
 			<NavBar />
-			<Container>
+			<Container
+				sx={{
+					minHeight: "calc(100vh - 132px)",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
 				<Grid
 					container
 					sx={{
 						justifyContent: "center",
 						flexDirection: "column",
 						alignItems: "center",
-						marginTop: "2rem",
 					}}
 				>
 					<Grid>
@@ -85,7 +81,7 @@ export default function Home() {
 							</Button>
 						</Grid>
 					</Grid>
-					<Grid
+					{/* <Grid
 						container
 						sx={{ marginTop: "2rem", width: "100%" }}
 						spacing={4}
@@ -113,10 +109,11 @@ export default function Home() {
 									<Typography align="center" variant="subtitle2" sx={{ padding: "0 0.4rem" }}>
 										{food.subTitle}
 									</Typography>
-									<Box
+									<Paper
 										sx={{
 											width: "100%",
-											background: (theme) => theme.palette?.terciary?.main,
+											// background: (theme) => theme.palette.background.paper,
+											boxShadow: (theme) => theme.shadows[4],
 											height: "11rem",
 											position: "absolute",
 											borderRadius: "0.5rem",
@@ -128,7 +125,7 @@ export default function Home() {
 								</Box>
 							</Grid>
 						))}
-					</Grid>
+					</Grid> */}
 				</Grid>
 			</Container>
 			<Footer />

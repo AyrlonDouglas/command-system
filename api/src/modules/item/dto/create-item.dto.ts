@@ -25,4 +25,10 @@ export class CreateItemDto {
   @ApiProperty({ example: 1, description: 'item category id' })
   @IsNumber()
   categoryId: number;
+
+  @ApiProperty({
+    example: 'src/assets/images',
+    description: 'Image path of image food',
+  })
+  imagePath: string;
 }

@@ -8,9 +8,15 @@ async function bootstrap() {
 
   swaggerStart(app);
 
-  app.enableCors();
+  app
+    .enableCors
+    //   {
+    //   origin: true,
+    //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    //   credentials: true,
+    // }
+    ();
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
 
   await app.listen(5000);
 }
