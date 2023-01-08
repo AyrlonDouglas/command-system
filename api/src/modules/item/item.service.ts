@@ -1,4 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { EmployeeLogged } from 'src/helper/types/employeeLogged';
 import { Category } from '../category/entities/category.entity';
 import { Employee } from '../employee/entities/employee.entity';
 import { CreateItemDto } from './dto/create-item.dto';
@@ -8,7 +9,7 @@ import { Item } from './entities/item.entity';
 
 @Injectable()
 export class ItemService {
-  async create(createItemDto: CreateItemDto, employeeLoged: Employee) {
+  async create(createItemDto: CreateItemDto & EmployeeLogged) {
     const category = await Category.findOneBy({ id: createItemDto.categoryId });
 
     if (!category) {
@@ -23,7 +24,8 @@ export class ItemService {
     item.description = createItemDto.description;
     item.price = createItemDto.price;
     item.category = category;
-    item.company = employeeLoged.company;
+    item.company = createItemDto.employeeLogged.company;
+    item.avaliable = createItemDto.avaliable;
 
     const itemData = await item.save();
 
@@ -43,9 +45,22 @@ export class ItemService {
   //   return `This action returns a #${id} item`;
   // }
 
-  // update(id: number, updateItemDto: UpdateItemDto) {
-  //   return `This action updates a #${id} item`;
-  // }
+  async update(id: number, updateItemDto: UpdateItemDto & EmployeeLogged) {
+    delete updateItemDto.employeeLogged;
+    let category: Category;
+
+    if (updateItemDto.categoryId) {
+      category = await Category.findOneBy({ id: updateItemDto.categoryId });
+      delete updateItemDto.categoryId;
+      updateItemDto.category = category;
+    }
+
+    await Item.update({ id }, updateItemDto);
+
+    const itemData = await Item.findOneBy({ id });
+
+    return new ItemDto(itemData);
+  }
 
   // remove(id: number) {
   //   return `This action removes a #${id} item`;

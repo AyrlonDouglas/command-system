@@ -1,9 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { EmployeeDto } from './dto/employee.dto';
 import { Employee } from './entities/employee.entity';
 import * as bcrypt from 'bcrypt';
 import { Company } from '../company/entities/company.entity';
+import { EmployeeLogged } from 'src/helper/types/employeeLogged';
 
 @Injectable()
 export class EmployeeService {
@@ -48,9 +50,18 @@ export class EmployeeService {
   //   return `This action returns a #${id} employee`;
   // }
 
-  // update(id: number, updateEmployeeDto: UpdateEmployeeDto) {
-  //   return `This action updates a #${id} employee`;
-  // }
+  async update(
+    id: number,
+    updateEmployeeDto: UpdateEmployeeDto & EmployeeLogged,
+  ): Promise<EmployeeDto> {
+    delete updateEmployeeDto?.employeeLogged;
+
+    await Employee.update({ id }, updateEmployeeDto);
+
+    const employeeData = await Employee.findOneBy({ id });
+
+    return new EmployeeDto(employeeData);
+  }
 
   // remove(id: number) {
   //   return `This action removes a #${id} employee`;

@@ -6,12 +6,15 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
 import { CompanyDto } from './dto/company.dto';
 import { Employee } from '../employee/entities/employee.entity';
+import { EEmployeeTypes } from 'src/helper/enum/employeeTypes';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectRepository(Company) private companyRepository: Repository<Company>,
   ) {}
+
   async create(createCompanyDto: CreateCompanyDto): Promise<CompanyDto> {
     try {
       if (!/^[a-zA-Z]+$/.test(createCompanyDto.prefix)) {
@@ -29,6 +32,23 @@ export class CompanyService {
 
       const companySaved = await company.save();
 
+      const pass = await bcrypt.hash('alterpassnow', await bcrypt.genSalt());
+
+      await Employee.insert({
+        company: companySaved,
+        firstName: 'Admin',
+        lastName: companySaved.prefix,
+        password: pass,
+        type: EEmployeeTypes.ADMIN,
+      });
+
+      await Employee.insert({
+        company: companySaved,
+        firstName: 'Bot',
+        lastName: companySaved.prefix,
+        password: pass,
+        type: EEmployeeTypes.BOT,
+      });
       const companyData = await Company.findOneBy({ id: companySaved.id });
 
       return new CompanyDto(companyData);

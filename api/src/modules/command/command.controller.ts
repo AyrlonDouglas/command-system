@@ -12,13 +12,12 @@ import { Employee } from '../employee/entities/employee.entity';
 import { CommandService } from './command.service';
 import { CreateCommandDto } from './dto/create-command.dto';
 import { UpdateCommandDto } from './dto/update-command.dto';
-
+@ApiBearerAuth()
 @ApiTags('Command')
 @Controller('command')
 export class CommandController {
   constructor(private readonly commandService: CommandService) {}
 
-  @ApiBearerAuth()
   @Post()
   create(
     @Body() createCommandDto: CreateCommandDto,
@@ -27,7 +26,6 @@ export class CommandController {
     return this.commandService.create(createCommandDto, employeeLogged);
   }
 
-  @ApiBearerAuth()
   @Get()
   findAll(@Body('employeeLogged') employeeLogged: Employee) {
     return this.commandService.findAll(employeeLogged);

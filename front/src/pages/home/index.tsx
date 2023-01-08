@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 //COMPONENTS
 import NavBar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { ColorRed, ImageFood } from "./styles";
+import { BeamColor, ImageFood } from "./styles";
 // IMAGES
 import BurguerImage from "../../assets/images/burger.jpg";
 import DrinkImage from "../../assets/images/drink.jpg";
@@ -26,7 +26,7 @@ export default function Home() {
 			<NavBar />
 			<Container
 				sx={{
-					minHeight: "calc(100vh - 132px)",
+					minHeight: "calc(100vh - 124px)",
 					display: "flex",
 					alignItems: "center",
 					justifyContent: "center",
@@ -65,7 +65,7 @@ export default function Home() {
 									color: (theme) => theme.palette.text.secondary,
 								}}
 							>
-								SERVIÇOS <ColorRed>|</ColorRed> COMIDAS <ColorRed>|</ColorRed> EXPERIÊNCIAS
+								SERVIÇOS <BeamColor>|</BeamColor> COMIDAS <BeamColor>|</BeamColor> EXPERIÊNCIAS
 							</Typography>
 						</Box>
 					</Grid>

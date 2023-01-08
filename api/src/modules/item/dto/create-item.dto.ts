@@ -31,4 +31,10 @@ export class CreateItemDto {
     description: 'Image path of image food',
   })
   imagePath: string;
+
+  @ApiProperty({
+    example: true,
+    description: 'Item availability',
+  })
+  avaliable: boolean;
 }

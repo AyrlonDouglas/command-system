@@ -1,63 +1,76 @@
-import React from "react";
+import React, { useState } from "react";
 //MUI
 import {
 	Unstable_Grid2 as Grid,
-	CardActionArea,
-	Card,
-	CardContent,
-	CardMedia,
 	Typography,
+	styled,
+	Grid2Props,
+	Button,
+	IconButton,
+	Box,
 } from "@mui/material";
-
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+// REDUX E SAGA
+import { useAppSelector } from "../../store/hooks";
+import { itemsDataProps } from "../../store/ducks/items/slice";
+// COMPONENTS
+import { GridContainer, ImageFood } from "./styles";
+import DialogCreateOrUpdateItem from "../Dialog/CreateOrUpdateItem";
 interface FoodCardProps {
+	item: itemsDataProps;
 	imagePath: string;
-	imageAlt: string;
-	title: string;
-	description: string;
-	price: number;
+	canEdit: boolean;
 }
 
-export default function FoodCard(props: FoodCardProps) {
-	return (
-		<Card sx={{ height: "100%" }}>
-			<CardActionArea sx={{ height: "100%" }}>
-				<Grid container spacing={0} sx={{ height: "100%" }}>
-					<Grid xs={4} sx={{ heigth: "100%" }}>
-						<CardMedia component="img" height="100%" image={props.imagePath} alt={props.imageAlt} />
-					</Grid>
-					<Grid xs={8}>
-						<CardContent sx={{ height: "100%" }}>
-							<Grid
-								container
-								flexDirection={"column"}
-								justifyContent="space-between"
-								sx={{ height: "100%" }}
-							>
-								<Grid>
-									<Typography
-										gutterBottom
-										variant="h5"
-										component="div"
-										sx={{ textTransform: "capitalize" }}
-										fontWeight={600}
-									>
-										{props.title}
-									</Typography>
+export default function FoodCard({ item, canEdit, ...props }: FoodCardProps) {
+	const [openModalEditItem, setOpenModalEditItem] = useState(false);
+	const handleClickOpenEditItem = () => {
+		setOpenModalEditItem(true);
+	};
 
-									<Typography variant="body2" color="text.secondary">
-										{props.description}
-									</Typography>
-								</Grid>
-								<Grid sx={{ marginTop: "1rem" }}>
-									<Typography variant="body1" color={"primary"} fontWeight={600}>
-										{`R$ ${props.price.toFixed(2)}`}
-									</Typography>
-								</Grid>
-							</Grid>
-						</CardContent>
+	const handleCloseEditItem = () => setOpenModalEditItem(false);
+
+	return (
+		<Grid sx={{ maxWidth: "1200px" }}>
+			<GridContainer container>
+				<Grid xs={12} sx={{ padding: "0.5rem" }}>
+					<ImageFood src={props.imagePath} alt={item.name} />
+				</Grid>
+				<Grid sx={{ padding: "0rem 0.5rem 0", width: "100%" }}>
+					<Typography sx={{ textTransform: "capitalize" }}>{item.name}</Typography>
+					<Grid container justifyContent="space-between" alignItems="center">
+						<Grid>
+							<Typography fontWeight={600} variant="body2">{`R$ ${item.price.toFixed(
+								2
+							)}`}</Typography>
+							{item.avaliable ? null : (
+								<Typography variant="body2" fontSize={12} color="error.main">
+									Indisponível
+								</Typography>
+							)}
+						</Grid>
+						<Grid>
+							<IconButton
+								onClick={() => {
+									if (canEdit) {
+										handleClickOpenEditItem();
+									}
+								}}
+							>
+								{canEdit ? <EditIcon /> : <AddIcon />}
+							</IconButton>
+						</Grid>
 					</Grid>
 				</Grid>
-			</CardActionArea>
-		</Card>
+				<Grid xs={12} sx={{ padding: "0.5rem" }}></Grid>
+			</GridContainer>
+			<DialogCreateOrUpdateItem
+				open={openModalEditItem}
+				handleClose={handleCloseEditItem}
+				idItem={item.id}
+				canEdit
+			/>
+		</Grid>
 	);
 }

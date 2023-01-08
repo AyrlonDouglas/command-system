@@ -13,9 +13,7 @@ import {
   InsertEvent,
 } from 'typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { EEmployeeTypes } from '../../../helper/enum/employeeTypes';
 
-import * as bcrypt from 'bcrypt';
 import { Item } from 'src/modules/item/entities/item.entity';
 import { Table } from 'src/modules/table/entities/table.entity';
 
@@ -99,24 +97,5 @@ export class CompanySubscriber implements EntitySubscriberInterface {
         HttpStatus.CONFLICT,
       );
     }
-  }
-  async afterInsert(event: InsertEvent<Company>): Promise<any> {
-    const pass = await bcrypt.hash('alterpassnow', await bcrypt.genSalt());
-
-    await event.manager.insert(Employee, {
-      company: event.entity,
-      firstName: 'Admin',
-      lastName: event.entity.prefix,
-      password: pass,
-      type: EEmployeeTypes.ADMIN,
-    });
-
-    await event.manager.insert(Employee, {
-      company: event.entity,
-      firstName: 'Bot',
-      lastName: event.entity.prefix,
-      password: pass,
-      type: EEmployeeTypes.BOT,
-    });
   }
 }

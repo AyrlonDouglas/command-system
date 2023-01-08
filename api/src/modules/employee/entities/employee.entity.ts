@@ -12,9 +12,11 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   OneToMany,
+  UpdateEvent,
 } from 'typeorm';
 import { EEmployeeTypes, TEmployeeTypes } from 'src/helper/enum/employeeTypes';
 import { Command } from 'src/modules/command/entities/command.entity';
+import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class Employee extends BaseEntity {
@@ -65,16 +67,31 @@ export class EmployeeSubscriber implements EntitySubscriberInterface {
   }
 
   async beforeInsert(event: InsertEvent<Employee>): Promise<any> {
-    const registeredEmployees = event.entity.company.registeredEmployees + 1;
+    const company = await Company.findOne({
+      where: { id: event.entity.company.id },
+    });
+
+    company.registeredEmployees += 1;
+    await company.save();
 
     event.manager.update(
       Company,
       { id: event.entity.company.id },
       {
-        registeredEmployees: registeredEmployees,
+        registeredEmployees: company.registeredEmployees,
       },
     );
 
-    event.entity.employeeCode = `${event.entity.company.prefix}${registeredEmployees}`;
+    event.entity.employeeCode = `${event.entity.company.prefix}${company.registeredEmployees}`;
+  }
+
+  async beforeUpdate(event: UpdateEvent<Employee>): Promise<any> {
+    if (event.entity.password) {
+      const pass = await bcrypt.hash(
+        event.entity.password,
+        await bcrypt.genSalt(),
+      );
+      event.entity.password = pass;
+    }
   }
 }

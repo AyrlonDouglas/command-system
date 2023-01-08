@@ -20,15 +20,14 @@ import {
 	DialogContent,
 	DialogActions,
 	Button,
+	useMediaQuery,
 } from "@mui/material";
 
 // icons
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
 import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import BadgeIcon from "@mui/icons-material/Badge";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import HailIcon from "@mui/icons-material/Hail";
@@ -92,14 +91,11 @@ interface IMiniDrawer {
 	children?: JSX.Element;
 }
 function MiniDrawer({ children }: IMiniDrawer) {
-	// const token = localStorage.getItem(LOCAL.token);
 	const theme = useTheme();
 	const [open, setOpen] = useState(false);
 	const [openModal, setOpenModal] = useState(false);
-	// const userState = useAppSelector((state) => state.user);
 	const navigate = useNavigate();
-	// const location = useLocation();
-	// const dispatch = useAppDispatch();
+	const match = useMediaQuery((theme) => theme.breakpoints.down("md"));
 
 	const handleDrawer = () => {
 		setOpen((state) => !state);

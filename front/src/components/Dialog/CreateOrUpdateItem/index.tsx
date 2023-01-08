@@ -10,84 +10,122 @@ import {
 	Unstable_Grid2 as Grid,
 	Autocomplete,
 	CircularProgress,
+	Switch,
+	FormControlLabel,
 } from "@mui/material";
 // REDUX E SAGA
 import { getCategoriesRequest } from "../../../store/ducks/categories/slice";
-import { createItemRequest } from "../../../store/ducks/items/slice";
+import { createItemRequest, updateItemRequest } from "../../../store/ducks/items/slice";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 
 //VALIDADOR
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-const schema = yup.object({
+//IMAGE
+
+const schema = yup.object().shape({
 	name: yup.string().required("Preencha o nome"),
 	description: yup.string().required("Preencha a descrição"),
 	price: yup.number().required("Preencha o preço").typeError("Preencha um preço válido"),
-	// categoryId: yup.number().required("Selecione uma categoria"),
-	categoryId: yup.number().typeError("Selecione uma categoria").required("Selecione uma categoria"),
+	avaliable: yup.boolean().required("Preencha se o item está disponível"),
+	category: yup
+		.object()
+		.shape({
+			name: yup.string().required("Escolha uma categoria"),
+			id: yup.number().moreThan(0, "Escolha uma categoria"),
+		})
+		.typeError("Escolha uma categoria")
+		.required("Escolha uma catgoria"),
 });
 
-interface DialogCreateItemProps {
+interface DialogCreateOrEditItemProps {
 	open: boolean;
 	handleClose: () => void;
+	canEdit?: boolean;
+	idItem?: number;
 }
 
-interface ICreateItem {
+interface CreateOrEditItemProps {
 	name: string | undefined;
 	description: string | undefined;
 	price: number | undefined;
-	categoryId: number | undefined;
+	avaliable: boolean;
+	category?: { name: string; id: number } | null;
 }
 
-export default function DialogCreateItem(props: DialogCreateItemProps) {
+export default function DialogCreateOrUpdateItem({
+	canEdit,
+	handleClose,
+	idItem,
+	open,
+}: DialogCreateOrEditItemProps) {
 	const categoriesState = useAppSelector((state) => state.categories);
+	const itemsState = useAppSelector((state) => state.items);
+
 	const dispatch = useAppDispatch();
 
+	const itemFiltered = itemsState.data.filter((item) => item.id === idItem)[0];
+
 	useEffect(() => {
-		if (props.open) {
+		if (open) {
 			dispatch(getCategoriesRequest());
 		}
-	}, [props.open]);
-	console.log(categoriesState);
+
+		if (canEdit && open) {
+			setValue("avaliable", itemFiltered.avaliable);
+			setValue("category", itemFiltered.category);
+			setValue("description", itemFiltered.description);
+			setValue("name", itemFiltered.name);
+			setValue("price", itemFiltered.price);
+		}
+	}, [open]);
+
 	const {
 		handleSubmit,
 		control,
-		getValues,
+		// getValues,
 		formState: { errors },
-		resetField,
-		// setValue,
+		// resetField,
+		setValue,
 		// trigger,
 		// watch,
-		// reset,
+		reset,
 	} = useForm({
 		resolver: yupResolver(schema),
 		defaultValues: {
-			name: undefined,
-			description: undefined,
-			price: undefined,
-			categoryId: undefined,
-			imagePath: undefined,
+			name: undefined as string | undefined,
+			description: undefined as string | undefined,
+			price: undefined as number | undefined,
+			imagePath: undefined as string | undefined,
+			avaliable: true,
+			category: null as { id: number; name: string } | null,
 		},
 	});
 
-	const createItem = (data: ICreateItem) => {
-		console.log(data);
-		dispatch(createItemRequest(data));
-	};
-	const onClose = () => {
-		props.handleClose();
+	const handleItem = (data: CreateOrEditItemProps) => {
+		const categoryId = data.category?.id;
+		delete data.category;
 
-		resetField("name");
-		resetField("description");
-		resetField("price");
-		resetField("categoryId");
+		if (canEdit) {
+			dispatch(updateItemRequest({ ...data, categoryId, id: itemFiltered.id }));
+		} else {
+			dispatch(createItemRequest({ ...data, categoryId }));
+		}
+
+		onClose();
 	};
+
+	const onClose = () => {
+		handleClose();
+		reset();
+	};
+
 	return (
-		<Dialog open={props.open} onClose={props.handleClose}>
-			<form onSubmit={handleSubmit(createItem)}>
-				<DialogTitle>Adicionar Item</DialogTitle>
+		<Dialog open={open} onClose={handleClose}>
+			<form onSubmit={handleSubmit(handleItem)}>
+				<DialogTitle>{canEdit ? "Editar Item" : "Adicionar Item"}</DialogTitle>
 				<DialogContent>
 					<Grid container spacing={2} mt={1}>
 						<Grid xs={12}>
@@ -150,15 +188,15 @@ export default function DialogCreateItem(props: DialogCreateItemProps) {
 						<Grid xs={12}>
 							<Controller
 								control={control}
-								name="categoryId"
+								name="category"
 								render={({ field: { onChange, value }, fieldState }) => (
 									<Autocomplete
 										onChange={(event, item) => {
-											onChange(item?.id);
+											onChange(item);
 										}}
 										value={value}
 										size="small"
-										id="categoryId"
+										id="category"
 										options={categoriesState.data}
 										getOptionLabel={(option) => option.name}
 										noOptionsText="Não existe opções"
@@ -189,12 +227,33 @@ export default function DialogCreateItem(props: DialogCreateItemProps) {
 								)}
 							/>
 						</Grid>
+						<Grid xs={12} sx={{ display: "flex", alignItems: "center" }}>
+							<Controller
+								name="avaliable"
+								control={control}
+								render={({ field: { onChange, value }, fieldState }) => (
+									<FormControlLabel
+										control={
+											<Switch
+												name="avaliable"
+												id="avaliable"
+												onChange={(event, item) => {
+													onChange(item);
+												}}
+												checked={value}
+											/>
+										}
+										label="Item disponível ?"
+									/>
+								)}
+							/>
+						</Grid>
 					</Grid>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={onClose}>Cancela</Button>
-					<Button type="submit" disabled={Object.keys(errors).length !== 0}>
-						Adicionar
+					<Button onClick={onClose}>Cancelar</Button>
+					<Button type="submit" disabled={Object.keys(errors).length !== 0} variant="contained">
+						{canEdit ? "Editar" : "Adicionar"}
 					</Button>
 				</DialogActions>
 			</form>

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface itemsDataProps {
+export interface itemsDataProps {
 	id: number;
 	name: string;
 	description: string;
@@ -46,6 +46,21 @@ const itemsSlice = createSlice({
 		},
 		createItemFail: (state) => {
 			state.loading = true;
+			state.error = true;
+			state.success = false;
+		},
+		updateItemRequest: (state, action) => {
+			state.loading = true;
+		},
+		updateItemSuccess: (state) => {
+			state.loading = false;
+			state.error = false;
+			state.success = true;
+		},
+		updateItemFail: (state) => {
+			state.loading = false;
+			state.error = true;
+			state.success = false;
 		},
 	},
 });
@@ -57,6 +72,9 @@ export const {
 	createItemFail,
 	createItemRequest,
 	createItemSuccess,
+	updateItemFail,
+	updateItemRequest,
+	updateItemSuccess,
 } = itemsSlice.actions;
 
 export default itemsSlice.reducer;

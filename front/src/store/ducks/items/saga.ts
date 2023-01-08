@@ -9,6 +9,9 @@ import {
 	createItemFail,
 	createItemRequest,
 	createItemSuccess,
+	updateItemRequest,
+	updateItemFail,
+	updateItemSuccess,
 } from "./slice";
 
 function* getItems() {
@@ -23,11 +26,18 @@ function* getItems() {
 	}
 }
 
-interface createItemProps {
-	payload: { name: string; description: string; price: number; categoryId: number };
+interface createOrUpdateItemProps {
+	payload: {
+		name: string;
+		description: string;
+		price: number;
+		categoryId: number;
+		avaliable: boolean;
+		id?: number;
+	};
 	type: string;
 }
-function* createItem({ payload }: createItemProps) {
+function* createItem({ payload }: createOrUpdateItemProps) {
 	try {
 		const response: AxiosResponse = yield call(api.post, "/item", payload);
 
@@ -39,7 +49,23 @@ function* createItem({ payload }: createItemProps) {
 	}
 }
 
+function* updateItem({ payload }: createOrUpdateItemProps) {
+	try {
+		const id = payload.id;
+
+		delete payload.id;
+		const response: AxiosResponse = yield call(api.patch, `/item/${id}`, payload);
+
+		yield put(getItemsRequest());
+	} catch (error) {
+		toast.error("Não foi possível editar item");
+
+		yield put(updateItemFail());
+	}
+}
+
 export default function* itemsSaga() {
 	yield takeLatest(getItemsRequest().type, getItems);
 	yield takeLatest(createItemRequest("").type, createItem);
+	yield takeLatest(updateItemRequest("").type, updateItem);
 }
