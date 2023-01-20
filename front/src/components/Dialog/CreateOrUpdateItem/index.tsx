@@ -14,7 +14,6 @@ import {
 	FormControlLabel,
 } from "@mui/material";
 // REDUX E SAGA
-import { getCategoriesRequest } from "../../../store/ducks/categories/slice";
 import { createItemRequest, updateItemRequest } from "../../../store/ducks/items/slice";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 
@@ -69,10 +68,6 @@ export default function DialogCreateOrUpdateItem({
 	const itemFiltered = itemsState.data.filter((item) => item.id === idItem)[0];
 
 	useEffect(() => {
-		if (open) {
-			dispatch(getCategoriesRequest());
-		}
-
 		if (canEdit && open) {
 			setValue("avaliable", itemFiltered.avaliable);
 			setValue("category", itemFiltered.category);
@@ -123,7 +118,7 @@ export default function DialogCreateOrUpdateItem({
 	};
 
 	return (
-		<Dialog open={open} onClose={handleClose}>
+		<Dialog open={open} onClose={onClose}>
 			<form onSubmit={handleSubmit(handleItem)}>
 				<DialogTitle>{canEdit ? "Editar Item" : "Adicionar Item"}</DialogTitle>
 				<DialogContent>
@@ -231,7 +226,7 @@ export default function DialogCreateOrUpdateItem({
 							<Controller
 								name="avaliable"
 								control={control}
-								render={({ field: { onChange, value }, fieldState }) => (
+								render={({ field: { onChange, value } }) => (
 									<FormControlLabel
 										control={
 											<Switch
@@ -253,7 +248,7 @@ export default function DialogCreateOrUpdateItem({
 				<DialogActions>
 					<Button onClick={onClose}>Cancelar</Button>
 					<Button type="submit" disabled={Object.keys(errors).length !== 0} variant="contained">
-						{canEdit ? "Editar" : "Adicionar"}
+						{canEdit ? "Atualizar" : "Adicionar"}
 					</Button>
 				</DialogActions>
 			</form>

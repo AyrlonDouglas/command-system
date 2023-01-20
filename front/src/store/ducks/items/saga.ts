@@ -1,6 +1,7 @@
-import { AxiosResponse } from "axios";
+import { AxiosResponse, isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { call, put, takeLatest } from "redux-saga/effects";
+import { createOrUpdateItemProps } from "../../../helper/interfaces/Item";
 import { api } from "../../../service/axios";
 import {
 	getItemsFail,
@@ -20,30 +21,27 @@ function* getItems() {
 
 		yield put(getItemsSuccess(response.data));
 	} catch (error: unknown) {
-		toast.error("Não foi possível buscar items");
+		if (isAxiosError(error)) {
+			toast.error(error.response?.data.message);
+		} else {
+			toast.error("Não foi possível buscar items");
+		}
 
 		yield put(getItemsFail());
 	}
 }
 
-interface createOrUpdateItemProps {
-	payload: {
-		name: string;
-		description: string;
-		price: number;
-		categoryId: number;
-		avaliable: boolean;
-		id?: number;
-	};
-	type: string;
-}
 function* createItem({ payload }: createOrUpdateItemProps) {
 	try {
 		const response: AxiosResponse = yield call(api.post, "/item", payload);
 
-		yield put(getItemsRequest());
+		yield put(createItemSuccess(response.data));
 	} catch (error) {
-		toast.error("Não foi possível criar item");
+		if (isAxiosError(error)) {
+			toast.error(error.response?.data.message);
+		} else {
+			toast.error("Não foi possível criar item");
+		}
 
 		yield put(createItemFail());
 	}
@@ -56,9 +54,13 @@ function* updateItem({ payload }: createOrUpdateItemProps) {
 		delete payload.id;
 		const response: AxiosResponse = yield call(api.patch, `/item/${id}`, payload);
 
-		yield put(getItemsRequest());
+		yield put(updateItemSuccess(response.data));
 	} catch (error) {
-		toast.error("Não foi possível editar item");
+		if (isAxiosError(error)) {
+			toast.error(error.response?.data.message);
+		} else {
+			toast.error("Não foi possível editar item");
+		}
 
 		yield put(updateItemFail());
 	}

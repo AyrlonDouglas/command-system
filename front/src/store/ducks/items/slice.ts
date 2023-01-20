@@ -39,10 +39,11 @@ const itemsSlice = createSlice({
 		createItemRequest: (state, action) => {
 			state.loading = true;
 		},
-		createItemSuccess: (state) => {
+		createItemSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
 			state.success = true;
+			state.data = [...state.data, action.payload];
 		},
 		createItemFail: (state) => {
 			state.loading = true;
@@ -52,10 +53,14 @@ const itemsSlice = createSlice({
 		updateItemRequest: (state, action) => {
 			state.loading = true;
 		},
-		updateItemSuccess: (state) => {
+		updateItemSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
 			state.success = true;
+
+			state.data = state.data.map((item) =>
+				item.id === action.payload.id ? action.payload : item
+			);
 		},
 		updateItemFail: (state) => {
 			state.loading = false;

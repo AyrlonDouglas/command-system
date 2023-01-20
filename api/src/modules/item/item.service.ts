@@ -57,7 +57,10 @@ export class ItemService {
 
     await Item.update({ id }, updateItemDto);
 
-    const itemData = await Item.findOneBy({ id });
+    const itemData = await Item.findOne({
+      where: { id },
+      relations: { category: true },
+    });
 
     return new ItemDto(itemData);
   }

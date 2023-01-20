@@ -91,6 +91,7 @@ interface IMiniDrawer {
 	children?: JSX.Element;
 }
 function MiniDrawer({ children }: IMiniDrawer) {
+	const token = localStorage.getItem(LOCAL.token);
 	const theme = useTheme();
 	const [open, setOpen] = useState(false);
 	const [openModal, setOpenModal] = useState(false);
@@ -115,7 +116,7 @@ function MiniDrawer({ children }: IMiniDrawer) {
 		{
 			text: "Profissionais",
 			icon: <HailIcon color="primary" />,
-			action: () => navigate("/employees"),
+			action: () => navigate("/employees/list"),
 		},
 		{
 			text: "Cardápio",
@@ -147,7 +148,7 @@ function MiniDrawer({ children }: IMiniDrawer) {
 	};
 	return (
 		<>
-			{
+			{token ? (
 				<Box component={"nav"} sx={{ display: "flex" }}>
 					<Drawer variant="permanent" open={open}>
 						<DrawerHeader sx={{ justifyContent: "center", gap: 1 }}>
@@ -241,13 +242,16 @@ function MiniDrawer({ children }: IMiniDrawer) {
 							sx={{
 								flexGrow: 1,
 								pt: 3,
+								pb: 3,
 							}}
 						>
 							{children}
 						</Box>
 					</Container>
 				</Box>
-			}
+			) : (
+				children
+			)}
 
 			<Dialog open={openModal} onClose={handleOpenModal}>
 				<DialogTitle variant="h5" color="primary.main" fontWeight={"bold"} align="left">

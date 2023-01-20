@@ -29,10 +29,43 @@ const categoriesSlice = createSlice({
 			state.success = false;
 			state.data = categoriesSlice.getInitialState().data;
 		},
+		createCategoryRequest: (state, action) => {
+			state.loading = true;
+		},
+		createCategoryFail: (state) => {
+			state.loading = false;
+			state.error = true;
+		},
+		createCategorySuccess: (state, action) => {
+			state.loading = false;
+			state.data = [...state.data, action.payload];
+		},
+		updateCategoryRequest: (state, action) => {
+			state.loading = true;
+		},
+		updateCategoryFail: (state) => {
+			state.loading = false;
+			state.error = true;
+		},
+		updateCategorySuccess: (state, action) => {
+			state.loading = false;
+			state.data = state.data.map((category) =>
+				category.id === action.payload.id ? action.payload : category
+			);
+		},
 	},
 });
 
-export const { getCategoriesFail, getCategoriesRequest, getCategoriesSuccess } =
-	categoriesSlice.actions;
+export const {
+	getCategoriesFail,
+	getCategoriesRequest,
+	getCategoriesSuccess,
+	createCategoryFail,
+	createCategoryRequest,
+	createCategorySuccess,
+	updateCategoryFail,
+	updateCategoryRequest,
+	updateCategorySuccess,
+} = categoriesSlice.actions;
 
 export default categoriesSlice.reducer;

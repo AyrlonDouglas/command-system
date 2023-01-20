@@ -20,6 +20,7 @@ const store = configureStore({
 		categories: categoriesReducer,
 	},
 	middleware: [saga],
+	devTools: true,
 });
 saga.run(loginSaga);
 saga.run(itemsSaga);

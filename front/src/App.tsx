@@ -11,6 +11,8 @@ import { LOCAL } from "./helper/constants/localStorage";
 import { Provider } from "react-redux";
 import store from "./store";
 import { ToastContainer } from "react-toastify";
+import Sidebar from "./components/Sidebar";
+import BackdropLoading from "./components/Backdrop";
 
 export default function App() {
 	const color = localStorage.getItem(LOCAL.colorMode) || "light";
@@ -22,15 +24,18 @@ export default function App() {
 				<ToastContainer theme={colorMode} />
 				<BrowserRouter>
 					<CssBaseline />
-					<Box
-						sx={{
-							background: theme(colorMode).palette.background.default,
-							minWidth: "100%",
-							minHeight: "100vh",
-						}}
-					>
-						<Routes />
-					</Box>
+					<BackdropLoading />
+					<Sidebar>
+						<Box
+							sx={{
+								background: theme(colorMode).palette.background.default,
+								minWidth: "100%",
+								minHeight: "100vh",
+							}}
+						>
+							<Routes />
+						</Box>
+					</Sidebar>
 				</BrowserRouter>
 			</ThemeProvider>
 		</Provider>

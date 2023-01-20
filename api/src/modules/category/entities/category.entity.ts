@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common/enums';
 import { HttpException } from '@nestjs/common/exceptions';
+import { Company } from 'src/modules/company/entities/company.entity';
 import { Item } from 'src/modules/item/entities/item.entity';
 import {
   BaseEntity,
@@ -13,6 +14,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -34,6 +36,9 @@ export class Category extends BaseEntity {
 
   @OneToMany(() => Item, (item) => item.category)
   items: Item[];
+
+  @ManyToOne(() => Company, (company) => company.categories)
+  company: Company;
 }
 
 @EventSubscriber()

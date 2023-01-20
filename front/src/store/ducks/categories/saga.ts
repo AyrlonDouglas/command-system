@@ -1,8 +1,19 @@
-import { AxiosResponse } from "axios";
+import { AxiosResponse, isAxiosError, AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { call, put, takeLatest } from "redux-saga/effects";
+import { createOrUpdateCategoryProps } from "../../../helper/interfaces/Category";
 import { api } from "../../../service/axios";
-import { getCategoriesFail, getCategoriesRequest, getCategoriesSuccess } from "./slice";
+import {
+	getCategoriesFail,
+	getCategoriesRequest,
+	getCategoriesSuccess,
+	createCategoryRequest,
+	createCategorySuccess,
+	createCategoryFail,
+	updateCategoryFail,
+	updateCategoryRequest,
+	updateCategorySuccess,
+} from "./slice";
 
 function* getCategories() {
 	try {
@@ -10,12 +21,55 @@ function* getCategories() {
 
 		yield put(getCategoriesSuccess(response.data));
 	} catch (error: unknown) {
-		toast.error("Não foi possível buscar categories");
+		if (isAxiosError(error)) {
+			toast.error(error.response?.data.message);
+		} else {
+			toast.error("Não foi possível buscar categories");
+		}
 
 		yield put(getCategoriesFail());
 	}
 }
 
+function* createCategory({ payload }: createOrUpdateCategoryProps) {
+	try {
+		const response: AxiosResponse = yield call(api.post, "/category", payload);
+
+		yield put(createCategorySuccess(response.data));
+		toast.success(`Categoria ${response.data.name} criada!`);
+	} catch (error) {
+		if (isAxiosError(error)) {
+			toast.error(error.response?.data.message);
+		} else {
+			toast.error("Não foi possível criar categoria");
+		}
+
+		yield put(createCategoryFail());
+	}
+}
+
+function* updateCategory({ payload }: createOrUpdateCategoryProps) {
+	try {
+		const id = payload.id;
+		delete payload.id;
+
+		const response: AxiosResponse = yield call(api.patch, `/category/${id}`, payload);
+
+		yield put(updateCategorySuccess(response.data));
+		toast.success(`Categoria ${response.data.name} Atualizada!`);
+	} catch (error) {
+		if (isAxiosError(error)) {
+			toast.error(error.response?.data.message);
+		} else {
+			toast.error("Não foi possível atualizar categoria");
+		}
+
+		yield put(updateCategoryFail());
+	}
+}
+
 export default function* itemsSaga() {
 	yield takeLatest(getCategoriesRequest().type, getCategories);
+	yield takeLatest(createCategoryRequest("").type, createCategory);
+	yield takeLatest(updateCategoryRequest("").type, updateCategory);
 }

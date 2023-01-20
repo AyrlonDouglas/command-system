@@ -29,6 +29,7 @@ export default function theme(mode?: PaletteMode | undefined) {
 			// primary: { main: "#C23E14" },
 			primary: { main: "#de1a1a" },
 			terciary: { main: "#fcd581" },
+			// secondary: { main: "#95c623" },
 		};
 	}
 

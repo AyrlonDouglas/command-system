@@ -16,6 +16,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 import { Item } from 'src/modules/item/entities/item.entity';
 import { Table } from 'src/modules/table/entities/table.entity';
+import { Category } from 'src/modules/category/entities/category.entity';
 
 @Entity()
 export class Company extends BaseEntity {
@@ -57,6 +58,9 @@ export class Company extends BaseEntity {
 
   @OneToMany(() => Table, (table) => table.company)
   tables: Table[];
+
+  @OneToMany(() => Category, (category) => category.company)
+  categories: Category[];
 }
 
 @EventSubscriber()

@@ -1,14 +1,17 @@
-import { styled, Grid2Props, Unstable_Grid2 as Grid } from "@mui/material";
+import { styled, Unstable_Grid2 as Grid, Box, BoxProps } from "@mui/material";
 
-export const ImageFood = styled("img")<Grid2Props>(({ theme }) => ({
+export const ImageFood = styled(Box)<BoxProps & { imagePath: string }>(({ theme, imagePath }) => ({
+	backgroundImage: `url(${imagePath})`,
+	height: "100%",
 	width: "100%",
-	maxHeight: "10rem",
-	borderRadius: "0.25rem",
-	objectFit: "cover",
-	aspectRatio: "10 / 5",
+	backgroundSize: "cover",
+	backgroundPosition: "center",
+	borderRadius: theme.shape.borderRadius - 2,
 }));
 
 export const GridContainer = styled(Grid)(({ theme }) => ({
 	background: theme.palette.background.paper,
 	borderRadius: theme.shape.borderRadius,
+	// height: "100%",
+	height: "5.5rem ",
 }));

@@ -20,11 +20,9 @@ function* login({ payload }: Credentials) {
 		yield put(loginSuccess(response.data));
 	} catch (error: unknown) {
 		if (isAxiosError(error)) {
-			if (error?.response?.data?.statusCode === 401) {
-				toast.error("Usuário e/ou senha erradas");
-			} else {
-				toast.error("Não foi possível realizar login");
-			}
+			toast.error(error.response?.data.message);
+		} else {
+			toast.error("Não foi possível realizar login");
 		}
 
 		localStorage.setItem(LOCAL.token, "");
