@@ -22,7 +22,7 @@ export class Category extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column()
   name: string;
 
   @CreateDateColumn()
@@ -46,9 +46,11 @@ export class CategorySubscriber implements EntitySubscriberInterface {
   listenTo() {
     return Category;
   }
+
   async beforeInsert(event: InsertEvent<Category>): Promise<any> {
     const CategoryWithSameName = await Category.findOneBy({
       name: event.entity.name,
+      company: { id: event.entity.company.id },
     });
 
     if (CategoryWithSameName) {

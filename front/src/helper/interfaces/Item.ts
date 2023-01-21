@@ -9,3 +9,15 @@ export interface createOrUpdateItemProps {
 	};
 	type: string;
 }
+
+export interface itemsDataProps {
+	id: number;
+	name: string;
+	description: string;
+	price: number;
+	avaliable: boolean;
+	category: {
+		id: number;
+		name: string;
+	};
+}

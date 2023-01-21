@@ -1,7 +1,7 @@
 import { styled, Unstable_Grid2 as Grid, Box, BoxProps } from "@mui/material";
 
 export const ImageFood = styled(Box)<BoxProps & { imagePath: string }>(({ theme, imagePath }) => ({
-	backgroundImage: `url(${imagePath})`,
+	backgroundImage: `${imagePath ? `url(${imagePath})` : "none"}`,
 	height: "100%",
 	width: "100%",
 	backgroundSize: "cover",

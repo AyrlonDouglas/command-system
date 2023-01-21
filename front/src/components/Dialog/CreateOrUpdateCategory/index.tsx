@@ -26,6 +26,8 @@ import { DialogStyled as Dialog } from "./styles";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import InputTextFieldControlled from "../../Input/TextFieldControlled";
+import { toast } from "react-toastify";
 
 const schema = yup.object().shape({
 	name: yup.string().required("Preencha o nome"),
@@ -76,12 +78,25 @@ export default function DialogCreateOrEditCategory({
 	});
 
 	const handleCategory = (data: CreateOrEditCategoryProps) => {
-		if (canEdit) {
-			dispatch(updateCategoryRequest({ ...data, id: categoryId }));
-		} else {
+		if (!canEdit) {
 			dispatch(createCategoryRequest(data));
+			onClose();
+			return;
 		}
-		onClose();
+
+		if (canEdit && dataChanged()) {
+			dispatch(updateCategoryRequest({ ...data, id: categoryId }));
+			onClose();
+			return;
+		}
+
+		if (canEdit && !dataChanged()) {
+			toast.warning("Algum dado deve ser mudado para atualizar.");
+		}
+	};
+
+	const dataChanged = () => {
+		return getValues().name !== categoryFiltered.name;
 	};
 
 	const onClose = () => {
@@ -96,23 +111,7 @@ export default function DialogCreateOrEditCategory({
 				<DialogContent>
 					<Grid container spacing={2} mt={1}>
 						<Grid xs={12}>
-							<Controller
-								name="name"
-								control={control}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										id="name"
-										label="Nome da categoria"
-										name="name"
-										variant="outlined"
-										size="small"
-										error={!!fieldState.error?.message}
-										helperText={fieldState.error?.message}
-										fullWidth
-									/>
-								)}
-							/>
+							<InputTextFieldControlled control={control} label={"Nome"} nameField={"name"} />
 						</Grid>
 					</Grid>
 				</DialogContent>

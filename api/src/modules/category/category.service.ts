@@ -11,18 +11,6 @@ export class CategoryService {
   async create(
     createCategoryDto: CreateCategoryDto & EmployeeLogged,
   ): Promise<CategoryDto> {
-    const existingCategory = await Category.findOneBy({
-      company: { id: createCategoryDto.employeeLogged.company.id },
-      name: createCategoryDto.name,
-    });
-
-    if (existingCategory) {
-      throw new HttpException(
-        'Esta categoria já existe.',
-        HttpStatus.BAD_GATEWAY,
-      );
-    }
-
     const category = new Category();
     category.name = createCategoryDto.name;
     category.company = createCategoryDto.employeeLogged.company;
@@ -48,8 +36,6 @@ export class CategoryService {
     id: number,
     updateCategoryDto: UpdateCategoryDto & EmployeeLogged,
   ) {
-    delete updateCategoryDto.employeeLogged;
-
     if (!(await Category.findOneBy({ id }))) {
       throw new HttpException(
         'Esta categoria não existe.',
@@ -59,13 +45,17 @@ export class CategoryService {
 
     if (
       updateCategoryDto.name &&
-      (await Category.findOneBy({ name: updateCategoryDto.name }))
+      (await Category.findOneBy({
+        name: updateCategoryDto.name,
+        company: { id: updateCategoryDto.employeeLogged.company.id },
+      }))
     ) {
       throw new HttpException(
         'Já existe categoria com este nome.',
-        HttpStatus.BAD_GATEWAY,
+        HttpStatus.BAD_REQUEST,
       );
     }
+    delete updateCategoryDto.employeeLogged;
 
     const update = {};
 

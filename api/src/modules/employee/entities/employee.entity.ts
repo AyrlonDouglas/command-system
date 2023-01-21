@@ -83,6 +83,12 @@ export class EmployeeSubscriber implements EntitySubscriberInterface {
     );
 
     event.entity.employeeCode = `${event.entity.company.prefix}${company.registeredEmployees}`;
+
+    const pass = await bcrypt.hash(
+      event.entity.password ?? 'alterarsenhaagora',
+      await bcrypt.genSalt(),
+    );
+    event.entity.password = pass;
   }
 
   async beforeUpdate(event: UpdateEvent<Employee>): Promise<any> {

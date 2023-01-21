@@ -21,6 +21,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { toast } from "react-toastify";
 
 //IMAGE
 
@@ -80,7 +81,7 @@ export default function DialogCreateOrUpdateItem({
 	const {
 		handleSubmit,
 		control,
-		// getValues,
+		getValues,
 		formState: { errors },
 		// resetField,
 		setValue,
@@ -100,16 +101,36 @@ export default function DialogCreateOrUpdateItem({
 	});
 
 	const handleItem = (data: CreateOrEditItemProps) => {
-		const categoryId = data.category?.id;
-		delete data.category;
-
-		if (canEdit) {
-			dispatch(updateItemRequest({ ...data, categoryId, id: itemFiltered.id }));
-		} else {
-			dispatch(createItemRequest({ ...data, categoryId }));
+		if (canEdit && !dataChanged()) {
+			toast.warning("Algum dado deve ser mudado para atualizar.");
+			return;
 		}
 
-		onClose();
+		const categoryId = data.category?.id;
+
+		delete data.category;
+
+		if (!canEdit) {
+			dispatch(createItemRequest({ ...data, categoryId }));
+			onClose();
+			return;
+		}
+
+		if (canEdit && dataChanged()) {
+			dispatch(updateItemRequest({ ...data, categoryId, id: itemFiltered.id }));
+			onClose();
+			return;
+		}
+	};
+
+	const dataChanged = () => {
+		return (
+			getValues().avaliable !== itemFiltered.avaliable ||
+			getValues().category?.id !== itemFiltered.category.id ||
+			getValues().description !== itemFiltered.description ||
+			getValues().name !== itemFiltered.name ||
+			getValues().price !== itemFiltered.price
+		);
 	};
 
 	const onClose = () => {

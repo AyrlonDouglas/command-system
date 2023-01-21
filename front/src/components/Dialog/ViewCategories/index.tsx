@@ -13,6 +13,7 @@ import {
 	InputAdornment,
 	IconButton,
 	Button,
+	Typography,
 } from "@mui/material";
 // icons
 import SearchIcon from "@mui/icons-material/Search";
@@ -22,6 +23,8 @@ import { useAppSelector } from "../../../store/hooks";
 // styles
 import { DialogStyled as Dialog } from "./styles";
 import DialogCreateOrEditCategory from "../CreateOrUpdateCategory";
+import ListEmpty from "../../common/listEmpty";
+import InputSearch from "../../Input/Search";
 
 interface DialogViewCategoriesProps {
 	open: boolean;
@@ -61,6 +64,33 @@ export default function DialogViewCategories({ open, handleClose }: DialogViewCa
 		return category.name.toLowerCase().includes(search.toLowerCase());
 	};
 
+	const GenerateList = () => {
+		if (categoriesState.data.length === 0 && categoriesState.error) {
+			return <Typography>Ocorreu algum erro ao listar as categorias.</Typography>;
+		}
+
+		return (
+			<List>
+				{categoriesState.data.filter(filterByCategory).map((category) => (
+					<ListItem disablePadding key={category.id}>
+						<ListItemButton
+							onClick={() => {
+								handleOpenUpdateCategory();
+								setCategoryId(category.id);
+							}}
+						>
+							<ListItemText primary={category.name} />
+						</ListItemButton>
+					</ListItem>
+				))}
+			</List>
+		);
+	};
+
+	const onChangeSearch = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+		setSearch(e.target.value);
+	};
+
 	return (
 		<>
 			<Dialog open={open} onClose={onClose}>
@@ -76,37 +106,15 @@ export default function DialogViewCategories({ open, handleClose }: DialogViewCa
 				</DialogTitle>
 
 				<DialogContent>
-					<TextField
-						sx={{ marginTop: "4px" }}
-						label="Pesquise aqui"
-						placeholder="Categoria"
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-						InputProps={{
-							endAdornment: (
-								<InputAdornment position="start">
-									<SearchIcon />
-								</InputAdornment>
-							),
-						}}
-						size="small"
-						variant="outlined"
-						fullWidth
+					<Box sx={{ marginTop: "4px" }}>
+						<InputSearch onChange={onChangeSearch} value={search} placeholder="Categoria" />
+					</Box>
+					<ListEmpty
+						label="categorias"
+						dataList={categoriesState.data}
+						action={handleOpenCreateCategory}
 					/>
-					<List>
-						{categoriesState.data.filter(filterByCategory).map((category) => (
-							<ListItem disablePadding key={category.id}>
-								<ListItemButton
-									onClick={() => {
-										handleOpenUpdateCategory();
-										setCategoryId(category.id);
-									}}
-								>
-									<ListItemText primary={category.name} />
-								</ListItemButton>
-							</ListItem>
-						))}
-					</List>
+					<GenerateList />
 				</DialogContent>
 			</Dialog>
 			<DialogCreateOrEditCategory

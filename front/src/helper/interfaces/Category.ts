@@ -5,3 +5,8 @@ export interface createOrUpdateCategoryProps {
 	};
 	type: string;
 }
+
+export interface categoriesDataProps {
+	id: number;
+	name: string;
+}

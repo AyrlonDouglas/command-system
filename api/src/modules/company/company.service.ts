@@ -38,7 +38,6 @@ export class CompanyService {
         company: companySaved,
         firstName: 'Admin',
         lastName: companySaved.prefix,
-        password: pass,
         type: EEmployeeTypes.ADMIN,
       });
 
@@ -46,7 +45,6 @@ export class CompanyService {
         company: companySaved,
         firstName: 'Bot',
         lastName: companySaved.prefix,
-        password: pass,
         type: EEmployeeTypes.BOT,
       });
       const companyData = await Company.findOneBy({ id: companySaved.id });

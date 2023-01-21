@@ -50,9 +50,10 @@ export class ItemService {
     let category: Category;
 
     if (updateItemDto.categoryId) {
-      category = await Category.findOneBy({ id: updateItemDto.categoryId });
+      updateItemDto.category = await Category.findOneBy({
+        id: updateItemDto.categoryId,
+      });
       delete updateItemDto.categoryId;
-      updateItemDto.category = category;
     }
 
     await Item.update({ id }, updateItemDto);

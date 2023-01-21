@@ -36,6 +36,7 @@ function* createItem({ payload }: createOrUpdateItemProps) {
 		const response: AxiosResponse = yield call(api.post, "/item", payload);
 
 		yield put(createItemSuccess(response.data));
+		toast.success(`Item ${response.data.name} criado!`);
 	} catch (error) {
 		if (isAxiosError(error)) {
 			toast.error(error.response?.data.message);
@@ -55,6 +56,7 @@ function* updateItem({ payload }: createOrUpdateItemProps) {
 		const response: AxiosResponse = yield call(api.patch, `/item/${id}`, payload);
 
 		yield put(updateItemSuccess(response.data));
+		toast.success(`Item ${payload.name} atualizado!`);
 	} catch (error) {
 		if (isAxiosError(error)) {
 			toast.error(error.response?.data.message);

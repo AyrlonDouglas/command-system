@@ -2,15 +2,11 @@ import { AxiosResponse, isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { call, put, takeLatest } from "redux-saga/effects";
 import { LOCAL } from "../../../helper/constants/localStorage";
+import { CredentialProps } from "../../../helper/interfaces/Login";
 import { api } from "../../../service/axios";
 import { loginFail, loginRequest, loginSuccess } from "./slice";
 
-type Credentials = {
-	payload: { password: string; employeeCode: string };
-	type: string;
-};
-
-function* login({ payload }: Credentials) {
+function* login({ payload }: CredentialProps) {
 	try {
 		const response: AxiosResponse = yield call(api.post, "/auth/login", payload);
 		toast.success("Seja bem-vindo!");

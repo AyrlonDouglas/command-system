@@ -22,7 +22,8 @@ import {
 	Button,
 	useMediaQuery,
 } from "@mui/material";
-
+// components
+import DialogLogout from "../Dialog/Logout";
 // icons
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
@@ -32,8 +33,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import HailIcon from "@mui/icons-material/Hail";
 import SoupKitchenIcon from "@mui/icons-material/SoupKitchen";
-// Redux e sagas
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+// storage
 import { LOCAL } from "../../helper/constants/localStorage";
 
 const drawerWidth = 240;
@@ -96,7 +96,6 @@ function MiniDrawer({ children }: IMiniDrawer) {
 	const [open, setOpen] = useState(false);
 	const [openModal, setOpenModal] = useState(false);
 	const navigate = useNavigate();
-	const match = useMediaQuery((theme) => theme.breakpoints.down("md"));
 
 	const handleDrawer = () => {
 		setOpen((state) => !state);
@@ -138,11 +137,6 @@ function MiniDrawer({ children }: IMiniDrawer) {
 		},
 	];
 
-	const handleLogout = () => {
-		localStorage.removeItem(LOCAL.token);
-		handleOpenModal();
-		navigate("/");
-	};
 	const handleOpenModal = () => {
 		setOpenModal((state) => !state);
 	};
@@ -253,38 +247,7 @@ function MiniDrawer({ children }: IMiniDrawer) {
 				children
 			)}
 
-			<Dialog open={openModal} onClose={handleOpenModal}>
-				<DialogTitle variant="h5" color="primary.main" fontWeight={"bold"} align="left">
-					Já vai ?
-				</DialogTitle>
-				<DialogContent>
-					<Typography align="center">
-						Tem certeza de deseja sair do{" "}
-						<Box component="span" fontWeight={"bold "}>
-							COMAND
-							<Box
-								component="span"
-								sx={{
-									color: (theme) => theme.palette.primary.main,
-									fontWeight: "900",
-								}}
-							>
-								SYSTEM
-							</Box>
-						</Box>
-						?
-					</Typography>
-					<Typography align="justify" mt={2}></Typography>
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={handleLogout} variant="outlined" fullWidth>
-						Quero sair
-					</Button>
-					<Button onClick={handleOpenModal} variant="contained" fullWidth>
-						Voltar
-					</Button>
-				</DialogActions>
-			</Dialog>
+			<DialogLogout open={openModal} onClose={handleOpenModal} />
 		</>
 	);
 }

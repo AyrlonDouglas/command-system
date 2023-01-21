@@ -22,9 +22,20 @@ export class AuthService {
       },
     });
 
-    if (employee && (await this.comparePassword(pass, employee.password))) {
+    if (
+      employee &&
+      employee.isActive &&
+      (await this.comparePassword(pass, employee.password))
+    ) {
       delete employee.password;
       return employee;
+    }
+
+    if (!employee.isActive) {
+      throw new HttpException(
+        'Sua conta foi inativada, consulte administração para saber mais',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     throw new HttpException(

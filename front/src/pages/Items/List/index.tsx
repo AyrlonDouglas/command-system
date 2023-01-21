@@ -12,9 +12,10 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 
 //COMPONENTS
-import PageTitle from "../../../components/PageTitle";
-import FoodCard from "../../../components/FoodCard";
+import PageTitle from "../../../components/common/PageTitle";
+import CardFood from "../../../components/Card/Food";
 import DialogCreateOrUpdateItem from "../../../components/Dialog/CreateOrUpdateItem";
+import InputSearch from "../../../components/Input/Search";
 // REDUX E SAGA
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getItemsRequest, itemsDataProps } from "../../../store/ducks/items/slice";
@@ -22,6 +23,7 @@ import { getCategoriesRequest } from "../../../store/ducks/categories/slice";
 //IMAGE
 import ImageDefault from "../../../assets/images/cutlery.jpg";
 import DialogViewCategories from "../../../components/Dialog/ViewCategories";
+import ListEmpty from "../../../components/common/listEmpty";
 
 export default function ItemsList() {
 	const dispatch = useAppDispatch();
@@ -38,15 +40,9 @@ export default function ItemsList() {
 		dispatch(getCategoriesRequest());
 	}, []);
 
-	const handleClickOpenCreateItem = () => {
-		setOpenModalCreateItem(true);
+	const onChangeFilter = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+		setFilter(e.target.value);
 	};
-
-	const handleClickOpenEditItem = () => {
-		setOpenModalEditItem(true);
-	};
-
-	const handleCloseEditItem = () => setOpenModalEditItem(false);
 
 	const handleFilterItems = (item: typeof itemsState.data[0]) => {
 		if (!filter) {
@@ -62,9 +58,13 @@ export default function ItemsList() {
 	};
 
 	const handleCloseCreateItem = () => setOpenModalCreateItem(false);
+	const handleClickOpenCreateItem = () => setOpenModalCreateItem(true);
 
-	const handleOpenViewCategories = () => setOpenModalViewCategories(true);
+	const handleCloseEditItem = () => setOpenModalEditItem(false);
+	const handleClickOpenEditItem = () => setOpenModalEditItem(true);
+
 	const handleCloseViewCategories = () => setOpenModalViewCategories(false);
+	const handleOpenViewCategories = () => setOpenModalViewCategories(true);
 
 	const groupItemsByCategory = (items: itemsDataProps[]) => {
 		interface groupedItemsProps {
@@ -90,94 +90,73 @@ export default function ItemsList() {
 
 		return itemsGrouped;
 	};
-
+	const onClickCard = (itemId: number) => {
+		handleClickOpenEditItem();
+		setItemIdSelected(itemId);
+	};
 	return (
-		<Grid container>
-			<Grid xs={12}>
-				<PageTitle title="Cardápio" />
-			</Grid>
-			<Grid xs={12} container spacing={1} justifyContent={"space-between"}>
-				<Grid xs={12} sm={4}>
-					<TextField
-						label="Pesquise aqui"
-						placeholder="comida mexicana etc"
-						value={filter}
-						onChange={(e) => setFilter(e.target.value)}
-						InputProps={{
-							endAdornment: (
-								<InputAdornment position="start">
-									<SearchIcon />
-								</InputAdornment>
-							),
-						}}
-						size="small"
-						variant="outlined"
-						fullWidth
-					/>
+		<>
+			<Grid container>
+				<Grid xs={12}>
+					<PageTitle title="Cardápio" />
 				</Grid>
-
-				<Grid xs={12} sm={4}>
-					<Button variant="contained" onClick={handleClickOpenCreateItem} fullWidth>
-						Adicionar Item
-					</Button>
+				<Grid xs={12} container spacing={1} justifyContent={"space-between"}>
+					<Grid xs={12} sm={4}>
+						<InputSearch
+							placeholder="comida mexicana etc"
+							value={filter}
+							onChange={onChangeFilter}
+						/>
+					</Grid>
+					<Grid xs={12} sm={4}>
+						<Button variant="contained" onClick={handleClickOpenCreateItem} fullWidth>
+							Adicionar Item
+						</Button>
+					</Grid>
+					<Grid xs={12} sm={4}>
+						<Button variant="contained" onClick={handleOpenViewCategories} fullWidth>
+							Categorias
+						</Button>
+					</Grid>
 				</Grid>
-				<Grid xs={12} sm={4}>
-					<Button variant="contained" onClick={handleOpenViewCategories} fullWidth>
-						Categorias
-					</Button>
-				</Grid>
-			</Grid>
-			<Grid container xs={12} spacing={1} sx={{ marginTop: "1rem" }}>
-				{itemsState.data.length === 0 ? (
-					<Typography>
-						Não existe nenhum item cadastrado,{" "}
-						<Typography
-							onClick={handleClickOpenCreateItem}
-							component={"span"}
-							color="primary"
-							sx={{ ":hover": { textDecoration: "underline" }, cursor: "pointer" }}
-						>
-							acidione aqui.
-						</Typography>
-					</Typography>
-				) : null}
-				{groupItemsByCategory(itemsState.data.filter(handleFilterItems)).map((itemByCategory) => {
-					return (
-						<>
-							<Grid xs={12}>
-								<Typography textTransform={"capitalize"} fontWeight={700} align="center">
-									{itemByCategory.name}
-								</Typography>
-								<Divider />
-							</Grid>
-							{itemByCategory.items.map((item, index) => (
-								<Grid key={item.id} xs={12} sm={6} md={4}>
-									<CardActionArea
-										sx={{ borderRadius: "0.25rem", height: "100%" }}
-										onClick={() => {
-											handleClickOpenEditItem();
-											setItemIdSelected(item.id);
-										}}
-									>
-										<FoodCard item={item} imagePath={ImageDefault} key={item.name} canEdit />
-									</CardActionArea>
+				<Grid container xs={12} spacing={1} sx={{ marginTop: "1rem" }}>
+					<ListEmpty label="items" action={handleClickOpenCreateItem} dataList={itemsState.data} />
+					{groupItemsByCategory(itemsState.data.filter(handleFilterItems)).map((itemByCategory) => {
+						return (
+							<>
+								<Grid xs={12}>
+									<Typography textTransform={"capitalize"} fontWeight={700} align="center">
+										{itemByCategory.name}
+									</Typography>
+									<Divider />
 								</Grid>
-							))}
-						</>
-					);
-				})}
+								{itemByCategory.items.map((item, index) => (
+									<Grid key={item.id} xs={12} sm={6} md={4}>
+										<CardFood
+											item={item}
+											imagePath={ImageDefault}
+											key={item.name}
+											canEdit
+											onClick={onClickCard}
+										/>
+									</Grid>
+								))}
+							</>
+						);
+					})}
+				</Grid>
+				<DialogCreateOrUpdateItem
+					open={openModalEditItem}
+					handleClose={handleCloseEditItem}
+					idItem={itemIdSelected}
+					canEdit
+				/>
 			</Grid>
-			<DialogCreateOrUpdateItem
-				open={openModalEditItem}
-				handleClose={handleCloseEditItem}
-				idItem={itemIdSelected}
-				canEdit
-			/>
 			<DialogCreateOrUpdateItem open={openModalCreateItem} handleClose={handleCloseCreateItem} />
 			<DialogViewCategories
 				open={openModalViewCategories}
 				handleClose={handleCloseViewCategories}
 			/>
-		</Grid>
+		</>
 	);
 }

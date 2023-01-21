@@ -1,16 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-export interface itemsDataProps {
-	id: number;
-	name: string;
-	description: string;
-	price: number;
-	avaliable: boolean;
-	category: {
-		id: number;
-		name: string;
-	};
-}
+import { itemsDataProps } from "../../../helper/interfaces/Item";
 
 const itemsSlice = createSlice({
 	name: "items",

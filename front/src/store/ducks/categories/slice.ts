@@ -1,9 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-interface categoriesDataProps {
-	id: number;
-	name: string;
-}
+import { categoriesDataProps } from "../../../helper/interfaces/Category";
 
 const categoriesSlice = createSlice({
 	name: "categories",

@@ -27,7 +27,7 @@ export default function theme(mode?: PaletteMode | undefined) {
 		colors = {
 			background: { paper: "#f7f7f7", default: "#fff" },
 			// primary: { main: "#C23E14" },
-			primary: { main: "#de1a1a" },
+			primary: { main: "#3772ff" },
 			terciary: { main: "#fcd581" },
 			// secondary: { main: "#95c623" },
 		};

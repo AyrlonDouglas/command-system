@@ -20,9 +20,9 @@ export class CreateEmployeeDto {
 
   @ApiProperty({
     description: "Employee's Password",
-    example: 'alterpassnow',
+    example: 'alterarsenhaagora',
+    required: false,
   })
-  @IsString()
   password: string;
 
   @ApiProperty({
@@ -31,8 +31,4 @@ export class CreateEmployeeDto {
   })
   @IsString()
   type: TEmployeeTypes;
-
-  @ApiProperty({ description: "Employee's companyId", example: 1 })
-  @IsNumber()
-  companyId: number;
 }

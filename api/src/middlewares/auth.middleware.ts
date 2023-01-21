@@ -13,7 +13,6 @@ export class AuthMiddleware implements NestMiddleware {
   constructor(readonly jwtService: JwtService) {}
   async use(req: Request, res: Response, next: NextFunction) {
     const accessToken = req.headers['authorization']?.toString().split(' ')[1];
-
     if (!accessToken) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }

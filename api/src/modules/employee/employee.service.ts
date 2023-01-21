@@ -6,27 +6,23 @@ import { Employee } from './entities/employee.entity';
 import * as bcrypt from 'bcrypt';
 import { Company } from '../company/entities/company.entity';
 import { EmployeeLogged } from 'src/helper/types/employeeLogged';
+import { EEmployeeTypes } from 'src/helper/enum/employeeTypes';
 
 @Injectable()
 export class EmployeeService {
-  async create(createEmployeeDto: CreateEmployeeDto): Promise<EmployeeDto> {
+  async create(
+    createEmployeeDto: CreateEmployeeDto & EmployeeLogged,
+  ): Promise<EmployeeDto> {
     const company = await Company.findOneBy({
-      id: createEmployeeDto.companyId,
+      id: createEmployeeDto.employeeLogged.company.id,
     });
-
-    if (!company) {
-      throw new HttpException(
-        'Companhia não existe no sistema',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
 
     const employee = new Employee();
     employee.email = createEmployeeDto.email;
     employee.firstName = createEmployeeDto.firstName;
     employee.lastName = createEmployeeDto.lastName;
     employee.password = await bcrypt.hash(
-      createEmployeeDto.password,
+      createEmployeeDto.password ?? 'alterarsenhaagora',
       await bcrypt.genSalt(),
     );
     employee.company = company;
@@ -54,7 +50,17 @@ export class EmployeeService {
     id: number,
     updateEmployeeDto: UpdateEmployeeDto & EmployeeLogged,
   ): Promise<EmployeeDto> {
-    delete updateEmployeeDto?.employeeLogged;
+    if (
+      updateEmployeeDto.employeeLogged.id !== id &&
+      updateEmployeeDto.employeeLogged.type !== EEmployeeTypes.ADMIN
+    ) {
+      throw new HttpException(
+        'Você não tem permissão para atualizar colaboradores além de si.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    delete updateEmployeeDto.employeeLogged;
 
     await Employee.update({ id }, updateEmployeeDto);
 
