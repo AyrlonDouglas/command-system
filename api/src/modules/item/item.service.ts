@@ -9,7 +9,7 @@ import { Item } from './entities/item.entity';
 
 @Injectable()
 export class ItemService {
-  async create(createItemDto: CreateItemDto & EmployeeLogged) {
+  async create(createItemDto: CreateItemDto, employeeLogged: Employee) {
     const category = await Category.findOneBy({ id: createItemDto.categoryId });
 
     if (!category) {
@@ -24,7 +24,7 @@ export class ItemService {
     item.description = createItemDto.description;
     item.price = createItemDto.price;
     item.category = category;
-    item.company = createItemDto.employeeLogged.company;
+    item.company = employeeLogged.company;
     item.avaliable = createItemDto.avaliable;
 
     const itemData = await item.save();
@@ -45,10 +45,11 @@ export class ItemService {
   //   return `This action returns a #${id} item`;
   // }
 
-  async update(id: number, updateItemDto: UpdateItemDto & EmployeeLogged) {
-    delete updateItemDto.employeeLogged;
-    let category: Category;
-
+  async update(
+    id: number,
+    updateItemDto: UpdateItemDto,
+    employeeLoged: Employee,
+  ) {
     if (updateItemDto.categoryId) {
       updateItemDto.category = await Category.findOneBy({
         id: updateItemDto.categoryId,

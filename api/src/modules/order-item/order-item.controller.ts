@@ -12,6 +12,7 @@ import { CreateOrderItemDto } from './dto/create-order-item.dto';
 import { UpdateOrderItemDto } from './dto/update-order-item.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Employee } from '../employee/entities/employee.entity';
+import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Order-item')
@@ -25,7 +26,7 @@ export class OrderItemController {
   }
 
   @Get()
-  findAll(@Body('employeeLogged') employeeLogged: Employee) {
+  findAll(@EmployeeLogged() employeeLogged: Employee) {
     return this.orderItemService.findAll(employeeLogged);
   }
 

@@ -9,11 +9,12 @@ import { Category } from './entities/category.entity';
 @Injectable()
 export class CategoryService {
   async create(
-    createCategoryDto: CreateCategoryDto & EmployeeLogged,
+    createCategoryDto: CreateCategoryDto,
+    employeeLogged: Employee,
   ): Promise<CategoryDto> {
     const category = new Category();
     category.name = createCategoryDto.name;
-    category.company = createCategoryDto.employeeLogged.company;
+    category.company = employeeLogged.company;
 
     const categoryData = await category.save();
 
@@ -34,7 +35,8 @@ export class CategoryService {
 
   async update(
     id: number,
-    updateCategoryDto: UpdateCategoryDto & EmployeeLogged,
+    updateCategoryDto: UpdateCategoryDto,
+    employeeLogged: Employee,
   ) {
     if (!(await Category.findOneBy({ id }))) {
       throw new HttpException(
@@ -47,15 +49,14 @@ export class CategoryService {
       updateCategoryDto.name &&
       (await Category.findOneBy({
         name: updateCategoryDto.name,
-        company: { id: updateCategoryDto.employeeLogged.company.id },
+        company: { id: employeeLogged.company.id },
       }))
     ) {
       throw new HttpException(
         'Já existe categoria com este nome.',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.CONFLICT,
       );
     }
-    delete updateCategoryDto.employeeLogged;
 
     const update = {};
 

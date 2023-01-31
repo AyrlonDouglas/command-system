@@ -11,7 +11,7 @@ import { itemsDataProps } from "../../../helper/interfaces/Item";
 
 interface CardFoodProps {
 	item: itemsDataProps;
-	imagePath: string;
+	imagePath?: string;
 	canEdit: boolean;
 	onClick: (id: number) => void;
 }

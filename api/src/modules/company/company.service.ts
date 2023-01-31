@@ -32,8 +32,6 @@ export class CompanyService {
 
       const companySaved = await company.save();
 
-      const pass = await bcrypt.hash('alterpassnow', await bcrypt.genSalt());
-
       await Employee.insert({
         company: companySaved,
         firstName: 'Admin',

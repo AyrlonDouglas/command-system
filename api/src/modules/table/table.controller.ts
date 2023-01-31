@@ -12,6 +12,7 @@ import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Employee } from '../employee/entities/employee.entity';
+import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Table')
@@ -22,13 +23,13 @@ export class TableController {
   @Post()
   create(
     @Body() createTableDto: CreateTableDto,
-    @Body('employeeLogged') employeeLogged: Employee,
+    @EmployeeLogged() employeeLogged: Employee,
   ) {
     return this.tableService.create(createTableDto, employeeLogged);
   }
 
   @Get()
-  findAll(@Body('employeeLogged') employeeLogged: Employee) {
+  findAll(@EmployeeLogged() employeeLogged: Employee) {
     return this.tableService.findAll(employeeLogged);
   }
 

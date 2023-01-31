@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 //MUI
-import {
-	Button,
-	Unstable_Grid2 as Grid,
-	Divider,
-	Typography,
-	TextField,
-	InputAdornment,
-	CardActionArea,
-} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import { Button, Unstable_Grid2 as Grid, Divider, Typography } from "@mui/material";
 
 //COMPONENTS
 import PageTitle from "../../../components/common/PageTitle";
@@ -18,12 +9,14 @@ import DialogCreateOrUpdateItem from "../../../components/Dialog/CreateOrUpdateI
 import InputSearch from "../../../components/Input/Search";
 // REDUX E SAGA
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getItemsRequest, itemsDataProps } from "../../../store/ducks/items/slice";
+import { getItemsRequest } from "../../../store/ducks/items/slice";
 import { getCategoriesRequest } from "../../../store/ducks/categories/slice";
 //IMAGE
 import ImageDefault from "../../../assets/images/cutlery.jpg";
 import DialogViewCategories from "../../../components/Dialog/ViewCategories";
 import ListEmpty from "../../../components/common/listEmpty";
+import { itemsDataProps } from "../../../helper/interfaces/Item";
+// interface
 
 export default function ItemsList() {
 	const dispatch = useAppDispatch();
@@ -123,7 +116,7 @@ export default function ItemsList() {
 					<ListEmpty label="items" action={handleClickOpenCreateItem} dataList={itemsState.data} />
 					{groupItemsByCategory(itemsState.data.filter(handleFilterItems)).map((itemByCategory) => {
 						return (
-							<>
+							<Grid container xs={12} key={itemByCategory.name}>
 								<Grid xs={12}>
 									<Typography textTransform={"capitalize"} fontWeight={700} align="center">
 										{itemByCategory.name}
@@ -141,7 +134,7 @@ export default function ItemsList() {
 										/>
 									</Grid>
 								))}
-							</>
+							</Grid>
 						);
 					})}
 				</Grid>

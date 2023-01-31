@@ -11,20 +11,25 @@ import { EEmployeeTypes } from 'src/helper/enum/employeeTypes';
 @Injectable()
 export class EmployeeService {
   async create(
-    createEmployeeDto: CreateEmployeeDto & EmployeeLogged,
+    createEmployeeDto: CreateEmployeeDto,
+    employeeLogged: Employee,
   ): Promise<EmployeeDto> {
     const company = await Company.findOneBy({
-      id: createEmployeeDto.employeeLogged.company.id,
+      id: employeeLogged.company.id,
     });
 
     const employee = new Employee();
     employee.email = createEmployeeDto.email;
     employee.firstName = createEmployeeDto.firstName;
     employee.lastName = createEmployeeDto.lastName;
-    employee.password = await bcrypt.hash(
-      createEmployeeDto.password ?? 'alterarsenhaagora',
-      await bcrypt.genSalt(),
-    );
+
+    if (createEmployeeDto.password) {
+      employee.password = await bcrypt.hash(
+        createEmployeeDto.password,
+        await bcrypt.genSalt(),
+      );
+    }
+
     employee.company = company;
 
     const employeeData = await employee.save();
@@ -48,19 +53,18 @@ export class EmployeeService {
 
   async update(
     id: number,
-    updateEmployeeDto: UpdateEmployeeDto & EmployeeLogged,
+    updateEmployeeDto: UpdateEmployeeDto,
+    employeeLogged: Employee,
   ): Promise<EmployeeDto> {
     if (
-      updateEmployeeDto.employeeLogged.id !== id &&
-      updateEmployeeDto.employeeLogged.type !== EEmployeeTypes.ADMIN
+      employeeLogged.id !== id &&
+      employeeLogged.type !== EEmployeeTypes.ADMIN
     ) {
       throw new HttpException(
         'Você não tem permissão para atualizar colaboradores além de si.',
         HttpStatus.BAD_REQUEST,
       );
     }
-
-    delete updateEmployeeDto.employeeLogged;
 
     await Employee.update({ id }, updateEmployeeDto);
 

@@ -12,6 +12,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Employee } from '../employee/entities/employee.entity';
+import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Order')
@@ -22,13 +23,13 @@ export class OrderController {
   @Post()
   create(
     @Body() createOrderDto: CreateOrderDto,
-    @Body('employeeLogged') employeeLogged: Employee,
+    @EmployeeLogged() employeeLogged: Employee,
   ) {
     return this.orderService.create(createOrderDto, employeeLogged);
   }
 
   @Get()
-  findAll(@Body('employeeLogged') employeeLogged: Employee) {
+  findAll(@EmployeeLogged() employeeLogged: Employee) {
     return this.orderService.findAll(employeeLogged);
   }
 
@@ -41,7 +42,7 @@ export class OrderController {
   update(
     @Param('id') id: string,
     @Body() updateOrderDto: UpdateOrderDto,
-    @Body('employeeLogged') employeeLogged: Employee,
+    @EmployeeLogged() employeeLogged: Employee,
   ) {
     return this.orderService.update(+id, updateOrderDto, employeeLogged);
   }

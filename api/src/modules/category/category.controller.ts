@@ -6,9 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { EmployeeLogged } from 'src/helper/types/employeeLogged';
+import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 import { Employee } from '../employee/entities/employee.entity';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -21,14 +22,15 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    const createCategoryDtoData = createCategoryDto as CreateCategoryDto &
-      EmployeeLogged;
-    return this.categoryService.create(createCategoryDtoData);
+  create(
+    @Body() createCategoryDto: CreateCategoryDto,
+    @EmployeeLogged() employeeLogged: Employee,
+  ) {
+    return this.categoryService.create(createCategoryDto, employeeLogged);
   }
 
   @Get()
-  findAll(@Body('employeeLogged') employeeLogged: Employee) {
+  findAll(@EmployeeLogged() employeeLogged: Employee) {
     return this.categoryService.findAll(employeeLogged);
   }
 
@@ -41,11 +43,9 @@ export class CategoryController {
   update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
+    @EmployeeLogged() employeeLogged: Employee,
   ) {
-    const updateCategoryDtoData = updateCategoryDto as UpdateCategoryDto &
-      EmployeeLogged;
-
-    return this.categoryService.update(+id, updateCategoryDtoData);
+    return this.categoryService.update(+id, updateCategoryDto, employeeLogged);
   }
 
   // @Delete(':id')

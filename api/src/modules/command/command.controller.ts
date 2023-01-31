@@ -8,6 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 import { Employee } from '../employee/entities/employee.entity';
 import { CommandService } from './command.service';
 import { CreateCommandDto } from './dto/create-command.dto';
@@ -21,13 +22,13 @@ export class CommandController {
   @Post()
   create(
     @Body() createCommandDto: CreateCommandDto,
-    @Body('employeeLogged') employeeLogged: Employee,
+    @EmployeeLogged() employeeLogged: Employee,
   ) {
     return this.commandService.create(createCommandDto, employeeLogged);
   }
 
   @Get()
-  findAll(@Body('employeeLogged') employeeLogged: Employee) {
+  findAll(@EmployeeLogged() employeeLogged: Employee) {
     return this.commandService.findAll(employeeLogged);
   }
 
