@@ -3,14 +3,16 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+  // Patch,
+  // Param,
+  // Delete,
 } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
-
+// import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+@ApiBearerAuth()
+@ApiTags('Permission')
 @Controller('permission')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
@@ -20,10 +22,10 @@ export class PermissionController {
     return this.permissionService.create(createPermissionDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.permissionService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.permissionService.findAll();
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {

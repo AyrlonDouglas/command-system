@@ -2,12 +2,15 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
+// import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
 import { CompanyDto } from './dto/company.dto';
 import { Employee } from '../employee/entities/employee.entity';
-import { EEmployeeTypes } from 'src/helper/enum/employeeTypes';
-import * as bcrypt from 'bcrypt';
+// import { EEmployeeTypes } from 'src/helper/enum/employeeTypes';
+// import * as bcrypt from 'bcrypt';
+import { Role } from '../role/entities/role.entity';
+import { RolePermission } from '../role-permission/entities/role-permission.entity';
+import { Permission } from '../permission/entities/permission.entity';
 
 @Injectable()
 export class CompanyService {
@@ -32,19 +35,10 @@ export class CompanyService {
 
       const companySaved = await company.save();
 
-      await Employee.insert({
-        company: companySaved,
-        firstName: 'Admin',
-        lastName: companySaved.prefix,
-        type: EEmployeeTypes.ADMIN,
-      });
+      const mainRoles = await this.createMainRoles(companySaved);
 
-      await Employee.insert({
-        company: companySaved,
-        firstName: 'Bot',
-        lastName: companySaved.prefix,
-        type: EEmployeeTypes.BOT,
-      });
+      await this.createMainEmployees(companySaved, mainRoles);
+
       const companyData = await Company.findOneBy({ id: companySaved.id });
 
       return new CompanyDto(companyData);
@@ -57,6 +51,45 @@ export class CompanyService {
     const companies = await Company.find();
 
     return companies.map((company) => new CompanyDto(company));
+  }
+
+  async createMainRoles(company: Company): Promise<Role[]> {
+    const roleAdmin = new Role();
+    roleAdmin.company = company;
+    roleAdmin.name = 'admin';
+    const roleAdminData = await roleAdmin.save();
+
+    const roleBot = new Role();
+    roleBot.company = company;
+    roleBot.name = 'bot';
+    const roleBotData = await roleBot.save();
+
+    (await Permission.find()).forEach(async (elementPermission) => {
+      const permission = await Permission.findOneBy({
+        id: elementPermission.id,
+      });
+
+      await RolePermission.insert({ permission, role: roleAdminData });
+      await RolePermission.insert({ permission, role: roleBotData });
+    });
+
+    return [roleAdminData, roleBotData];
+  }
+
+  async createMainEmployees(company: Company, roles: Role[]) {
+    await Employee.insert({
+      company: company,
+      firstName: 'Admin',
+      lastName: company.prefix,
+      role: roles[0],
+    });
+
+    await Employee.insert({
+      company: company,
+      firstName: 'Bot',
+      lastName: company.prefix,
+      role: roles[1],
+    });
   }
 
   // findOne(id: number) {

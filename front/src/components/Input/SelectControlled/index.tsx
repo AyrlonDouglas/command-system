@@ -1,11 +1,12 @@
-import { useForm, Controller, Control, FieldErrorsImpl } from "react-hook-form";
+import { Controller, Control, FieldErrors } from "react-hook-form";
 import { FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
 interface InputSelectControlledProps {
+	//TODO: ajustar tipo do control
 	control: Control<any>;
 	nameField: string;
 	options: string[];
 	label: string;
-	error: Partial<FieldErrorsImpl<{ [key: string]: string }>>;
+	error: FieldErrors<{ [key: string]: string }>;
 }
 
 export default function InputSelectControlled({
@@ -32,7 +33,7 @@ export default function InputSelectControlled({
 				)}
 			/>
 			{error[nameField]?.message ? (
-				<FormHelperText error={!!error[nameField]?.message}>
+				<FormHelperText error={Boolean(error[nameField]?.message)}>
 					{error[nameField]?.message}
 				</FormHelperText>
 			) : null}

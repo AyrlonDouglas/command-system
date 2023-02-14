@@ -14,11 +14,10 @@ import {
   OneToMany,
   UpdateEvent,
 } from 'typeorm';
-import { EEmployeeTypes, TEmployeeTypes } from 'src/helper/enum/employeeTypes';
+// import { EEmployeeTypes, TEmployeeTypes } from 'src/helper/enum/employeeTypes';
 import { Command } from 'src/modules/command/entities/command.entity';
 import * as bcrypt from 'bcrypt';
-import { EmployeeRole } from 'src/modules/employee-role/entities/employee-role.entity';
-
+import { Role } from 'src/modules/role/entities/role.entity';
 @Entity()
 export class Employee extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -39,8 +38,8 @@ export class Employee extends BaseEntity {
   @Column()
   password: string;
 
-  @Column({ type: 'enum', enum: EEmployeeTypes })
-  type: TEmployeeTypes;
+  // @Column({ type: 'enum', enum: EEmployeeTypes })
+  // type: TEmployeeTypes;
 
   @Column({ default: true })
   isActive: boolean;
@@ -51,8 +50,8 @@ export class Employee extends BaseEntity {
   @OneToMany(() => Command, (command) => command.employee)
   commands: Command[];
 
-  @OneToMany(() => EmployeeRole, (employeeRole) => employeeRole.employee)
-  employeeRoles: EmployeeRole[];
+  @ManyToOne(() => Role, (role) => role.employees)
+  role: Role;
 
   @CreateDateColumn()
   createdAt: Date;

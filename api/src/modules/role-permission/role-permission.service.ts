@@ -1,16 +1,59 @@
 import { Injectable } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common/enums';
+import { HttpException } from '@nestjs/common/exceptions';
+import { Permission } from '../permission/entities/permission.entity';
+import { Role } from '../role/entities/role.entity';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
-import { UpdateRolePermissionDto } from './dto/update-role-permission.dto';
+import { RolePermissionDto } from './dto/role-permission.dto';
+// import { UpdateRolePermissionDto } from './dto/update-role-permission.dto';
+import { RolePermission } from './entities/role-permission.entity';
 
 @Injectable()
 export class RolePermissionService {
-  create(createRolePermissionDto: CreateRolePermissionDto) {
-    return 'This action adds a new rolePermission';
+  async create(createRolePermissionDto: CreateRolePermissionDto) {
+    const permission = await Permission.findOne({
+      where: { id: createRolePermissionDto.permissionId },
+    });
+    const role = await Role.findOne({
+      where: { id: createRolePermissionDto.roleId },
+    });
+
+    if (!permission) {
+      throw new HttpException(
+        'Permissão não existe',
+        HttpStatus.PRECONDITION_FAILED,
+      );
+    }
+
+    if (!role) {
+      throw new HttpException(
+        'Role não existe',
+        HttpStatus.PRECONDITION_FAILED,
+      );
+    }
+
+    const rolePermission = new RolePermission();
+    rolePermission.permission = permission;
+    rolePermission.role = role;
+
+    const rolePermissionData = await rolePermission.save();
+
+    console.log('rolePermissionData', rolePermissionData);
+
+    return new RolePermissionDto(rolePermissionData);
   }
 
-  // findAll() {
-  //   return `This action returns all rolePermission`;
-  // }
+  async findAll() {
+    const rolePermissions = await RolePermission.find({
+      relations: {
+        permission: true,
+        role: true,
+      },
+    });
+    return rolePermissions.map(
+      (rolePermission) => new RolePermissionDto(rolePermission),
+    );
+  }
 
   // findOne(id: number) {
   //   return `This action returns a #${id} rolePermission`;

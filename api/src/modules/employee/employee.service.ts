@@ -42,7 +42,10 @@ export class EmployeeService {
       where: {
         company: { id: employeeLoged.company.id },
       },
+      relations: { role: true },
     });
+
+    console.log('employees', employees);
 
     return employees.map((employee) => new EmployeeDto(employee));
   }
@@ -56,15 +59,15 @@ export class EmployeeService {
     updateEmployeeDto: UpdateEmployeeDto,
     employeeLogged: Employee,
   ): Promise<EmployeeDto> {
-    if (
-      employeeLogged.id !== id &&
-      employeeLogged.type !== EEmployeeTypes.ADMIN
-    ) {
-      throw new HttpException(
-        'Você não tem permissão para atualizar colaboradores além de si.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    // if (
+    //   employeeLogged.id !== id &&
+    //   employeeLogged.type !== EEmployeeTypes.ADMIN
+    // ) {
+    //   throw new HttpException(
+    //     'Você não tem permissão para atualizar colaboradores além de si.',
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
 
     await Employee.update({ id }, updateEmployeeDto);
 

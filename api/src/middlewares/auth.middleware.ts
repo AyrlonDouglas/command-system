@@ -7,7 +7,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response, NextFunction } from 'express';
 import { Employee } from 'src/modules/employee/entities/employee.entity';
-import { EmployeeLogged } from 'src/helper/types/employeeLogged';
 
 interface RequestMiddleware extends Request {
   employeeLogged: Employee;

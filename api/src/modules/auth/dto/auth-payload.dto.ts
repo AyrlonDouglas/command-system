@@ -1,4 +1,4 @@
-import { EmployeeDto } from 'src/modules/employee/dto/employee.dto';
+import { Employee } from 'src/modules/employee/entities/employee.entity';
 
 export class AuthPayloadDto {
   readonly id: number;
@@ -7,7 +7,7 @@ export class AuthPayloadDto {
 
   readonly token: string;
 
-  constructor(employee: EmployeeDto, token: string) {
+  constructor(employee: Employee, token: string) {
     this.id = employee.id;
     this.employeeCode = employee.employeeCode;
     this.token = token;

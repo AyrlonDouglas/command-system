@@ -1,4 +1,5 @@
-import { EmployeeRole } from 'src/modules/employee-role/entities/employee-role.entity';
+import { Company } from 'src/modules/company/entities/company.entity';
+import { Employee } from 'src/modules/employee/entities/employee.entity';
 import { RolePermission } from 'src/modules/role-permission/entities/role-permission.entity';
 import {
   BaseEntity,
@@ -9,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -19,11 +21,14 @@ export class Role extends BaseEntity {
   @Column()
   name: string;
 
-  @OneToMany(() => EmployeeRole, (employeeRole) => employeeRole.role)
-  employeeRoles: EmployeeRole[];
+  @OneToMany(() => Employee, (employee) => employee.role)
+  employees: Employee[];
 
   @OneToMany(() => RolePermission, (RolePermission) => RolePermission.role)
   rolePermissions: RolePermission[];
+
+  @ManyToOne(() => Company, (company) => company.roles)
+  company: Company;
 
   @CreateDateColumn()
   createdAt: Date;

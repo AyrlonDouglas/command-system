@@ -1,4 +1,5 @@
 import { Company } from 'src/modules/company/entities/company.entity';
+import { Role } from 'src/modules/role/entities/role.entity';
 import { Employee } from '../entities/employee.entity';
 
 export class EmployeeDto {
@@ -14,11 +15,13 @@ export class EmployeeDto {
 
   // readonly password: string;
 
-  readonly type: string;
+  // readonly type: string;
 
   readonly isActive: boolean;
 
   readonly company: Company;
+
+  readonly role: Role;
 
   constructor(employee: Employee) {
     this.id = employee.id;
@@ -27,8 +30,9 @@ export class EmployeeDto {
     this.employeeCode = employee.employeeCode;
     this.email = employee.email;
     // this.password = employee.password;
-    this.type = employee.type;
+    // this.type = employee.type;
     this.isActive = employee.isActive;
     this.company = employee.company;
+    this.role = employee.role;
   }
 }

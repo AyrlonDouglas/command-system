@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateRoleDto {
-  @ApiProperty({ example: 1, description: "role's name" })
+  @ApiProperty({ example: 'Garçom', description: "role's name" })
   @IsString()
   name: string;
+
+  @ApiProperty({ example: 1, description: "role's companyId" })
+  @IsNumber()
+  companyId: number;
 }

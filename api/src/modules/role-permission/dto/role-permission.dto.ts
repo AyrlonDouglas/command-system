@@ -11,7 +11,7 @@ export class RolePermissionDto {
 
   constructor(rolePermission: RolePermission) {
     this.id = rolePermission.id;
-    // this.role = rolePermission.role;
-    // this.permission = rolePermission.permission;
+    this.role = rolePermission.role;
+    this.permission = rolePermission.permission;
   }
 }

@@ -19,6 +19,13 @@ export class CreateEmployeeDto {
   email: string;
 
   @ApiProperty({
+    description: "Employee's Role Id",
+    example: 1,
+  })
+  @IsNumber()
+  roleId: number;
+
+  @ApiProperty({
     description: "Employee's Password",
     example: 'alterarsenhaagora',
     required: false,

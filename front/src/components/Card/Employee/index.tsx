@@ -1,5 +1,5 @@
 //components
-import { CardActionArea, Unstable_Grid2 as Grid, Typography, Box } from "@mui/material";
+import { CardActionArea, Unstable_Grid2 as Grid, Typography } from "@mui/material";
 import { employeeDataProps } from "../../../helper/interfaces/Employee";
 //styles
 import { GridContainer } from "./styles";

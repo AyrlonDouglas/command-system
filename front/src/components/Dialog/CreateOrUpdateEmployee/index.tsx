@@ -5,12 +5,7 @@ import {
 	DialogActions,
 	DialogContent,
 	DialogTitle,
-	TextField,
 	Unstable_Grid2 as Grid,
-	Autocomplete,
-	CircularProgress,
-	Switch,
-	FormControlLabel,
 } from "@mui/material";
 
 // Redux
@@ -21,7 +16,7 @@ import { createEmployeeRequest, updateEmployeeRequest } from "../../../store/duc
 import { DialogStyled as Dialog } from "./styles";
 
 //VALIDADOR
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import InputTextFieldControlled from "../../Input/TextFieldControlled";
@@ -76,12 +71,12 @@ export default function DialogCreateOrUpdateEmployee({
 		handleSubmit,
 		control,
 		getValues,
-		setError,
+		// setError,
 		formState: { errors },
 		// resetField,
 		setValue,
 		// trigger,
-		watch,
+		// watch,
 		reset,
 	} = useForm({
 		resolver: yupResolver(schema),

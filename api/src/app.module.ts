@@ -21,7 +21,6 @@ import { CommandModule } from './modules/command/command.module';
 import { OrderItemModule } from './modules/order-item/order-item.module';
 import { TableModule } from './modules/table/table.module';
 import { RoleModule } from './modules/role/role.module';
-import { EmployeeRoleModule } from './modules/employee-role/employee-role.module';
 import { RolePermissionModule } from './modules/role-permission/role-permission.module';
 import { PermissionModule } from './modules/permission/permission.module';
 
@@ -39,7 +38,6 @@ import { PermissionModule } from './modules/permission/permission.module';
     OrderItemModule,
     TableModule,
     RoleModule,
-    EmployeeRoleModule,
     RolePermissionModule,
     PermissionModule,
   ],

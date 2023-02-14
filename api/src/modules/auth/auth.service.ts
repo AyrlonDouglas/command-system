@@ -14,11 +14,31 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateEmployee(employeeCode: string, pass: string): Promise<any> {
+  async login(auth: AuthLoginDto): Promise<AuthPayloadDto> {
+    const employee = await this.validateEmployee(
+      auth.employeeCode,
+      auth.password,
+    );
+
+    const token = await this.generateToken({
+      id: employee.id,
+      companyId: employee.company.id,
+      role: employee.role.id,
+      employeeCode: employee.employeeCode,
+    });
+
+    return new AuthPayloadDto(employee, token);
+  }
+
+  async validateEmployee(
+    employeeCode: string,
+    pass: string,
+  ): Promise<Employee> {
     const employee = await Employee.findOne({
       where: { employeeCode },
       relations: {
         company: true,
+        role: true,
       },
     });
 
@@ -42,22 +62,6 @@ export class AuthService {
       'Código e/ou senha errada.',
       HttpStatus.UNAUTHORIZED,
     );
-  }
-
-  async login(auth: AuthLoginDto): Promise<AuthPayloadDto> {
-    const employee: EmployeeDto = await this.validateEmployee(
-      auth.employeeCode,
-      auth.password,
-    );
-
-    const token = await this.generateToken({
-      companyId: employee.company.id,
-      type: employee.type,
-      id: employee.id,
-      employeeCode: employee.employeeCode,
-    });
-
-    return new AuthPayloadDto(employee, token);
   }
 
   private async comparePassword(enteredPassword: string, dbPassword: string) {

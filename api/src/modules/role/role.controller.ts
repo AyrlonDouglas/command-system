@@ -3,14 +3,16 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+  // Patch,
+  // Param,
+  // Delete,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
-
+// import { UpdateRoleDto } from './dto/update-role.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+@ApiBearerAuth()
+@ApiTags('Role')
 @Controller('role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
@@ -20,10 +22,10 @@ export class RoleController {
     return this.roleService.create(createRoleDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.roleService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.roleService.findAll();
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {

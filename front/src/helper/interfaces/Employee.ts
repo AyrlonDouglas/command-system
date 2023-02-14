@@ -1,10 +1,12 @@
+import { EEmployeeTypes } from "../constants/employee";
+
 export interface employeeDataProps {
 	id: number;
 	firstName: string;
 	lastName: string;
 	employeeCode: string;
 	email?: string;
-	type: "admin" | "standard" | "bot";
+	type: EEmployeeTypes;
 	isActive: boolean;
 }
 
@@ -15,7 +17,7 @@ export interface createOrUpdateEmployeeProps {
 		lastName: string;
 		employeeCode: string;
 		email?: string;
-		type: "admin" | "standard" | "bot";
+		type: EEmployeeTypes;
 		isActive: boolean;
 	};
 	type: string;
