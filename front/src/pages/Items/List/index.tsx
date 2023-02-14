@@ -26,7 +26,6 @@ export default function ItemsList() {
 	const [openModalEditItem, setOpenModalEditItem] = useState(false);
 	const [itemIdSelected, setItemIdSelected] = useState(-1);
 	const [filter, setFilter] = useState("");
-	const [itemsFiltered, setItemsFiltered] = useState<typeof itemsState.data>([]);
 
 	useEffect(() => {
 		dispatch(getItemsRequest());
@@ -123,7 +122,7 @@ export default function ItemsList() {
 									</Typography>
 									<Divider />
 								</Grid>
-								{itemByCategory.items.map((item, index) => (
+								{itemByCategory.items.map((item) => (
 									<Grid key={item.id} xs={12} sm={6} md={4}>
 										<CardFood
 											item={item}
