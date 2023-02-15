@@ -1,10 +1,10 @@
 export interface PermissionProps {
-  entity: EntitiesTypes;
+  entity: PermissionEntitiesTypes;
   action: PermissionsActionTypes;
 }
 
 export type PermissionsActionTypes = 'VIEW' | 'CREATE' | 'EDIT' | 'REMOVE';
-export type EntitiesTypes =
+export type PermissionEntitiesTypes =
   | 'CATEGORY'
   | 'COMMAND'
   | 'COMPANY'

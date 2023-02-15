@@ -15,25 +15,19 @@ export function cpfIsValid(strCPF: string): boolean {
   if (cpfWithoutSpecialCharacters === '99999999999') return false;
 
   for (let i = 1; i <= 9; i++)
-    sum =
-      sum +
-      parseInt(cpfWithoutSpecialCharacters.substring(i - 1, i)) * (11 - i);
+    sum = sum + parseInt(cpfWithoutSpecialCharacters.substring(i - 1, i)) * (11 - i);
   module = (sum * 10) % 11;
 
   if (module === 10 || module === 11) module = 0;
-  if (module !== parseInt(cpfWithoutSpecialCharacters.substring(9, 10)))
-    return false;
+  if (module !== parseInt(cpfWithoutSpecialCharacters.substring(9, 10))) return false;
 
   sum = 0;
   for (let i = 1; i <= 10; i++)
-    sum =
-      sum +
-      parseInt(cpfWithoutSpecialCharacters.substring(i - 1, i)) * (12 - i);
+    sum = sum + parseInt(cpfWithoutSpecialCharacters.substring(i - 1, i)) * (12 - i);
   module = (sum * 10) % 11;
 
   if (module === 10 || module === 11) module = 0;
-  if (module !== parseInt(cpfWithoutSpecialCharacters.substring(10, 11)))
-    return false;
+  if (module !== parseInt(cpfWithoutSpecialCharacters.substring(10, 11))) return false;
 
   return true;
 }

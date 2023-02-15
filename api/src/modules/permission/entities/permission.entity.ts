@@ -1,5 +1,5 @@
 // import { HttpStatus, HttpException } from '@nestjs/common';
-import { PermissionsActionTypes, EntitiesTypes } from 'src/helper/interfaces/permissions';
+import { PermissionsActionTypes, PermissionEntitiesTypes } from 'src/helper/interfaces/permissions';
 import { RolePermission } from 'src/modules/role-permission/entities/role-permission.entity';
 import {
   BaseEntity,
@@ -21,7 +21,7 @@ export class Permission extends BaseEntity {
   id: number;
 
   @Column()
-  entity: EntitiesTypes;
+  entity: PermissionEntitiesTypes;
 
   @Column()
   action: PermissionsActionTypes;
