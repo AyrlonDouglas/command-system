@@ -15,10 +15,7 @@ export class AuthService {
   ) {}
 
   async login(auth: AuthLoginDto): Promise<AuthPayloadDto> {
-    const employee = await this.validateEmployee(
-      auth.employeeCode,
-      auth.password,
-    );
+    const employee = await this.validateEmployee(auth.employeeCode, auth.password);
 
     const token = await this.generateToken({
       id: employee.id,
@@ -30,10 +27,7 @@ export class AuthService {
     return new AuthPayloadDto(employee, token);
   }
 
-  async validateEmployee(
-    employeeCode: string,
-    pass: string,
-  ): Promise<Employee> {
+  async validateEmployee(employeeCode: string, pass: string): Promise<Employee> {
     const employee = await Employee.findOne({
       where: { employeeCode },
       relations: {
@@ -42,26 +36,19 @@ export class AuthService {
       },
     });
 
-    if (
-      employee &&
-      employee.isActive &&
-      (await this.comparePassword(pass, employee.password))
-    ) {
+    if (employee && employee.isActive && (await this.comparePassword(pass, employee.password))) {
       delete employee.password;
       return employee;
     }
 
-    if (!employee.isActive) {
+    if (employee && !employee.isActive) {
       throw new HttpException(
-        'Sua conta foi inativada, consulte administração para saber mais',
+        'Sua conta está inativada, consulte administração para saber mais',
         HttpStatus.UNAUTHORIZED,
       );
     }
 
-    throw new HttpException(
-      'Código e/ou senha errada.',
-      HttpStatus.UNAUTHORIZED,
-    );
+    throw new HttpException('Código e/ou senha errada.', HttpStatus.UNAUTHORIZED);
   }
 
   private async comparePassword(enteredPassword: string, dbPassword: string) {

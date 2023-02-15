@@ -19,17 +19,11 @@ export class RolePermissionService {
     });
 
     if (!permission) {
-      throw new HttpException(
-        'Permissão não existe',
-        HttpStatus.PRECONDITION_FAILED,
-      );
+      throw new HttpException('Permissão não existe', HttpStatus.PRECONDITION_FAILED);
     }
 
     if (!role) {
-      throw new HttpException(
-        'Role não existe',
-        HttpStatus.PRECONDITION_FAILED,
-      );
+      throw new HttpException('Role não existe', HttpStatus.PRECONDITION_FAILED);
     }
 
     const rolePermission = new RolePermission();
@@ -37,8 +31,6 @@ export class RolePermissionService {
     rolePermission.role = role;
 
     const rolePermissionData = await rolePermission.save();
-
-    console.log('rolePermissionData', rolePermissionData);
 
     return new RolePermissionDto(rolePermissionData);
   }
@@ -50,9 +42,7 @@ export class RolePermissionService {
         role: true,
       },
     });
-    return rolePermissions.map(
-      (rolePermission) => new RolePermissionDto(rolePermission),
-    );
+    return rolePermissions.map((rolePermission) => new RolePermissionDto(rolePermission));
   }
 
   // findOne(id: number) {

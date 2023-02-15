@@ -1,5 +1,4 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { EmployeeLogged } from 'src/helper/types/employeeLogged';
 import { Category } from '../category/entities/category.entity';
 import { Employee } from '../employee/entities/employee.entity';
 import { CreateItemDto } from './dto/create-item.dto';
@@ -13,10 +12,7 @@ export class ItemService {
     const category = await Category.findOneBy({ id: createItemDto.categoryId });
 
     if (!category) {
-      throw new HttpException(
-        'Esta categoria não existe.',
-        HttpStatus.BAD_GATEWAY,
-      );
+      throw new HttpException('Esta categoria não existe.', HttpStatus.BAD_GATEWAY);
     }
 
     const item = new Item();
@@ -45,11 +41,7 @@ export class ItemService {
   //   return `This action returns a #${id} item`;
   // }
 
-  async update(
-    id: number,
-    updateItemDto: UpdateItemDto,
-    employeeLoged: Employee,
-  ) {
+  async update(id: number, updateItemDto: UpdateItemDto, employeeLoged: Employee) {
     if (updateItemDto.categoryId) {
       updateItemDto.category = await Category.findOneBy({
         id: updateItemDto.categoryId,

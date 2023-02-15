@@ -11,6 +11,8 @@ import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 // import { UpdateRoleDto } from './dto/update-role.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
+import { Employee } from '../employee/entities/employee.entity';
 @ApiBearerAuth()
 @ApiTags('Role')
 @Controller('role')
@@ -18,13 +20,13 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Post()
-  create(@Body() createRoleDto: CreateRoleDto) {
-    return this.roleService.create(createRoleDto);
+  create(@Body() createRoleDto: CreateRoleDto, @EmployeeLogged() employeeLogged: Employee) {
+    return this.roleService.create(createRoleDto, employeeLogged);
   }
 
   @Get()
-  findAll() {
-    return this.roleService.findAll();
+  findAll(@EmployeeLogged() employeeLogged: Employee) {
+    return this.roleService.findAll(employeeLogged);
   }
 
   // @Get(':id')

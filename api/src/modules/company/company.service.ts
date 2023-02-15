@@ -14,17 +14,12 @@ import { Permission } from '../permission/entities/permission.entity';
 
 @Injectable()
 export class CompanyService {
-  constructor(
-    @InjectRepository(Company) private companyRepository: Repository<Company>,
-  ) {}
+  constructor(@InjectRepository(Company) private companyRepository: Repository<Company>) {}
 
   async create(createCompanyDto: CreateCompanyDto): Promise<CompanyDto> {
     try {
       if (!/^[a-zA-Z]+$/.test(createCompanyDto.prefix)) {
-        throw new HttpException(
-          'O prefixo deve ser apenas letras!',
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new HttpException('O prefixo deve ser apenas letras!', HttpStatus.BAD_REQUEST);
       }
 
       const company = new Company();

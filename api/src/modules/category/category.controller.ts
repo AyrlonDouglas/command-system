@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 import { Employee } from '../employee/entities/employee.entity';
@@ -22,10 +13,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  create(
-    @Body() createCategoryDto: CreateCategoryDto,
-    @EmployeeLogged() employeeLogged: Employee,
-  ) {
+  create(@Body() createCategoryDto: CreateCategoryDto, @EmployeeLogged() employeeLogged: Employee) {
     return this.categoryService.create(createCategoryDto, employeeLogged);
   }
 

@@ -23,6 +23,7 @@ import { TableModule } from './modules/table/table.module';
 import { RoleModule } from './modules/role/role.module';
 import { RolePermissionModule } from './modules/role-permission/role-permission.module';
 import { PermissionModule } from './modules/permission/permission.module';
+import { PermissionsGuard } from './helper/guards/permissions.guard';
 
 @Module({
   imports: [
@@ -42,7 +43,13 @@ import { PermissionModule } from './modules/permission/permission.module';
     PermissionModule,
   ],
   controllers: [AuthController],
-  providers: [JwtService],
+  providers: [
+    JwtService,
+    {
+      provide: 'APP_GUARD',
+      useClass: PermissionsGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
@@ -52,6 +59,8 @@ export class AppModule implements NestModule {
         { path: '/auth/login', method: RequestMethod.POST },
         { path: '/company', method: RequestMethod.POST },
         { path: '/company', method: RequestMethod.GET },
+        { path: '/permission', method: RequestMethod.POST },
+        { path: '/permission', method: RequestMethod.GET },
       )
       .forRoutes('');
   }

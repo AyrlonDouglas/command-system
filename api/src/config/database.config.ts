@@ -4,6 +4,7 @@ import { CompanySubscriber } from 'src/modules/company/entities/company.entity';
 import { EmployeeSubscriber } from 'src/modules/employee/entities/employee.entity';
 import { ItemSubscriber } from 'src/modules/item/entities/item.entity';
 import { OrderSubscriber } from 'src/modules/order/entities/order.entity';
+import { PermissionSubscriber } from 'src/modules/permission/entities/permission.entity';
 import {
   DataSource,
   EntitySubscriberInterface,
@@ -28,6 +29,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
     CategorySubscriber,
     ItemSubscriber,
     OrderSubscriber,
+    PermissionSubscriber,
   ];
 
   const options: DatabaseConfigProps = {

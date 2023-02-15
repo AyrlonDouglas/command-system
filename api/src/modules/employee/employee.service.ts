@@ -1,12 +1,12 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { EmployeeDto } from './dto/employee.dto';
 import { Employee } from './entities/employee.entity';
 import * as bcrypt from 'bcrypt';
 import { Company } from '../company/entities/company.entity';
-import { EmployeeLogged } from 'src/helper/types/employeeLogged';
 import { EEmployeeTypes } from 'src/helper/enum/employeeTypes';
+import { Role } from '../role/entities/role.entity';
 
 @Injectable()
 export class EmployeeService {
@@ -18,18 +18,16 @@ export class EmployeeService {
       id: employeeLogged.company.id,
     });
 
+    const role = await Role.findOneBy({ id: createEmployeeDto.roleId });
+
+    if (!role) throw new HttpException('Função não existe', HttpStatus.BAD_REQUEST);
+
     const employee = new Employee();
     employee.email = createEmployeeDto.email;
     employee.firstName = createEmployeeDto.firstName;
     employee.lastName = createEmployeeDto.lastName;
-
-    if (createEmployeeDto.password) {
-      employee.password = await bcrypt.hash(
-        createEmployeeDto.password,
-        await bcrypt.genSalt(),
-      );
-    }
-
+    employee.password = createEmployeeDto.password;
+    employee.role = role;
     employee.company = company;
 
     const employeeData = await employee.save();
@@ -44,8 +42,6 @@ export class EmployeeService {
       },
       relations: { role: true },
     });
-
-    console.log('employees', employees);
 
     return employees.map((employee) => new EmployeeDto(employee));
   }

@@ -1,3 +1,5 @@
+// import { HttpStatus, HttpException } from '@nestjs/common';
+import { PermissionsActionTypes, EntitiesTypes } from 'src/helper/interfaces/permissions';
 import { RolePermission } from 'src/modules/role-permission/entities/role-permission.entity';
 import {
   BaseEntity,
@@ -5,6 +7,9 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  EntitySubscriberInterface,
+  EventSubscriber,
+  // InsertEvent,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -16,7 +21,10 @@ export class Permission extends BaseEntity {
   id: number;
 
   @Column()
-  name: string;
+  entity: EntitiesTypes;
+
+  @Column()
+  action: PermissionsActionTypes;
 
   @OneToMany(() => RolePermission, (RolePermission) => RolePermission.role)
   rolePermissions: RolePermission[];
@@ -29,4 +37,13 @@ export class Permission extends BaseEntity {
 
   @DeleteDateColumn()
   deletedAt: Date;
+}
+
+@EventSubscriber()
+export class PermissionSubscriber implements EntitySubscriberInterface {
+  listenTo() {
+    return Permission;
+  }
+
+  // async beforeInsert(event: InsertEvent<Permission>): Promise<any> {}
 }

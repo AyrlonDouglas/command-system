@@ -1,18 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Employee } from './entities/employee.entity';
 import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
+import { Permissions } from 'src/helper/decorators/permission.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Employee')
@@ -21,13 +14,11 @@ export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
   @Post()
-  create(
-    @Body() createEmployeeDto: CreateEmployeeDto,
-    @EmployeeLogged() employeeLogged: Employee,
-  ) {
+  create(@Body() createEmployeeDto: CreateEmployeeDto, @EmployeeLogged() employeeLogged: Employee) {
     return this.employeeService.create(createEmployeeDto, employeeLogged);
   }
 
+  @Permissions([{ entity: 'EMPLOYEE', action: 'VIEW' }])
   @Get()
   findAll(@EmployeeLogged() employeeLogged: Employee) {
     return this.employeeService.findAll(employeeLogged);

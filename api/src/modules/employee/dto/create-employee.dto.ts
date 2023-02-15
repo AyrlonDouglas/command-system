@@ -31,11 +31,4 @@ export class CreateEmployeeDto {
     required: false,
   })
   password: string;
-
-  @ApiProperty({
-    description: "Employee's type",
-    example: EEmployeeTypes.STANDARD,
-  })
-  @IsString()
-  type: TEmployeeTypes;
 }

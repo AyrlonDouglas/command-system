@@ -38,9 +38,6 @@ export class Employee extends BaseEntity {
   @Column()
   password: string;
 
-  // @Column({ type: 'enum', enum: EEmployeeTypes })
-  // type: TEmployeeTypes;
-
   @Column({ default: true })
   isActive: boolean;
 
@@ -96,10 +93,7 @@ export class EmployeeSubscriber implements EntitySubscriberInterface {
 
   async beforeUpdate(event: UpdateEvent<Employee>): Promise<any> {
     if (event.entity.password) {
-      const pass = await bcrypt.hash(
-        event.entity.password,
-        await bcrypt.genSalt(),
-      );
+      const pass = await bcrypt.hash(event.entity.password, await bcrypt.genSalt());
       event.entity.password = pass;
     }
   }

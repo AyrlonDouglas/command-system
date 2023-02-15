@@ -1,5 +1,4 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { EmployeeLogged } from 'src/helper/types/employeeLogged';
 import { Employee } from '../employee/entities/employee.entity';
 import { CategoryDto } from './dto/category.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -33,16 +32,9 @@ export class CategoryService {
   //   return `This action returns a #${id} category`;
   // }
 
-  async update(
-    id: number,
-    updateCategoryDto: UpdateCategoryDto,
-    employeeLogged: Employee,
-  ) {
+  async update(id: number, updateCategoryDto: UpdateCategoryDto, employeeLogged: Employee) {
     if (!(await Category.findOneBy({ id }))) {
-      throw new HttpException(
-        'Esta categoria não existe.',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException('Esta categoria não existe.', HttpStatus.NOT_FOUND);
     }
 
     if (
@@ -52,10 +44,7 @@ export class CategoryService {
         company: { id: employeeLogged.company.id },
       }))
     ) {
-      throw new HttpException(
-        'Já existe categoria com este nome.',
-        HttpStatus.CONFLICT,
-      );
+      throw new HttpException('Já existe categoria com este nome.', HttpStatus.CONFLICT);
     }
 
     const update = {};

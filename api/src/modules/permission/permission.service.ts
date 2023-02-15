@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { PermissionDto } from './dto/permission.dto';
 // import { UpdatePermissionDto } from './dto/update-permission.dto';
@@ -7,12 +7,30 @@ import { Permission } from './entities/permission.entity';
 @Injectable()
 export class PermissionService {
   async create(createPermissionDto: CreatePermissionDto) {
-    const permission = new Permission();
-    permission.name = createPermissionDto.name;
+    for (const permission of createPermissionDto.permissions) {
+      const permissionExists = await Permission.findOneBy({
+        entity: permission.entity,
+        action: permission.action,
+      });
 
-    const permissionData = await permission.save();
+      if (permissionExists) {
+        throw new HttpException(
+          `A permissão entity ${permissionExists.entity} action ${permissionExists.action} já existe`,
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
 
-    return new PermissionDto(permissionData);
+    const permissionsData: Permission[] = [];
+    for (const permission of createPermissionDto.permissions) {
+      const newPermission = new Permission();
+      newPermission.entity = permission.entity;
+      newPermission.action = permission.action;
+      const permissionSaved = await newPermission.save();
+      permissionsData.push(permissionSaved);
+    }
+
+    return permissionsData.map((permission) => new PermissionDto(permission));
   }
 
   async findAll() {
