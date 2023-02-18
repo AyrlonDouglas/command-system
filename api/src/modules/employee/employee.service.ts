@@ -3,9 +3,7 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { EmployeeDto } from './dto/employee.dto';
 import { Employee } from './entities/employee.entity';
-import * as bcrypt from 'bcrypt';
 import { Company } from '../company/entities/company.entity';
-import { EEmployeeTypes } from 'src/helper/enum/employeeTypes';
 import { Role } from '../role/entities/role.entity';
 
 @Injectable()
@@ -46,9 +44,18 @@ export class EmployeeService {
     return employees.map((employee) => new EmployeeDto(employee));
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} employee`;
-  // }
+  async findOne(id: number, employeeLogged: Employee) {
+    const employee = await Employee.findOne({
+      where: { id, company: { id: employeeLogged.company.id } },
+      relations: { role: { rolePermissions: { permission: true } } },
+    });
+
+    if (!employee) {
+      throw new HttpException('Profissional inválido', HttpStatus.BAD_REQUEST);
+    }
+
+    return new EmployeeDto(employee);
+  }
 
   async update(
     id: number,

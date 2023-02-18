@@ -16,7 +16,6 @@ export class AuthMiddleware implements NestMiddleware {
     if (!accessToken) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
-
     const payload: Employee = await this.jwtService
       .verifyAsync(accessToken, {
         secret: process.env.JWTKEY,

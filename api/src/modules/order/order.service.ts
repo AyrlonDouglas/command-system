@@ -8,10 +8,7 @@ import { Order } from './entities/order.entity';
 
 @Injectable()
 export class OrderService {
-  async create(
-    createOrderDto: CreateOrderDto,
-    employeeLogged: Employee,
-  ): Promise<OrderDto> {
+  async create(createOrderDto: CreateOrderDto, employeeLogged: Employee): Promise<OrderDto> {
     if (createOrderDto.Items.length === 0) {
       throw new HttpException(
         'Para cadastrar um pedido você deve adicionar pelo menos um item',
@@ -56,11 +53,7 @@ export class OrderService {
   //   return `This action returns a #${id} order`;
   // }
 
-  async update(
-    id: number,
-    updateOrderDto: UpdateOrderDto,
-    employeeLogged: Employee,
-  ) {
+  async update(id: number, updateOrderDto: UpdateOrderDto, employeeLogged: Employee) {
     const order = await Order.findOne({
       where: {
         id,
@@ -69,10 +62,7 @@ export class OrderService {
     });
 
     if (!order) {
-      throw new HttpException(
-        'Este pedido não existe.',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('Este pedido não existe.', HttpStatus.BAD_REQUEST);
     }
 
     if (updateOrderDto.status) {

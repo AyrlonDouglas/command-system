@@ -65,7 +65,7 @@ export default function CardFood({ item, canEdit, imagePath, onClick }: CardFood
 					</Grid>
 					{imagePath ? (
 						<Grid xs={3} sx={{ padding: "0.5rem" }}>
-							<ImageFood imagePath={imagePath} />
+							<ImageFood imagepath={imagePath} />
 						</Grid>
 					) : null}
 				</GridContainer>

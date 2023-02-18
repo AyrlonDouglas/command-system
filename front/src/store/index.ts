@@ -12,6 +12,7 @@ import loginReducer from "./ducks/login/slice";
 import itemsReducer from "./ducks/items/slice";
 import categoriesReducer from "./ducks/categories/slice";
 import employeesReducer from "./ducks/employees/slice";
+import layoutReducer from "./ducks/layout/slice";
 
 const saga = createSagaMiddleware();
 
@@ -21,6 +22,7 @@ const store = configureStore({
 		items: itemsReducer,
 		categories: categoriesReducer,
 		employees: employeesReducer,
+		layout: layoutReducer,
 	},
 	middleware: [saga],
 	devTools: true,

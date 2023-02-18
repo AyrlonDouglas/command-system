@@ -1,9 +1,5 @@
-import {
-  EStatusOrderTypes,
-  TStatusOrderTypes,
-} from 'src/helper/enum/statusOrderTypes';
+import { OrderStatusType } from 'src/helper/interfaces/orders';
 import { Command } from 'src/modules/command/entities/command.entity';
-import { Item } from 'src/modules/item/entities/item.entity';
 import { OrderItem } from 'src/modules/order-item/entities/order-item.entity';
 import { Order } from '../entities/order.entity';
 
@@ -12,7 +8,7 @@ export class OrderDto {
 
   readonly amount: number;
 
-  readonly status: TStatusOrderTypes;
+  readonly status: OrderStatusType;
 
   readonly command: Command;
 

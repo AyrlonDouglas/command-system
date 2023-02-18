@@ -24,7 +24,8 @@
 		"quotes": ["error", "double"],
 		"semi": ["error", "always"],
 		"react/react-in-jsx-scope": "off",
-		"import/no-unresolved": [2, { "caseSensitive": false }]
+		"import/no-unresolved": [2, { "caseSensitive": false }],
+		"no-console": ["warn"]
 	},
 	"settings": {
 		"import/resolver": {

@@ -1,17 +1,15 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
-import {
-  EStatusOrderTypes,
-  TStatusOrderTypes,
-} from 'src/helper/enum/statusOrderTypes';
+import { OrderStatusEnum } from 'src/helper/enum/orders';
+import { OrderStatusType } from 'src/helper/interfaces/orders';
 import { CreateOrderDto } from './create-order.dto';
 
 export class UpdateOrderDto extends PartialType(CreateOrderDto) {
   @ApiProperty({
-    enum: EStatusOrderTypes,
-    example: EStatusOrderTypes.CONFIRMED,
+    enum: OrderStatusEnum,
+    example: OrderStatusEnum.CONFIRMED,
     description: 'Order status',
   })
   @IsString()
-  status: TStatusOrderTypes;
+  status: OrderStatusType;
 }

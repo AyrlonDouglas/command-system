@@ -1,8 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import {
-  EStatusOrderTypes,
-  TStatusOrderTypes,
-} from 'src/helper/enum/statusOrderTypes';
+import { OrderStatusEnum } from 'src/helper/enum/orders';
+import { OrderStatusType } from 'src/helper/interfaces/orders';
+// import { OrderStatusEnum, OrderStatusType } from '../../../helper/interfaces/orders';
 import { Command } from 'src/modules/command/entities/command.entity';
 import { Employee } from 'src/modules/employee/entities/employee.entity';
 import { Item } from 'src/modules/item/entities/item.entity';
@@ -34,11 +33,11 @@ export class Order extends BaseEntity {
   amount: number;
 
   @Column({
-    default: EStatusOrderTypes.WAITING,
+    default: OrderStatusEnum.WAITING,
     type: 'enum',
-    enum: EStatusOrderTypes,
+    enum: OrderStatusEnum,
   })
-  status: TStatusOrderTypes;
+  status: OrderStatusType;
 
   @Column({ default: false })
   canceled: boolean;
@@ -88,17 +87,17 @@ export class OrderSubscriber implements EntitySubscriberInterface {
   beforeUpdate(event: UpdateEvent<Order>): void | Promise<any> {
     let includeStatus = false;
 
-    for (const status in EStatusOrderTypes) {
-      if (EStatusOrderTypes[status] === event.entity.status) {
+    for (const status in OrderStatusEnum) {
+      if (OrderStatusEnum[status] === event.entity.status) {
         includeStatus = true;
       }
     }
 
     if (!includeStatus && event.entity.status) {
       throw new HttpException(
-        `Status fora do padrão de uso, utilize um desses: ${Object.values(
-          EStatusOrderTypes,
-        ).map((status) => ' ' + status)}`,
+        `Status fora do padrão de uso, utilize um desses: ${Object.values(OrderStatusEnum).map(
+          (status) => ' ' + status,
+        )}`,
         HttpStatus.BAD_REQUEST,
       );
     }

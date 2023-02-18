@@ -27,12 +27,23 @@ export class AuthService {
     return new AuthPayloadDto(employee, token);
   }
 
+  async recoverLoginData(employeeLogged: Employee) {
+    const employee = await Employee.findOne({
+      where: { employeeCode: employeeLogged.employeeCode },
+      relations: {
+        company: true,
+        role: { rolePermissions: { permission: true } },
+      },
+    });
+    return new AuthPayloadDto(employee);
+  }
+
   async validateEmployee(employeeCode: string, pass: string): Promise<Employee> {
     const employee = await Employee.findOne({
       where: { employeeCode },
       relations: {
         company: true,
-        role: true,
+        role: { rolePermissions: { permission: true } },
       },
     });
 

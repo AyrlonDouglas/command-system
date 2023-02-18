@@ -52,11 +52,11 @@ export default function DialogLogout({ onClose, open }: DialogLogoutProps) {
 				<Typography align="justify" mt={2}></Typography>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={handleLogout} variant="outlined" fullWidth>
-					Quero sair
+				<Button onClick={onClose} variant="outlined" fullWidth>
+					Cancelar
 				</Button>
-				<Button onClick={onClose} variant="contained" fullWidth>
-					Voltar
+				<Button onClick={handleLogout} variant="contained" fullWidth>
+					sair
 				</Button>
 			</DialogActions>
 		</Dialog>

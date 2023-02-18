@@ -8,21 +8,18 @@ export const loginSlice = createSlice({
 		loading: false,
 		error: false,
 		success: false,
-		userCreated: false,
 	},
 	reducers: {
-		loginRequest: (state, action) => {
+		loginRequest: (state) => {
 			state.loading = true;
-			state.userCreated = false;
 		},
 		loginSuccess: (state, action) => {
 			state.loading = false;
-			state.userCreated = false;
-
 			state.data = {
 				employeeCode: action.payload.employeeCode,
 				token: action.payload.token,
 				employeeId: action.payload.id,
+				permissions: action.payload.permissions,
 			};
 		},
 		loginFail: (state) => {
@@ -30,9 +27,24 @@ export const loginSlice = createSlice({
 			state.loading = false;
 			state.error = true;
 		},
+		recoverLoginRequest: (state) => {
+			state.loading = true;
+		},
+		recoverLoginSuccess: (state, action) => {
+			state.loading = false;
+			state.success = true;
+			state.error = false;
+			state.data = {
+				...state.data,
+				employeeCode: action.payload.employeeCode,
+				employeeId: action.payload.id,
+				permissions: action.payload.permissions,
+			};
+		},
 	},
 });
 
-export const { loginRequest, loginFail, loginSuccess } = loginSlice.actions;
+export const { loginRequest, loginFail, loginSuccess, recoverLoginRequest, recoverLoginSuccess } =
+	loginSlice.actions;
 
 export default loginSlice.reducer;

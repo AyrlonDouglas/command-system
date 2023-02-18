@@ -148,6 +148,8 @@ export default function DialogCreateOrUpdateEmployee({
 								label="Tipo"
 								nameField="type"
 								options={Object.values(EEmployeeTypes).filter((type) => type !== "bot")}
+								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+								//@ts-ignore
 								error={errors}
 							/>
 						</Grid>

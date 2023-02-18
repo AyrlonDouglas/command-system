@@ -24,10 +24,11 @@ export class EmployeeController {
     return this.employeeService.findAll(employeeLogged);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.employeeService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string, @EmployeeLogged() employeeLogged: Employee) {
+    console.log('id', id);
+    return this.employeeService.findOne(+id, employeeLogged);
+  }
 
   @Patch(':id')
   update(

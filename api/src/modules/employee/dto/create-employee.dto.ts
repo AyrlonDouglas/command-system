@@ -1,6 +1,5 @@
 import { IsString, IsEmail, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { EEmployeeTypes, TEmployeeTypes } from 'src/helper/enum/employeeTypes';
 
 export class CreateEmployeeDto {
   @ApiProperty({ description: "Employee's first name", example: 'Rodolfo' })

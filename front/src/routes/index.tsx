@@ -27,7 +27,7 @@ export default function SwitchRoutes() {
 				}
 			/>
 			<Route
-				path="/items/list"
+				path="/items"
 				element={
 					<ProtectedRoute>
 						<ItemsList />
@@ -35,7 +35,7 @@ export default function SwitchRoutes() {
 				}
 			/>
 			<Route
-				path="/employees/list"
+				path="/employees"
 				element={
 					<ProtectedRoute>
 						<EmployeesList />
@@ -43,32 +43,6 @@ export default function SwitchRoutes() {
 				}
 			/>
 			<Route path="*" element={<h1>404 NOT FOUND</h1>} />
-
-			{/* <Route path="/login" element={<Login />} /> */}
-			{/* <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/professional"
-        element={
-          <ProtectedRoute>
-            <ProfessionalList />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <Settings />
-          </ProtectedRoute>
-        }
-      /> */}
 		</Routes>
 	);
 }

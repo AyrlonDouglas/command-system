@@ -4,6 +4,7 @@ export interface PermissionProps {
 }
 
 export type PermissionsActionTypes = 'VIEW' | 'CREATE' | 'EDIT' | 'REMOVE';
+
 export type PermissionEntitiesTypes =
   | 'CATEGORY'
   | 'COMMAND'
