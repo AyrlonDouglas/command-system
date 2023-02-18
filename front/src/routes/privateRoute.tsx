@@ -5,7 +5,7 @@ import { LOCAL } from "../helper/constants/localStorage";
 interface IProtectedRoute {
 	isAllowed?: boolean;
 	redirectPath?: string;
-	children: JSX.Element;
+	children?: JSX.Element;
 }
 
 export default function ProtectedRoute({
