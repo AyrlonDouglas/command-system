@@ -11,6 +11,7 @@ import Login from "../pages/Login";
 
 export default function SwitchRoutes() {
 	const token = localStorage.getItem(LOCAL.token);
+
 	return (
 		<Routes>
 			<Route path="/" element={token ? <Navigate to={"/orders/management"} /> : <Home />} />
