@@ -10,7 +10,7 @@ export const loginSlice = createSlice({
 		success: false,
 	},
 	reducers: {
-		loginRequest: (state) => {
+		loginRequest: (state, action) => {
 			state.loading = true;
 		},
 		loginSuccess: (state, action) => {

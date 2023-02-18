@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 
 import { LOCAL } from "../helper/constants/localStorage";
 
@@ -7,20 +7,20 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(
-	(config: AxiosRequestConfig<any>) => {
+	(config) => {
 		const token = localStorage.getItem(LOCAL.token) || "";
 
-		if (token) {
-			config.headers.set("authorization", `Bearer ${token}`);
-		} else {
-			config.headers.set("authorization", "");
+		if (config.headers) {
+			if (token) {
+				config.headers.authorization = `Bearer ${token}`;
+			} else {
+				config.headers.authorization = "";
+			}
 		}
 
 		return config;
 	},
-	(error) => {
-		return Promise.reject(error);
-	}
+	(error) => Promise.reject(error)
 );
 
 api.interceptors.response.use(

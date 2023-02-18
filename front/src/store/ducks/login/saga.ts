@@ -48,6 +48,6 @@ function* recoveryDataLogin() {
 }
 
 export default function* userSaga() {
-	yield takeLatest(loginRequest().type, login);
+	yield takeLatest(loginRequest("").type, login);
 	yield takeLatest(recoverLoginRequest().type, recoveryDataLogin);
 }
