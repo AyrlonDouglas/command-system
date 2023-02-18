@@ -11,8 +11,9 @@ import {
 	List,
 	ListItem,
 	ListItemButton,
-	Theme,
 } from "@mui/material";
+import theme from "../../theme";
+
 // STYLES
 import { Nav, ContainerStyle as Container } from "./styles";
 
@@ -26,7 +27,7 @@ import Button from "@mui/material/Button";
 
 export default function NavBar() {
 	const [openDrawer, setOpenDrawer] = useState(false);
-	const match = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
+	const match = useMediaQuery(theme().breakpoints.down("md"));
 	const navigate = useNavigate();
 
 	const itemsNav = [
