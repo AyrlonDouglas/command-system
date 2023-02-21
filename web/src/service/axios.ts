@@ -11,6 +11,8 @@ api.interceptors.request.use(
 		const token = localStorage.getItem(LOCAL.token) || "";
 
 		if (config.headers) {
+			config.headers["ngrok-skip-browser-warning"] = ""; // para ngrok funcionar durante devenvolvimento
+
 			if (token) {
 				config.headers.authorization = `Bearer ${token}`;
 			} else {
