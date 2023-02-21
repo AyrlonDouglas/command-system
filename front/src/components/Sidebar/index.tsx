@@ -47,7 +47,7 @@ import {
 	setMenuSelected,
 	setSubMenuSelected,
 } from "../../store/ducks/layout/slice";
-import { recoverLoginRequest } from "../../store/ducks/login/slice";
+import { PermissionProps } from "../../helper/interfaces/Permission";
 
 const drawerWidth = 240;
 
@@ -124,10 +124,9 @@ function MiniDrawer({ children }: IMiniDrawer) {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-
-	useEffect(() => {
-		token && dispatch(recoverLoginRequest());
-	}, [layoutState.config.menu.subMenuSelected]);
+	const permissionsLogin = JSON.parse(
+		localStorage.getItem(LOCAL.permissions) || "[]"
+	) as PermissionProps[];
 
 	const onFixedMenu = () => {
 		dispatch(setFixedMenu(!layoutState.config.menu.fixedMenu));
@@ -170,9 +169,7 @@ function MiniDrawer({ children }: IMiniDrawer) {
 			}
 
 			return permissionsToAcces.every(({ entity, action }) =>
-				loginState.data.permissions?.some(
-					({ entity: e, action: a }) => e === entity && a === action
-				)
+				permissionsLogin?.some(({ entity: e, action: a }) => e === entity && a === action)
 			);
 		});
 

@@ -18,6 +18,7 @@ function* login({ payload }: CredentialProps) {
 		toast.success("Seja bem-vindo!");
 
 		localStorage.setItem(LOCAL.token, response.data.token);
+		localStorage.setItem(LOCAL.permissions, JSON.stringify(response.data.permissions));
 
 		yield put(loginSuccess(response.data));
 	} catch (error: unknown) {
