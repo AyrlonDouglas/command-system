@@ -26,7 +26,6 @@ export class EmployeeController {
 
   @Get(':id')
   findOne(@Param('id') id: string, @EmployeeLogged() employeeLogged: Employee) {
-    console.log('id', id);
     return this.employeeService.findOne(+id, employeeLogged);
   }
 

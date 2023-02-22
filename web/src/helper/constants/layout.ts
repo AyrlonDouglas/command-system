@@ -34,7 +34,7 @@ export const SecondaryMenu: SecondaryMenuProps[] = [
 	{
 		path: "/roles",
 		title: "Funções",
-		section: "Configurações",
+		section: "Permissões",
 		permissionsToAcces: [{ entity: "ROLE", action: "VIEW" }],
 	},
 ];

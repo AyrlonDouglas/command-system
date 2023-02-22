@@ -25,7 +25,8 @@ export type MainMenuTitleType =
 	| "Cardápio"
 	| "Usuários"
 	| "Configurações"
-	| "sair";
+	| "sair"
+	| "Permissões";
 export type SecondaryMenuTitleType =
 	| "Comandas"
 	| "Pedidos"
@@ -34,4 +35,5 @@ export type SecondaryMenuTitleType =
 	| "Categorias"
 	| "Clientes"
 	| "Configurações"
+	| "Funções"
 	| "Funções";

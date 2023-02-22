@@ -28,9 +28,9 @@ export default function App() {
 					<Sidebar>
 						<Box
 							sx={{
-								background: theme(colorMode).palette.background.default,
+								// background: theme(colorMode).palette.primary.main,
 								minWidth: "100%",
-								minHeight: "100vh",
+								minHeight: "calc(100vh - 48px)",
 							}}
 						>
 							<Routes />

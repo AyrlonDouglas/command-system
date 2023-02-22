@@ -13,7 +13,7 @@ const LayoutSlice = createSlice({
 			menu: {
 				menuSelected: "" as MainMenuTitleType,
 				subMenuSelected: "" as SecondaryMenuTitleType,
-				fixedMenu: false,
+				isMenuPinned: false,
 				menuOpen: false,
 			},
 		},
@@ -25,8 +25,8 @@ const LayoutSlice = createSlice({
 		setSubMenuSelected: (state, action) => {
 			state.config.menu.subMenuSelected = action.payload;
 		},
-		setFixedMenu: (state, action) => {
-			state.config.menu.fixedMenu = action.payload;
+		setPinnedMenu: (state, action) => {
+			state.config.menu.isMenuPinned = action.payload;
 		},
 		setMenuOpen: (state, action) => {
 			state.config.menu.menuOpen = action.payload;
@@ -34,7 +34,7 @@ const LayoutSlice = createSlice({
 	},
 });
 
-export const { setMenuSelected, setSubMenuSelected, setFixedMenu, setMenuOpen } =
+export const { setMenuSelected, setSubMenuSelected, setPinnedMenu, setMenuOpen } =
 	LayoutSlice.actions;
 
 export default LayoutSlice.reducer;

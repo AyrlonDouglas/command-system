@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { LOCAL } from "../helper/constants/localStorage";
+import { redirect } from "react-router-dom";
 
 export const api = axios.create({
 	baseURL: import.meta.env.VITE_HOST_URL,

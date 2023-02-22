@@ -1,6 +1,10 @@
 export interface PermissionProps {
+	id?: number;
 	entity: PermissionEntitiesTypes;
 	action: PermissionsActionTypes;
+	createdAt?: Date;
+	deletedAt?: Date | null;
+	updatedAt?: Date;
 }
 
 export type PermissionsActionTypes = "VIEW" | "CREATE" | "EDIT" | "REMOVE";

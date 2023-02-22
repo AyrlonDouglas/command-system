@@ -8,7 +8,8 @@ import ItemsList from "../pages/Items/List";
 import EmployeesList from "../pages/Employees/List";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
-
+import RoleList from "../pages/Role/list";
+import RoleCreateUpdate from "../pages/Role/createUpdate";
 export default function SwitchRoutes() {
 	const token = localStorage.getItem(LOCAL.token);
 
@@ -40,6 +41,31 @@ export default function SwitchRoutes() {
 					</ProtectedRoute>
 				}
 			/>
+			<Route
+				path="/roles"
+				element={
+					<ProtectedRoute>
+						<RoleList />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="/roles/create"
+				element={
+					<ProtectedRoute>
+						<RoleCreateUpdate />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="/roles/update/:idRole"
+				element={
+					<ProtectedRoute>
+						<RoleCreateUpdate />
+					</ProtectedRoute>
+				}
+			/>
+
 			<Route path="*" element={<h1>404 NOT FOUND</h1>} />
 		</Routes>
 	);

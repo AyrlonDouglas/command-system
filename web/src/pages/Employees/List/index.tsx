@@ -1,17 +1,7 @@
 import { useState, useEffect } from "react";
 
 // components
-import {
-	Unstable_Grid2 as Grid,
-	Button,
-	TableContainer,
-	Table,
-	Paper,
-	TableHead,
-	TableRow,
-	TableCell,
-	TableBody,
-} from "@mui/material";
+import { Unstable_Grid2 as Grid, Button } from "@mui/material";
 import PageTitle from "../../../components/common/PageTitle";
 import InputSearch from "../../../components/Input/Search";
 // redux
@@ -38,7 +28,7 @@ export default function EmployeesList() {
 		setSearch(e.target.value);
 	};
 
-	const handleSearchItems = (employee: typeof employeesState.data[0]) => {
+	const handleSearchItems = (employee: (typeof employeesState.data)[0]) => {
 		if (!search) {
 			return employee.type !== "bot";
 		}

@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 // MUI
-import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import {
 	Box,
-	Drawer as MuiDrawer,
 	List,
 	Typography,
 	Divider,
@@ -30,6 +28,7 @@ import HailIcon from "@mui/icons-material/Hail";
 import SoupKitchenIcon from "@mui/icons-material/SoupKitchen";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
 // storage
 import { LOCAL } from "../../helper/constants/localStorage";
 // const
@@ -42,69 +41,20 @@ import {
 // redux
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import {
-	setFixedMenu,
+	setPinnedMenu,
 	setMenuOpen,
 	setMenuSelected,
 	setSubMenuSelected,
 } from "../../store/ducks/layout/slice";
 import { PermissionProps } from "../../helper/interfaces/Permission";
-
-const drawerWidth = 240;
-
-const openedMixin = (theme: Theme): CSSObject => ({
-	width: drawerWidth,
-	transition: theme.transitions.create("width", {
-		easing: theme.transitions.easing.sharp,
-		duration: theme.transitions.duration.enteringScreen,
-	}),
-	overflowX: "hidden",
-	background: theme.palette.background.paper,
-});
-
-const closedMixin = (theme: Theme): CSSObject => ({
-	transition: theme.transitions.create("width", {
-		easing: theme.transitions.easing.sharp,
-		duration: theme.transitions.duration.leavingScreen,
-	}),
-	overflowX: "hidden",
-	background: theme.palette.background.paper,
-	width: `calc(${theme.spacing(7)} + 1px)`,
-	[theme.breakpoints.up("sm")]: {
-		width: `calc(${theme.spacing(8)} + 1px)`,
-	},
-});
-
-const DrawerHeader = styled("div")(({ theme }) => ({
-	display: "flex",
-	alignItems: "center",
-	justifyContent: "flex-end",
-	padding: theme.spacing(0, 1),
-	// necessary for content to be below app bar
-	...theme.mixins.toolbar,
-}));
-
-const Drawer = styled(MuiDrawer, {
-	shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-	width: drawerWidth,
-	flexShrink: 0,
-	whiteSpace: "nowrap",
-	boxSizing: "border-box",
-	...(open && {
-		...openedMixin(theme),
-		"& .MuiDrawer-paper": openedMixin(theme),
-	}),
-	...(!open && {
-		...closedMixin(theme),
-		"& .MuiDrawer-paper": closedMixin(theme),
-	}),
-}));
+import { Drawer, DrawerHeader } from "./styles";
 
 const MainMenu: MainMenuProps[] = [
 	{ title: "Comandas", icon: <DashboardIcon color="primary" /> },
 	{ title: "Pedidos", icon: <SoupKitchenIcon color="primary" /> },
 	{ title: "Cardápio", icon: <MenuBookIcon color="primary" /> },
 	{ title: "Usuários", icon: <HailIcon color="primary" /> },
+	{ title: "Permissões", icon: <PermDataSettingIcon color="primary" /> },
 ];
 
 const BottomMenu: MainMenuProps[] = [
@@ -112,16 +62,14 @@ const BottomMenu: MainMenuProps[] = [
 	{ title: "sair", icon: <LogoutIcon color="primary" /> },
 ];
 
-interface IMiniDrawer {
+interface MiniDrawerProps {
 	children?: JSX.Element;
 }
-function MiniDrawer({ children }: IMiniDrawer) {
+function MiniDrawer({ children }: MiniDrawerProps) {
 	const [openModal, setOpenModal] = useState(false);
 	const layoutState = useAppSelector((state) => state.layout);
-	const loginState = useAppSelector((state) => state.login);
 	const open = useAppSelector((state) => state.layout.config.menu.menuOpen);
 	const token = localStorage.getItem(LOCAL.token);
-	const theme = useTheme();
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 	const permissionsLogin = JSON.parse(
@@ -129,11 +77,11 @@ function MiniDrawer({ children }: IMiniDrawer) {
 	) as PermissionProps[];
 
 	const onFixedMenu = () => {
-		dispatch(setFixedMenu(!layoutState.config.menu.fixedMenu));
+		dispatch(setPinnedMenu(!layoutState.config.menu.isMenuPinned));
 	};
 
 	const onMouse = (type: "enter" | "leave") => {
-		if (layoutState.config.menu.fixedMenu) {
+		if (layoutState.config.menu.isMenuPinned) {
 			return;
 		}
 
@@ -141,11 +89,10 @@ function MiniDrawer({ children }: IMiniDrawer) {
 			dispatch(setMenuOpen(true));
 		}
 
-		if (type === "leave" && !loginState.loading) {
+		if (type === "leave") {
 			dispatch(setMenuOpen(false));
 		}
 	};
-
 	const handleOpenModal = () => {
 		setOpenModal((state) => !state);
 	};
@@ -183,7 +130,7 @@ function MiniDrawer({ children }: IMiniDrawer) {
 					<>
 						{index === 0 ? <Divider /> : null}
 
-						<ListItem key={item.title} disablePadding sx={{ display: "block" }}>
+						<ListItem disablePadding sx={{ display: "block" }}>
 							<ListItemButton
 								sx={{
 									minHeight: 48,
@@ -271,7 +218,6 @@ function MiniDrawer({ children }: IMiniDrawer) {
 	const onClickSubMenu = (subMenuTitle: SecondaryMenuTitleType, path: string) => {
 		dispatch(setSubMenuSelected(subMenuTitle));
 		navigate(path);
-		dispatch(setMenuOpen(true));
 	};
 
 	return (
@@ -300,7 +246,7 @@ function MiniDrawer({ children }: IMiniDrawer) {
 								</Typography>
 							)}
 							<IconButton onClick={onFixedMenu}>
-								{layoutState.config.menu.fixedMenu ? (
+								{layoutState.config.menu.isMenuPinned ? (
 									<ChevronLeftIcon color="primary" />
 								) : (
 									<ChevronRightIcon color="primary" />
@@ -308,7 +254,9 @@ function MiniDrawer({ children }: IMiniDrawer) {
 							</IconButton>
 						</DrawerHeader>
 						<List sx={{ paddingTop: 0 }}>
-							{MainMenu.map((item, index) => listItems(item, index))}
+							{MainMenu.map((item, index) => (
+								<Box key={item.title}>{listItems(item, index)}</Box>
+							))}
 						</List>
 						<List
 							sx={{
@@ -318,15 +266,17 @@ function MiniDrawer({ children }: IMiniDrawer) {
 								justifyContent: "flex-end",
 							}}
 						>
-							{BottomMenu.map((item, index) => listItems(item, index))}
+							{BottomMenu.map((item, index) => (
+								<Box key={item.title}>{listItems(item, index)}</Box>
+							))}
 						</List>
 					</Drawer>
 					<Container
-						sx={{
-							width: !open
-								? `calc(100% - ${theme.spacing(7)} - 1px)`
-								: `calc(100% - ${drawerWidth}px) !important`,
-						}}
+					// sx={{
+					// 	width: !open
+					// 		? `calc(100% - ${theme.spacing(7)} - 1px)`
+					// 		: `calc(100% - ${drawerWidth}px) !important`,
+					// }}
 					>
 						<Box
 							component="main"

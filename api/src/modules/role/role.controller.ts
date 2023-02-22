@@ -4,7 +4,7 @@ import {
   Post,
   Body,
   // Patch,
-  // Param,
+  Param,
   // Delete,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
@@ -29,10 +29,10 @@ export class RoleController {
     return this.roleService.findAll(employeeLogged);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.roleService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string, @EmployeeLogged() employeeLogged: Employee) {
+    return this.roleService.findOne(+id, employeeLogged);
+  }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
