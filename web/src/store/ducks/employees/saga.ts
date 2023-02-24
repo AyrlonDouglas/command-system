@@ -1,7 +1,7 @@
 import { AxiosResponse, isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { call, put, takeLatest } from "redux-saga/effects";
-import { createOrUpdateEmployeeProps } from "../../../helper/interfaces/Employee";
+import { CreateOrUpdateEmployeeProps } from "../../../helper/interfaces/Employee";
 import { api } from "../../../service/axios";
 import {
 	getEmployeesFail,
@@ -30,7 +30,7 @@ function* getEmployees() {
 	}
 }
 
-function* createEmployee({ payload }: createOrUpdateEmployeeProps) {
+function* createEmployee({ payload }: CreateOrUpdateEmployeeProps) {
 	try {
 		const response: AxiosResponse = yield call(api.post, "/employee", payload);
 
@@ -47,7 +47,7 @@ function* createEmployee({ payload }: createOrUpdateEmployeeProps) {
 	}
 }
 
-function* updateEmployee({ payload }: createOrUpdateEmployeeProps) {
+function* updateEmployee({ payload }: CreateOrUpdateEmployeeProps) {
 	try {
 		const id = payload.id;
 

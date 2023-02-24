@@ -6,7 +6,7 @@ export interface createOrUpdateCategoryProps {
 	type: string;
 }
 
-export interface categoriesDataProps {
+export interface CategoriesDataProps {
 	id: number;
 	name: string;
 }

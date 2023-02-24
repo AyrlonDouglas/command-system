@@ -1,4 +1,4 @@
-export interface createOrUpdateItemProps {
+export interface CreateOrUpdateItemProps {
 	payload: {
 		name: string;
 		description: string;

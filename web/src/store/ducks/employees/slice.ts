@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { employeeDataProps } from "../../../helper/interfaces/Employee";
+import { EmployeeDataProps } from "../../../helper/interfaces/Employee";
 
 const employeesSlice = createSlice({
 	name: "employess",
 	initialState: {
-		data: [] as employeeDataProps[],
+		data: [] as EmployeeDataProps[],
 		loading: false,
 		error: false,
 		success: true,

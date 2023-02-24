@@ -24,7 +24,7 @@ export class Role extends BaseEntity {
   @OneToMany(() => Employee, (employee) => employee.role)
   employees: Employee[];
 
-  @OneToMany(() => RolePermission, (RolePermission) => RolePermission.role)
+  @OneToMany(() => RolePermission, (RolePermission) => RolePermission.role, { onDelete: 'CASCADE' })
   rolePermissions: RolePermission[];
 
   @ManyToOne(() => Company, (company) => company.roles)

@@ -62,21 +62,17 @@ export class EmployeeService {
     updateEmployeeDto: UpdateEmployeeDto,
     employeeLogged: Employee,
   ): Promise<EmployeeDto> {
-    // if (
-    //   employeeLogged.id !== id &&
-    //   employeeLogged.type !== EEmployeeTypes.ADMIN
-    // ) {
-    //   throw new HttpException(
-    //     'Você não tem permissão para atualizar colaboradores além de si.',
-    //     HttpStatus.BAD_REQUEST,
-    //   );
-    // }
+    const employee = await Employee.findOneBy({ id, company: { id: employeeLogged.company.id } });
+    if (!employee) {
+      throw new HttpException('Não existe este colaborador', HttpStatus.PRECONDITION_FAILED);
+    }
 
-    await Employee.update({ id }, updateEmployeeDto);
+    const role = await Role.findOneBy({ id: updateEmployeeDto.roleId });
+    delete updateEmployeeDto.roleId;
 
-    const employeeData = await Employee.findOneBy({ id });
+    await Employee.update({ id }, { ...updateEmployeeDto, role });
 
-    return new EmployeeDto(employeeData);
+    return this.findOne(id, employeeLogged);
   }
 
   // remove(id: number) {

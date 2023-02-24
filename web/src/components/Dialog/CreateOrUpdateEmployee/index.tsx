@@ -21,15 +21,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import InputTextFieldControlled from "../../Input/TextFieldControlled";
 import InputSelectControlled from "../../Input/SelectControlled";
-import { EEmployeeTypes } from "../../../helper/constants/employee";
 import InputSwitchControlled from "../../Input/SwitchControlled";
 import { toast } from "react-toastify";
 
 const schema = yup.object().shape({
 	firstName: yup.string().required("Preencha o primeiro nome"),
 	lastName: yup.string().required("Preencha o sobrenome"),
-	email: yup.string().email("Preencha um email válido").notRequired().nullable(),
-	type: yup.string().required("Escolha o tipo"),
+	email: yup.string().email("Preencha um e-mail válido").required("Preencha o e-mail"),
+	role: yup.string().required("Escolha a função"),
 	isActive: yup.boolean().required("Escolha o status"),
 });
 
@@ -44,7 +43,7 @@ interface CreateOrEditEmployeeProps {
 	firstName: string | undefined;
 	lastName: string | undefined;
 	email: string | undefined;
-	type: string | undefined;
+	role: string | undefined;
 	isActive: boolean | undefined;
 }
 
@@ -56,17 +55,18 @@ export default function DialogCreateOrUpdateEmployee({
 }: DialogCreateOrEditEmployeeProps) {
 	const dispatch = useAppDispatch();
 	const employeesState = useAppSelector((state) => state.employees);
+	const rolesState = useAppSelector((state) => state.roles);
+
 	const employeeFiltered = employeesState.data.filter((employee) => employee.id === EmployeeId)[0];
 	useEffect(() => {
 		if (canEdit && open) {
 			setValue("firstName", employeeFiltered.firstName);
 			setValue("lastName", employeeFiltered.lastName);
 			setValue("email", employeeFiltered.email);
-			setValue("type", employeeFiltered.type);
+			setValue("role", employeeFiltered.role.name);
 			setValue("isActive", employeeFiltered.isActive);
 		}
 	}, [open]);
-
 	const {
 		handleSubmit,
 		control,
@@ -84,43 +84,48 @@ export default function DialogCreateOrUpdateEmployee({
 			firstName: undefined as string | undefined,
 			lastName: undefined as string | undefined,
 			email: undefined as string | undefined,
-			type: undefined as string | undefined,
+			role: undefined as string | undefined,
 			isActive: true,
 		},
 	});
 
 	const handleEmployee = (data: CreateOrEditEmployeeProps) => {
+		const roleId = rolesState.data.filter((role) => role.name === data.role)[0].id;
+
 		if (!canEdit) {
-			dispatch(createEmployeeRequest(data));
+			delete data.role;
+
+			dispatch(createEmployeeRequest({ ...data, roleId }));
 			onClose();
 			return;
 		}
 
-		if (canEdit && dataChanged()) {
-			dispatch(updateEmployeeRequest({ ...data, id: EmployeeId }));
+		if (canEdit && dataChanged(data)) {
+			delete data.role;
+
+			dispatch(updateEmployeeRequest({ ...data, roleId, id: EmployeeId }));
 			onClose();
 			return;
 		}
 
-		if (canEdit && !dataChanged()) {
+		if (canEdit && !dataChanged(data)) {
 			toast.warning("Algum dado deve ser mudado para atualizar.");
-			return;
 		}
+	};
+
+	const dataChanged = (data: CreateOrEditEmployeeProps) => {
+		return (
+			data.firstName !== employeeFiltered.firstName ||
+			data.lastName !== employeeFiltered.lastName ||
+			data.email !== employeeFiltered.email ||
+			data.isActive !== employeeFiltered.isActive ||
+			data.role !== employeeFiltered.role.name
+		);
 	};
 
 	const onClose = () => {
 		handleClose();
 		reset();
-	};
-
-	const dataChanged = () => {
-		return (
-			getValues().firstName !== employeeFiltered.firstName ||
-			getValues().lastName !== employeeFiltered.lastName ||
-			getValues().email !== employeeFiltered.email ||
-			getValues().isActive !== employeeFiltered.isActive ||
-			getValues().type !== employeeFiltered.type
-		);
 	};
 
 	return (
@@ -145,9 +150,9 @@ export default function DialogCreateOrUpdateEmployee({
 						<Grid xs={6}>
 							<InputSelectControlled
 								control={control}
-								label="Tipo"
-								nameField="type"
-								options={Object.values(EEmployeeTypes).filter((type) => type !== "bot")}
+								label="Função"
+								nameField="role"
+								options={rolesState.data.filter((role) => role.name !== "bot").map((el) => el.name)}
 								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 								//@ts-ignore
 								error={errors}

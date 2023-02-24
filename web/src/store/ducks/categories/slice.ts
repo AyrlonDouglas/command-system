@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { categoriesDataProps } from "../../../helper/interfaces/Category";
+import { CategoriesDataProps } from "../../../helper/interfaces/Category";
 
 const categoriesSlice = createSlice({
 	name: "categories",
 	initialState: {
-		data: [] as categoriesDataProps[],
+		data: [] as CategoriesDataProps[],
 		loading: false,
 		error: false,
 		success: true,

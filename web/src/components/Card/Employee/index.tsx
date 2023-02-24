@@ -1,29 +1,16 @@
 //components
 import { CardActionArea, Unstable_Grid2 as Grid, Typography } from "@mui/material";
-import { employeeDataProps } from "../../../helper/interfaces/Employee";
+import { EmployeeDataProps } from "../../../helper/interfaces/Employee";
 //styles
 import { GridContainer } from "./styles";
 
 interface CardEmployeeProps {
-	employee: employeeDataProps;
+	employee: EmployeeDataProps;
 	canEdit?: boolean;
 	onClick: (id: number) => void;
 }
 
 export default function CardEmployee({ canEdit, onClick, employee }: CardEmployeeProps) {
-	const typeTranslator = (type: string) => {
-		switch (type) {
-			case "admin":
-				return "administrador";
-			case "bot":
-				return "robô";
-			case "standard":
-				return "padrão";
-			default:
-				return "padrão";
-		}
-	};
-
 	return (
 		<CardActionArea
 			sx={{ borderRadius: "0.25rem", height: "100%" }}
@@ -64,7 +51,7 @@ export default function CardEmployee({ canEdit, onClick, employee }: CardEmploye
 							</Typography>
 						</Grid>
 						<Grid>
-							<Typography variant="body2">{`tipo: ${typeTranslator(employee.type)}`}</Typography>
+							<Typography variant="body2">{`Função: ${employee.role.name}`}</Typography>
 						</Grid>
 					</Grid>
 				</GridContainer>

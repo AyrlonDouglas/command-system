@@ -1,12 +1,12 @@
-import { rolePermissionsProps } from "./RolePermissions";
+import { RolePermissionsProps } from "./RolePermissions";
 
-export interface rolesDataProps {
+export interface RolesDataProps {
 	id: number;
 	name: string;
-	rolePermissions: rolePermissionsProps[];
+	rolePermissions: RolePermissionsProps[];
 }
 
-export interface CreateRolesProps {
-	payload: { name: string; permissionsIds: number[] };
+export interface CreateUpdateRolesProps {
+	payload: { name: string; permissionsIds: number[]; id?: number };
 	type: string;
 }

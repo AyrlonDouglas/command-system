@@ -33,9 +33,12 @@ import {
 	createRoleRequest,
 	getAllPermissionsRequest,
 	getRoleByIdRequest,
+	removeRoleRequest,
+	updateRoleRequest,
 } from "../../../store/ducks/roles/slice";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { PermissionEntitiesTypes, PermissionProps } from "../../../helper/interfaces/Permission";
+import DialogRemovalConfirmation from "../../../components/Dialog/RemovalConfirmation";
 
 const schema = yup.object().shape({
 	name: yup.string().required("Preencha o nome"),
@@ -47,6 +50,7 @@ const schema = yup.object().shape({
 });
 
 export default function RoleCreateUpdate() {
+	const [openModalConfirmation, setOpenModalConfirmation] = useState(false);
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const { idRole } = useParams();
@@ -74,7 +78,6 @@ export default function RoleCreateUpdate() {
 
 			setValue("name", roleFiltered.name);
 			setValue("permissionsIds", permissionsIdsFiltered);
-			trigger("permissionsIds");
 		}
 	}, [rolesState.data, idRole]);
 
@@ -144,120 +147,155 @@ export default function RoleCreateUpdate() {
 	};
 
 	const onSubmit = (data: typeof defaultValues) => {
-		console.log("data", data);
 		if (idRole) {
+			dispatch(updateRoleRequest({ ...data, id: idRole }));
 		} else {
 			dispatch(createRoleRequest(data));
 		}
+		navigate("/roles");
+	};
+
+	const onRemove = () => {
+		dispatch(removeRoleRequest({ id: idRole }));
+		navigate("/roles");
+	};
+
+	const closeModalConfirmation = () => {
+		setOpenModalConfirmation(false);
+	};
+	const handleOpenModalConfirmation = () => {
+		setOpenModalConfirmation(true);
 	};
 
 	return (
-		<Grid container>
-			<Grid xs={12}>
-				<PageTitle title="Criar função" />
-			</Grid>
-
-			<Grid component={"form"} xs={12} container spacing={2} onSubmit={handleSubmit(onSubmit)}>
-				<Grid>
-					<InputTextFieldControlled control={control} label={"Nome da função"} nameField={"name"} />
-				</Grid>
-
+		<>
+			<Grid container>
 				<Grid xs={12}>
-					<FormControl fullWidth error={!!errors.permissionsIds}>
-						<TableContainer component={Paper}>
-							<Table>
-								<TableHead sx={{ background: (t) => t.palette.primary.light }}>
-									<TableRow
-										sx={{
-											"& th": {
-												fontWeight: 700,
-												padding: "8px 16px",
-												color: (t) => t.palette.common.white,
-											},
-										}}
-									>
-										<TableCell align="left">Módulo</TableCell>
-										<TableCell align="center">Visualizar</TableCell>
-										<TableCell align="center">Criar</TableCell>
-										<TableCell align="center">Editar</TableCell>
-										<TableCell align="center">Deletar</TableCell>
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{groupPermissionsByEntity(allPermissions).map((group) => {
-										return (
-											<TableRow
-												key={group.name}
-												sx={{
-													"&:last-child td, &:last-child th": { border: 0 },
-													"&:hover": { background: (t) => t.palette.background.default },
-													"& th": { padding: "0 16px" },
-												}}
-											>
-												<TableCell component="th" scope="row" align="left">
-													{translateEntity(group.name)}
-												</TableCell>
-												{group.items.map((item) => {
-													return (
-														<>
-															<TableCell component="th" scope="row" align="center">
-																<Controller
-																	name="permissionsIds"
-																	key={item.id}
-																	control={control}
-																	render={({ field }) => (
-																		<Checkbox
-																			onBlur={field.onBlur}
-																			name={field.name}
-																			ref={field.ref}
-																			value={item.id}
-																			checked={field.value.includes(item.id?.toString() as string)}
-																			icon={<RadioButtonUncheckedOutlinedIcon />}
-																			checkedIcon={<CheckCircleOutlineOutlinedIcon />}
-																			onChange={(event, checked) => {
-																				if (checked) {
-																					field.onChange([...field.value, event.target.value]);
-																				} else {
-																					field.onChange(
-																						field.value.filter((value) => {
-																							return value.toString() !== event.target.value;
-																						})
-																					);
-																				}
-																			}}
-																		/>
-																	)}
-																/>
-															</TableCell>
-														</>
-													);
-												})}
-											</TableRow>
-										);
-									})}
-								</TableBody>
-							</Table>
-						</TableContainer>
-						{errors.permissionsIds ? (
-							<FormHelperText sx={{ textAlign: "right" }}>
-								{errors.permissionsIds.message}
-							</FormHelperText>
-						) : null}
-					</FormControl>
+					<PageTitle title={idRole ? "Editar função" : "Criar função"} />
 				</Grid>
-				<Grid container spacing={1} justifyContent={"flex-end"} xs={12}>
+
+				<Grid component={"form"} xs={12} container spacing={2} onSubmit={handleSubmit(onSubmit)}>
 					<Grid>
-						<Button variant="outlined" onClick={() => navigate(-1)}>
-							Cancelar
-						</Button>
+						<InputTextFieldControlled
+							control={control}
+							label={"Nome da função"}
+							nameField={"name"}
+						/>
 					</Grid>
-					<Grid>
-						<Button variant="contained" type="submit">
-							{idRole ? "Editar função" : "Criar Função"}
-						</Button>
+
+					<Grid xs={12}>
+						<FormControl fullWidth error={!!errors.permissionsIds}>
+							<TableContainer component={Paper}>
+								<Table>
+									<TableHead sx={{ background: (t) => t.palette.primary.light }}>
+										<TableRow
+											sx={{
+												"& th": {
+													fontWeight: 700,
+													padding: "8px 16px",
+													color: (t) => t.palette.common.white,
+												},
+											}}
+										>
+											<TableCell align="left">Módulo</TableCell>
+											<TableCell align="center">Visualizar</TableCell>
+											<TableCell align="center">Criar</TableCell>
+											<TableCell align="center">Editar</TableCell>
+											<TableCell align="center">Deletar</TableCell>
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										{groupPermissionsByEntity(allPermissions).map((group) => {
+											return (
+												<TableRow
+													key={group.name}
+													sx={{
+														"&:last-child td, &:last-child th": { border: 0 },
+														"&:hover": { background: (t) => t.palette.background.default },
+														"& th": { padding: "0 16px" },
+													}}
+												>
+													<TableCell component="th" scope="row" align="left">
+														{translateEntity(group.name)}
+													</TableCell>
+													{group.items.map((item) => {
+														return (
+															<>
+																<TableCell component="th" scope="row" align="center" key={item.id}>
+																	<Controller
+																		name="permissionsIds"
+																		key={item.id}
+																		control={control}
+																		render={({ field }) => (
+																			<Checkbox
+																				onBlur={field.onBlur}
+																				name={field.name}
+																				ref={field.ref}
+																				value={item.id}
+																				checked={field.value.includes(
+																					item.id?.toString() as string
+																				)}
+																				icon={<RadioButtonUncheckedOutlinedIcon />}
+																				checkedIcon={<CheckCircleOutlineOutlinedIcon />}
+																				onChange={(event, checked) => {
+																					if (checked) {
+																						field.onChange([...field.value, event.target.value]);
+																					} else {
+																						field.onChange(
+																							field.value.filter((value) => {
+																								return value.toString() !== event.target.value;
+																							})
+																						);
+																					}
+																				}}
+																			/>
+																		)}
+																	/>
+																</TableCell>
+															</>
+														);
+													})}
+												</TableRow>
+											);
+										})}
+									</TableBody>
+								</Table>
+							</TableContainer>
+							{errors.permissionsIds ? (
+								<FormHelperText sx={{ textAlign: "right" }}>
+									{errors.permissionsIds.message}
+								</FormHelperText>
+							) : null}
+						</FormControl>
+					</Grid>
+					<Grid container spacing={1} justifyContent={"flex-end"} xs={12}>
+						<Grid>
+							<Button variant="outlined" onClick={() => navigate(-1)}>
+								Cancelar
+							</Button>
+						</Grid>
+						{idRole ? (
+							<Grid>
+								<Button variant="contained" onClick={handleOpenModalConfirmation} color="error">
+									{"Remover função"}
+								</Button>
+							</Grid>
+						) : null}
+						<Grid>
+							<Button variant="contained" type="submit">
+								{idRole ? "Editar função" : "Criar Função"}
+							</Button>
+						</Grid>
 					</Grid>
 				</Grid>
 			</Grid>
-		</Grid>
+			<DialogRemovalConfirmation
+				title={`Tem certeza que deseja remover a função ${getValues("name")}?`}
+				subtitle={"Essa ação é irreversível!"}
+				onConfirmation={onRemove}
+				open={openModalConfirmation}
+				handleClose={closeModalConfirmation}
+			/>
+		</>
 	);
 }

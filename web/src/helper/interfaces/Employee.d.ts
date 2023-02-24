@@ -1,16 +1,17 @@
 import { EEmployeeTypes } from "../constants/employee";
+import { RolesDataProps } from "./Roles";
 
-export interface employeeDataProps {
+export interface EmployeeDataProps {
 	id: number;
 	firstName: string;
 	lastName: string;
 	employeeCode: string;
 	email?: string;
-	type: EEmployeeTypes;
 	isActive: boolean;
+	role: RolesDataProps;
 }
 
-export interface createOrUpdateEmployeeProps {
+export interface CreateOrUpdateEmployeeProps {
 	payload: {
 		id?: number;
 		firstName: string;

@@ -7,6 +7,7 @@ import { Permission } from '../permission/entities/permission.entity';
 import { RolePermission } from '../role-permission/entities/role-permission.entity';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { RoleDto } from './dto/role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 // import { UpdateRoleDto } from './dto/update-role.dto';
 import { Role } from './entities/role.entity';
 
@@ -19,6 +20,14 @@ export class RoleService {
 
     if (!company)
       throw new HttpException('Não existe esta companhia', HttpStatus.PRECONDITION_FAILED);
+
+    const roleName = await Role.findOne({
+      where: { company: { id: employeeLogged.company.id }, name: createRoleDto.name },
+    });
+
+    if (roleName) {
+      throw new HttpException('Já existe função com esse nome', HttpStatus.CONFLICT);
+    }
 
     const role = new Role();
     role.name = createRoleDto.name;
@@ -70,11 +79,81 @@ export class RoleService {
     return new RoleDto(role);
   }
 
-  // update(id: number, updateRoleDto: UpdateRoleDto) {
-  //   return `This action updates a #${id} role`;
-  // }
+  async update(id: number, updateRoleDto: UpdateRoleDto, employeeLogged: Employee) {
+    const company = await Company.findOneBy({ id: employeeLogged.company.id });
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} role`;
-  // }
+    if (!company) {
+      throw new HttpException('Não existe esta companhia', HttpStatus.PRECONDITION_FAILED);
+    }
+
+    const role = await Role.findOne({
+      where: { id: Number(id) },
+      relations: { rolePermissions: { permission: true } },
+    });
+
+    if (!role) {
+      throw new HttpException('Função não existe', HttpStatus.PRECONDITION_FAILED);
+    }
+
+    const permissionsIdsReceived = updateRoleDto.permissionsIds.map((id) => Number(id));
+
+    const existingPermissionsIds = role.rolePermissions.map(
+      (rolePermission) => rolePermission.permission.id,
+    );
+
+    const permissionsIdsToWithdraw = existingPermissionsIds.filter(
+      (permissionId) => !permissionsIdsReceived.includes(permissionId),
+    );
+
+    const permissionsIdsToAdd = permissionsIdsReceived.filter(
+      (permissionId) => !existingPermissionsIds.includes(permissionId),
+    );
+
+    if (permissionsIdsToWithdraw.length > 0) {
+      const permissionsToRemove = role.rolePermissions.filter(({ permission }) =>
+        permissionsIdsToWithdraw.includes(permission.id),
+      );
+
+      await RolePermission.remove(permissionsToRemove);
+    }
+
+    if (permissionsIdsToAdd.length > 0) {
+      const permissionsToAdd = await Promise.all(
+        permissionsIdsToAdd.map((permitionsId) => Permission.findOneBy({ id: permitionsId })),
+      );
+
+      await Promise.all(
+        permissionsToAdd.map((permissionToAdd) => {
+          const rolePermission = new RolePermission();
+          rolePermission.permission = permissionToAdd;
+          rolePermission.role = role;
+
+          return rolePermission.save();
+        }),
+      );
+    }
+
+    if (role.name !== updateRoleDto.name) {
+      role.name = updateRoleDto.name;
+      await role.save();
+    }
+
+    return this.findOne(id, employeeLogged);
+  }
+
+  async remove(id: number, employeeLogged: Employee) {
+    const company = await Company.findOne({ where: { id: employeeLogged.company.id } });
+
+    if (!company) {
+      throw new HttpException('Companhia não existe', HttpStatus.PRECONDITION_FAILED);
+    }
+
+    const role = await Role.findOne({ where: { id } });
+
+    if (!role) {
+      throw new HttpException('Função não existe', HttpStatus.PRECONDITION_FAILED);
+    }
+
+    return await role.remove();
+  }
 }

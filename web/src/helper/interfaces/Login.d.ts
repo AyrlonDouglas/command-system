@@ -1,6 +1,6 @@
 import { PermissionProps } from "./Permission";
 
-export interface loginDataProps {
+export interface LoginDataProps {
 	token: string;
 	employeeCode: string;
 	employeeId: number;

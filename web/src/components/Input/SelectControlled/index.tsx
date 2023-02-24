@@ -4,7 +4,7 @@ interface InputSelectControlledProps {
 	//TODO: ajustar tipo do control
 	control: Control<any>;
 	nameField: string;
-	options: string[];
+	options: string[] | number[];
 	label: string;
 	error: FieldErrors<{ [key: string]: string }>;
 }

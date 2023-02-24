@@ -9,6 +9,7 @@ import {
 	ListItem,
 	ListItemButton,
 	ListItemText,
+	Paper,
 } from "@mui/material";
 //Components
 import PageTitle from "../../../components/common/PageTitle";
@@ -31,17 +32,25 @@ export default function RoleList() {
 	const handleSearch = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
 		setSearch(e.target.value);
 	};
-
 	const isMatchedSearch = (role: (typeof rolesState.data)[0]) => {
 		if (!search) {
 			return true;
 		}
 
-		return role.name.toLowerCase().includes(search.toLowerCase());
+		const roleName = role.name.toLowerCase();
+		const searchQuery = search.toLowerCase();
+
+		return roleName.includes(searchQuery);
+	};
+
+	const isRoleShown = (role: (typeof rolesState.data)[0]) => {
+		const rolesNoShow = ["admin", "bot"];
+		return !rolesNoShow.includes(role.name);
 	};
 
 	const toCreateRole = () => navigate("/roles/create");
 	const toUpdateRole = (id: number) => navigate(`/roles/update/${id}`);
+
 	return (
 		<Grid container>
 			<Grid xs={12}>
@@ -61,16 +70,20 @@ export default function RoleList() {
 			</Grid>
 
 			<Grid xs={12}>
-				<ListEmpty dataList={rolesState.data} label="Funções" action={toCreateRole} />
-				<List>
-					{rolesState.data.filter(isMatchedSearch).map((role) => (
-						<ListItem disablePadding key={role.id}>
-							<ListItemButton onClick={() => toUpdateRole(role.id)}>
-								<ListItemText primary={role.name} />
-							</ListItemButton>
-						</ListItem>
-					))}
-				</List>
+				<Paper sx={{ marginTop: "1rem" }}>
+					<ListEmpty dataList={rolesState.data} label="Funções" action={toCreateRole} />
+					<List disablePadding>
+						{rolesState.data
+							.filter((roleFilter) => isMatchedSearch(roleFilter) && isRoleShown(roleFilter))
+							.map((role) => (
+								<ListItem disablePadding key={role.id}>
+									<ListItemButton onClick={() => toUpdateRole(role.id)}>
+										<ListItemText primary={role.name} />
+									</ListItemButton>
+								</ListItem>
+							))}
+					</List>
+				</Paper>
 			</Grid>
 		</Grid>
 	);

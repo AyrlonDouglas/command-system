@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PermissionProps } from "../../../helper/interfaces/Permission";
-import { rolesDataProps } from "../../../helper/interfaces/Roles";
+import { RolesDataProps } from "../../../helper/interfaces/Roles";
 
 const rolesSlice = createSlice({
 	name: "roles",
 	initialState: {
-		data: [] as rolesDataProps[],
+		data: [] as RolesDataProps[],
 		loading: false,
 		error: false,
 		success: true,
@@ -70,6 +70,35 @@ const rolesSlice = createSlice({
 			state.success = false;
 			state.error = true;
 		},
+		updateRoleRequest: (state, action) => {
+			state.loading = true;
+		},
+		updateRoleSuccess: (state, action) => {
+			state.loading = false;
+			state.error = false;
+			state.success = true;
+			state.data = [...state.data.filter((el) => el.id !== action.payload.id), action.payload];
+		},
+		updateRoleFail: (state) => {
+			state.loading = false;
+			state.success = false;
+			state.error = true;
+		},
+
+		removeRoleRequest: (state, action) => {
+			state.loading = true;
+		},
+		removeRoleSuccess: (state, action) => {
+			state.loading = false;
+			state.error = false;
+			state.success = true;
+			state.data = state.data.filter((role) => role.name !== action.payload.name);
+		},
+		removeRoleFail: (state) => {
+			state.loading = false;
+			state.success = false;
+			state.error = true;
+		},
 	},
 });
 
@@ -86,6 +115,12 @@ export const {
 	getRoleByIdFail,
 	getRoleByIdRequest,
 	getRoleByIdSuccess,
+	updateRoleFail,
+	updateRoleRequest,
+	updateRoleSuccess,
+	removeRoleFail,
+	removeRoleRequest,
+	removeRoleSuccess,
 } = rolesSlice.actions;
 
 export default rolesSlice.reducer;

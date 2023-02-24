@@ -1,6 +1,6 @@
 import { PermissionProps } from "./Permission";
 
-export interface layoutDataProps {
+export interface LayoutDataProps {
 	permissions: PermissionProps[];
 }
 

@@ -1,7 +1,7 @@
 import { AxiosResponse, isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { call, put, takeLatest } from "redux-saga/effects";
-import { createOrUpdateItemProps } from "../../../helper/interfaces/Item";
+import { CreateOrUpdateItemProps } from "../../../helper/interfaces/Item";
 import { api } from "../../../service/axios";
 import {
 	getItemsFail,
@@ -31,7 +31,7 @@ function* getItems() {
 	}
 }
 
-function* createItem({ payload }: createOrUpdateItemProps) {
+function* createItem({ payload }: CreateOrUpdateItemProps) {
 	try {
 		const response: AxiosResponse = yield call(api.post, "/item", payload);
 
@@ -48,7 +48,7 @@ function* createItem({ payload }: createOrUpdateItemProps) {
 	}
 }
 
-function* updateItem({ payload }: createOrUpdateItemProps) {
+function* updateItem({ payload }: CreateOrUpdateItemProps) {
 	try {
 		const id = payload.id;
 

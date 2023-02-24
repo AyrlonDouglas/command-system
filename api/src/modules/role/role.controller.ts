@@ -1,18 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  // Patch,
-  Param,
-  // Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 // import { UpdateRoleDto } from './dto/update-role.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 import { Employee } from '../employee/entities/employee.entity';
+import { UpdateRoleDto } from './dto/update-role.dto';
 @ApiBearerAuth()
 @ApiTags('Role')
 @Controller('role')
@@ -34,13 +27,17 @@ export class RoleController {
     return this.roleService.findOne(+id, employeeLogged);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-  //   return this.roleService.update(+id, updateRoleDto);
-  // }
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateRoleDto: UpdateRoleDto,
+    @EmployeeLogged() employeeLogged: Employee,
+  ) {
+    return this.roleService.update(+id, updateRoleDto, employeeLogged);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.roleService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string, @EmployeeLogged() employeeLogged: Employee) {
+    return this.roleService.remove(+id, employeeLogged);
+  }
 }

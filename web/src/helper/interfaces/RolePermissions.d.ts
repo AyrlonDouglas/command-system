@@ -1,6 +1,6 @@
 import { PermissionProps } from "./Permission";
 
-export interface rolePermissionsProps {
+export interface RolePermissionsProps {
 	id: number;
 	createdAt: Date;
 	deletedAt: Date;

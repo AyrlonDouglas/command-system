@@ -10,6 +10,7 @@ import { getEmployeesRequest } from "../../../store/ducks/employees/slice";
 import ListEmpty from "../../../components/common/listEmpty";
 import CardEmployee from "../../../components/Card/Employee";
 import DialogCreateOrUpdateEmployee from "../../../components/Dialog/CreateOrUpdateEmployee";
+import { getRolesRequest } from "../../../store/ducks/roles/slice";
 export default function EmployeesList() {
 	const employeesState = useAppSelector((state) => state.employees);
 	const [search, setSearch] = useState("");
@@ -28,22 +29,30 @@ export default function EmployeesList() {
 		setSearch(e.target.value);
 	};
 
+	const isBotEmployee = (employee: (typeof employeesState.data)[0]) => {
+		return employee?.role?.name !== "bot";
+	};
+
+	const isMatchedBySearchTerm = (employee: (typeof employeesState.data)[0], searchTerm: string) => {
+		return (
+			employee.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			employee.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			employee.role.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			employee.employeeCode.toString().toLowerCase().includes(searchTerm.toLowerCase())
+		);
+	};
+
 	const handleSearchItems = (employee: (typeof employeesState.data)[0]) => {
 		if (!search) {
-			return employee.type !== "bot";
+			return isBotEmployee(employee);
 		}
 
-		return (
-			employee.type !== "bot" &&
-			(employee.firstName.toLowerCase().includes(search.toLowerCase()) ||
-				employee.lastName.toLowerCase().includes(search.toLowerCase()) ||
-				employee.type.toString().toLowerCase().includes(search.toLowerCase()) ||
-				employee.employeeCode.toString().toLowerCase().includes(search.toLowerCase()))
-		);
+		return isBotEmployee(employee) && isMatchedBySearchTerm(employee, search);
 	};
 
 	useEffect(() => {
 		dispatch(getEmployeesRequest());
+		dispatch(getRolesRequest());
 	}, []);
 
 	return (

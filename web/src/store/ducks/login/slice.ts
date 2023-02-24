@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginDataProps } from "../../../helper/interfaces/Login";
+import { LoginDataProps } from "../../../helper/interfaces/Login";
 
 export const loginSlice = createSlice({
 	name: "login",
 	initialState: {
-		data: {} as loginDataProps,
+		data: {} as LoginDataProps,
 		loading: false,
 		error: false,
 		success: false,
