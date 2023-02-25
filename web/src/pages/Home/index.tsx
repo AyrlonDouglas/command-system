@@ -10,6 +10,7 @@ import BurguerImage from "../../assets/images/burger.jpg";
 import DrinkImage from "../../assets/images/drink.jpg";
 import ChickenImage from "../../assets/images/chicken.jpg";
 import PizzaImage from "../../assets/images/pizza.jpg";
+import { routesApp } from "../../helper/constants/routes";
 
 const cardsFood = [
 	{ image: BurguerImage, title: "Hambúrgueres", subTitle: "Surpreendendes combinações" },
@@ -71,12 +72,12 @@ export default function Home() {
 					</Grid>
 					<Grid container spacing={2} sx={{ marginTop: "1rem", whiteSpace: "nowrap" }}>
 						<Grid sx={{ flex: "1 1 0" }}>
-							<Button variant="contained" onClick={() => navigate("/")}>
+							<Button variant="contained" onClick={() => navigate(routesApp.initial.main)}>
 								Peça aqui
 							</Button>
 						</Grid>
 						<Grid sx={{ flex: "1 1 0" }}>
-							<Button variant="outlined" onClick={() => navigate("/")}>
+							<Button variant="outlined" onClick={() => navigate(routesApp.initial.main)}>
 								Cardápio
 							</Button>
 						</Grid>

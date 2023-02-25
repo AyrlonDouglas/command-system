@@ -2,17 +2,16 @@ import { AxiosResponse, isAxiosError, AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { call, put, takeLatest } from "redux-saga/effects";
 import { createOrUpdateCategoryProps } from "../../../helper/interfaces/Category";
+import { navigateSetter } from "../../../routes/NavigateSetter";
 import { api } from "../../../service/axios";
 import {
-	getCategoriesFail,
 	getCategoriesRequest,
 	getCategoriesSuccess,
 	createCategoryRequest,
 	createCategorySuccess,
-	createCategoryFail,
-	updateCategoryFail,
 	updateCategoryRequest,
 	updateCategorySuccess,
+	genericCategoryFail,
 } from "./slice";
 
 function* getCategories() {
@@ -27,7 +26,7 @@ function* getCategories() {
 			toast.error("Não foi possível buscar categories");
 		}
 
-		yield put(getCategoriesFail());
+		yield put(genericCategoryFail());
 	}
 }
 
@@ -44,7 +43,7 @@ function* createCategory({ payload }: createOrUpdateCategoryProps) {
 			toast.error("Não foi possível criar categoria");
 		}
 
-		yield put(createCategoryFail());
+		yield put(genericCategoryFail());
 	}
 }
 
@@ -64,7 +63,7 @@ function* updateCategory({ payload }: createOrUpdateCategoryProps) {
 			toast.error("Não foi possível atualizar categoria");
 		}
 
-		yield put(updateCategoryFail());
+		yield put(genericCategoryFail());
 	}
 }
 

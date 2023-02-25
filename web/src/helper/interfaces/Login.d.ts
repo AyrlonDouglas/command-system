@@ -1,3 +1,4 @@
+import { NavigateFunction } from "react-router-dom";
 import { PermissionProps } from "./Permission";
 
 export interface LoginDataProps {
@@ -7,7 +8,10 @@ export interface LoginDataProps {
 	permissions: PermissionProps[];
 }
 
-export type CredentialProps = {
-	payload: { password: string; employeeCode: string };
+export type LoginProps = {
+	payload: {
+		credentials: { password: string; employeeCode: string };
+		navigate: NavigateFunction;
+	};
 	type: string;
 };

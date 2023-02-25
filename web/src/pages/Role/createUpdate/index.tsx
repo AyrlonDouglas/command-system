@@ -39,6 +39,9 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { PermissionEntitiesTypes, PermissionProps } from "../../../helper/interfaces/Permission";
 import DialogRemovalConfirmation from "../../../components/Dialog/RemovalConfirmation";
+import { RolesDataProps } from "../../../helper/interfaces/Roles";
+import { toast } from "react-toastify";
+import { routesApp } from "../../../helper/constants/routes";
 
 const schema = yup.object().shape({
 	name: yup.string().required("Preencha o nome"),
@@ -54,6 +57,9 @@ export default function RoleCreateUpdate() {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const { idRole } = useParams();
+	const [permissionsIdsFiltered, setPermissionsIdsFiltered] = useState<string[]>([]);
+	const [roleFiltered, setRoleFiltered] = useState({} as RolesDataProps);
+
 	const { roles: rolesState } = useAppSelector((state) => state);
 
 	useEffect(() => {
@@ -70,11 +76,14 @@ export default function RoleCreateUpdate() {
 
 	useEffect(() => {
 		if (idRole && rolesState.data.length > 0) {
-			const roleFiltered = rolesState.data.filter((role) => role.id.toString() === idRole)[0];
+			const role = rolesState.data.filter((role) => role.id.toString() === idRole)[0];
+			setRoleFiltered(role);
 
-			const permissionsIdsFiltered = roleFiltered.rolePermissions
-				.filter((rolePermission) => Boolean(rolePermission))
-				.map((rolePermission) => rolePermission.permission.id?.toString()) as string[];
+			setPermissionsIdsFiltered(
+				role?.rolePermissions
+					.filter((rolePermission) => Boolean(rolePermission))
+					.map((rolePermission) => rolePermission.permission.id?.toString()) as string[]
+			);
 
 			setValue("name", roleFiltered.name);
 			setValue("permissionsIds", permissionsIdsFiltered);
@@ -82,6 +91,7 @@ export default function RoleCreateUpdate() {
 	}, [rolesState.data, idRole]);
 
 	const allPermissions = useAppSelector((state) => state.roles.allPermissions);
+
 	const {
 		handleSubmit,
 		control,
@@ -89,9 +99,9 @@ export default function RoleCreateUpdate() {
 		resetField,
 		setValue,
 		getValues,
-		trigger,
+		// trigger,
 		// reset,
-		watch,
+		// watch,
 	} = useForm({
 		resolver: yupResolver(schema),
 		defaultValues: {
@@ -99,7 +109,6 @@ export default function RoleCreateUpdate() {
 			permissionsIds: [] as string[],
 		},
 	});
-	// console.log("getValues", getValues().permissionsIds);
 
 	const groupPermissionsByEntity = (permissions: PermissionProps[]) => {
 		interface PermissionGroupedProps {
@@ -147,17 +156,23 @@ export default function RoleCreateUpdate() {
 	};
 
 	const onSubmit = (data: typeof defaultValues) => {
-		if (idRole) {
-			dispatch(updateRoleRequest({ ...data, id: idRole }));
-		} else {
+		if (!idRole) {
 			dispatch(createRoleRequest(data));
+			return;
 		}
-		navigate("/roles");
+
+		if (idRole && dataChanged(data)) {
+			dispatch(updateRoleRequest({ ...data, id: idRole }));
+			return;
+		}
+
+		if (idRole && !dataChanged(data)) {
+			toast.warning("Nenhum dado foi modificado.");
+		}
 	};
 
 	const onRemove = () => {
 		dispatch(removeRoleRequest({ id: idRole }));
-		navigate("/roles");
 	};
 
 	const closeModalConfirmation = () => {
@@ -165,6 +180,13 @@ export default function RoleCreateUpdate() {
 	};
 	const handleOpenModalConfirmation = () => {
 		setOpenModalConfirmation(true);
+	};
+
+	const dataChanged = (data: typeof defaultValues) => {
+		return (
+			data?.name !== roleFiltered.name ||
+			JSON.stringify(data.permissionsIds) !== JSON.stringify(permissionsIdsFiltered)
+		);
 	};
 
 	return (
@@ -175,14 +197,6 @@ export default function RoleCreateUpdate() {
 				</Grid>
 
 				<Grid component={"form"} xs={12} container spacing={2} onSubmit={handleSubmit(onSubmit)}>
-					<Grid>
-						<InputTextFieldControlled
-							control={control}
-							label={"Nome da função"}
-							nameField={"name"}
-						/>
-					</Grid>
-
 					<Grid xs={12}>
 						<FormControl fullWidth error={!!errors.permissionsIds}>
 							<TableContainer component={Paper}>
@@ -220,39 +234,35 @@ export default function RoleCreateUpdate() {
 													</TableCell>
 													{group.items.map((item) => {
 														return (
-															<>
-																<TableCell component="th" scope="row" align="center" key={item.id}>
-																	<Controller
-																		name="permissionsIds"
-																		key={item.id}
-																		control={control}
-																		render={({ field }) => (
-																			<Checkbox
-																				onBlur={field.onBlur}
-																				name={field.name}
-																				ref={field.ref}
-																				value={item.id}
-																				checked={field.value.includes(
-																					item.id?.toString() as string
-																				)}
-																				icon={<RadioButtonUncheckedOutlinedIcon />}
-																				checkedIcon={<CheckCircleOutlineOutlinedIcon />}
-																				onChange={(event, checked) => {
-																					if (checked) {
-																						field.onChange([...field.value, event.target.value]);
-																					} else {
-																						field.onChange(
-																							field.value.filter((value) => {
-																								return value.toString() !== event.target.value;
-																							})
-																						);
-																					}
-																				}}
-																			/>
-																		)}
-																	/>
-																</TableCell>
-															</>
+															<TableCell component="th" scope="row" align="center" key={item.id}>
+																<Controller
+																	name="permissionsIds"
+																	key={item.id}
+																	control={control}
+																	render={({ field }) => (
+																		<Checkbox
+																			onBlur={field.onBlur}
+																			name={field.name}
+																			ref={field.ref}
+																			value={item.id}
+																			checked={field.value.includes(item.id?.toString() as string)}
+																			icon={<RadioButtonUncheckedOutlinedIcon />}
+																			checkedIcon={<CheckCircleOutlineOutlinedIcon />}
+																			onChange={(event, checked) => {
+																				if (checked) {
+																					field.onChange([...field.value, event.target.value]);
+																				} else {
+																					field.onChange(
+																						field.value.filter((value) => {
+																							return value.toString() !== event.target.value;
+																						})
+																					);
+																				}
+																			}}
+																		/>
+																	)}
+																/>
+															</TableCell>
 														);
 													})}
 												</TableRow>
@@ -268,22 +278,34 @@ export default function RoleCreateUpdate() {
 							) : null}
 						</FormControl>
 					</Grid>
-					<Grid container spacing={1} justifyContent={"flex-end"} xs={12}>
-						<Grid>
-							<Button variant="outlined" onClick={() => navigate(-1)}>
+					<Grid xs={12} md={4}>
+						<InputTextFieldControlled
+							control={control}
+							label={"Nome da função"}
+							nameField={"name"}
+						/>
+					</Grid>
+					<Grid container spacing={1} justifyContent={"flex-end"} xs={12} md={8}>
+						<Grid xs={idRole ? 4 : 6} md={idRole ? 4 : 6}>
+							<Button variant="outlined" onClick={() => navigate(-1)} fullWidth>
 								Cancelar
 							</Button>
 						</Grid>
 						{idRole ? (
-							<Grid>
-								<Button variant="contained" onClick={handleOpenModalConfirmation} color="error">
-									{"Remover função"}
+							<Grid xs={idRole ? 4 : 6} md={4}>
+								<Button
+									variant="contained"
+									onClick={handleOpenModalConfirmation}
+									color="error"
+									fullWidth
+								>
+									{"Remover"}
 								</Button>
 							</Grid>
 						) : null}
-						<Grid>
-							<Button variant="contained" type="submit">
-								{idRole ? "Editar função" : "Criar Função"}
+						<Grid xs={idRole ? 4 : 6} md={idRole ? 4 : 6}>
+							<Button variant="contained" type="submit" fullWidth>
+								{idRole ? "Editar" : "Criar"}
 							</Button>
 						</Grid>
 					</Grid>

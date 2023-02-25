@@ -8,7 +8,6 @@ const rolesSlice = createSlice({
 		data: [] as RolesDataProps[],
 		loading: false,
 		error: false,
-		success: true,
 		allPermissions: [] as PermissionProps[],
 	},
 	reducers: {
@@ -18,14 +17,7 @@ const rolesSlice = createSlice({
 		getRolesSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
-			state.success = true;
 			state.data = action.payload;
-		},
-		getRolesFail: (state) => {
-			state.loading = false;
-			state.error = true;
-			state.success = false;
-			state.data = rolesSlice.getInitialState().data;
 		},
 		getAllPermissionsRequest: (state) => {
 			state.loading = true;
@@ -33,14 +25,7 @@ const rolesSlice = createSlice({
 		getAllPermissionsSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
-			state.success = true;
 			state.allPermissions = action.payload;
-		},
-		getAllPermissionsFail: (state) => {
-			state.loading = false;
-			state.error = true;
-			state.success = false;
-			state.allPermissions = rolesSlice.getInitialState().allPermissions;
 		},
 		createRoleRequest: (state, action) => {
 			state.loading = true;
@@ -48,13 +33,7 @@ const rolesSlice = createSlice({
 		createRoleSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
-			state.success = true;
 			state.data = [...state.data, action.payload];
-		},
-		createRoleFail: (state) => {
-			state.loading = false;
-			state.success = false;
-			state.error = true;
 		},
 		getRoleByIdRequest: (state, action) => {
 			state.loading = true;
@@ -62,13 +41,7 @@ const rolesSlice = createSlice({
 		getRoleByIdSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
-			state.success = true;
 			state.data = [...state.data.filter((el) => el.id !== action.payload.id), action.payload];
-		},
-		getRoleByIdFail: (state) => {
-			state.loading = false;
-			state.success = false;
-			state.error = true;
 		},
 		updateRoleRequest: (state, action) => {
 			state.loading = true;
@@ -76,51 +49,37 @@ const rolesSlice = createSlice({
 		updateRoleSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
-			state.success = true;
 			state.data = [...state.data.filter((el) => el.id !== action.payload.id), action.payload];
 		},
-		updateRoleFail: (state) => {
-			state.loading = false;
-			state.success = false;
-			state.error = true;
-		},
-
 		removeRoleRequest: (state, action) => {
 			state.loading = true;
 		},
 		removeRoleSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
-			state.success = true;
 			state.data = state.data.filter((role) => role.name !== action.payload.name);
 		},
-		removeRoleFail: (state) => {
+		genericRoleFail: (state) => {
 			state.loading = false;
-			state.success = false;
 			state.error = true;
 		},
 	},
 });
 
 export const {
-	getRolesFail,
 	getRolesRequest,
 	getRolesSuccess,
-	getAllPermissionsFail,
 	getAllPermissionsRequest,
 	getAllPermissionsSuccess,
-	createRoleFail,
 	createRoleRequest,
 	createRoleSuccess,
-	getRoleByIdFail,
 	getRoleByIdRequest,
 	getRoleByIdSuccess,
-	updateRoleFail,
 	updateRoleRequest,
 	updateRoleSuccess,
-	removeRoleFail,
 	removeRoleRequest,
 	removeRoleSuccess,
+	genericRoleFail,
 } = rolesSlice.actions;
 
 export default rolesSlice.reducer;

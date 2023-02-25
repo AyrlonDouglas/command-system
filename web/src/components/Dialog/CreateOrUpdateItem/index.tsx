@@ -43,8 +43,7 @@ const schema = yup.object().shape({
 interface DialogCreateOrEditItemProps {
 	open: boolean;
 	handleClose: () => void;
-	canEdit?: boolean;
-	idItem?: number;
+	idItem?: number | null;
 }
 
 interface CreateOrEditItemProps {
@@ -56,7 +55,6 @@ interface CreateOrEditItemProps {
 }
 
 export default function DialogCreateOrUpdateItem({
-	canEdit,
 	handleClose,
 	idItem,
 	open,
@@ -69,13 +67,21 @@ export default function DialogCreateOrUpdateItem({
 	const itemFiltered = itemsState.data.filter((item) => item.id === idItem)[0];
 
 	useEffect(() => {
-		if (canEdit && open) {
+		if (idItem && open) {
 			setValue("avaliable", itemFiltered.avaliable);
 			setValue("category", itemFiltered.category);
 			setValue("description", itemFiltered.description);
 			setValue("name", itemFiltered.name);
 			setValue("price", itemFiltered.price);
 		}
+
+		return () => {
+			resetField("avaliable");
+			resetField("category");
+			resetField("description");
+			resetField("name");
+			resetField("price");
+		};
 	}, [open]);
 
 	const {
@@ -83,7 +89,7 @@ export default function DialogCreateOrUpdateItem({
 		control,
 		getValues,
 		formState: { errors },
-		// resetField,
+		resetField,
 		setValue,
 		// trigger,
 		// watch,
@@ -101,7 +107,7 @@ export default function DialogCreateOrUpdateItem({
 	});
 
 	const handleItem = (data: CreateOrEditItemProps) => {
-		if (canEdit && !dataChanged()) {
+		if (idItem && !dataChanged()) {
 			toast.warning("Algum dado deve ser mudado para atualizar.");
 			return;
 		}
@@ -110,13 +116,13 @@ export default function DialogCreateOrUpdateItem({
 
 		delete data.category;
 
-		if (!canEdit) {
+		if (!idItem) {
 			dispatch(createItemRequest({ ...data, categoryId }));
 			onClose();
 			return;
 		}
 
-		if (canEdit && dataChanged()) {
+		if (idItem && dataChanged()) {
 			dispatch(updateItemRequest({ ...data, categoryId, id: itemFiltered.id }));
 			onClose();
 			return;
@@ -141,7 +147,7 @@ export default function DialogCreateOrUpdateItem({
 	return (
 		<Dialog open={open} onClose={onClose}>
 			<form onSubmit={handleSubmit(handleItem)}>
-				<DialogTitle>{canEdit ? "Editar Item" : "Adicionar Item"}</DialogTitle>
+				<DialogTitle>{idItem ? "Editar Item" : "Adicionar Item"}</DialogTitle>
 				<DialogContent>
 					<Grid container spacing={2} mt={1}>
 						<Grid xs={12}>
@@ -269,7 +275,7 @@ export default function DialogCreateOrUpdateItem({
 				<DialogActions>
 					<Button onClick={onClose}>Cancelar</Button>
 					<Button type="submit" disabled={Object.keys(errors).length !== 0} variant="contained">
-						{canEdit ? "Atualizar" : "Adicionar"}
+						{idItem ? "Atualizar" : "Adicionar"}
 					</Button>
 				</DialogActions>
 			</form>

@@ -12,6 +12,10 @@ import {
 } from "@mui/material";
 //storage
 import { LOCAL } from "../../../helper/constants/localStorage";
+//redux
+import { useAppDispatch } from "../../../store/hooks";
+import { setSubMenuSelected, setMenuSelected } from "../../../store/ducks/layout/slice";
+import { routesApp } from "../../../helper/constants/routes";
 
 interface DialogLogoutProps {
 	open: boolean;
@@ -20,11 +24,14 @@ interface DialogLogoutProps {
 
 export default function DialogLogout({ onClose, open }: DialogLogoutProps) {
 	const navigate = useNavigate();
+	const dispatch = useAppDispatch();
 
 	const handleLogout = () => {
 		localStorage.removeItem(LOCAL.token);
 		onClose();
-		navigate("/");
+		navigate(routesApp.initial.main);
+		dispatch(setMenuSelected("Comandas"));
+		dispatch(setSubMenuSelected("Comandas"));
 	};
 
 	return (

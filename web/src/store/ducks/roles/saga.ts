@@ -5,25 +5,21 @@ import { call, put, takeLatest } from "redux-saga/effects";
 import { CreateUpdateRolesProps } from "../../../helper/interfaces/Roles";
 import { api } from "../../../service/axios";
 import {
-	getRolesFail,
 	getRolesSuccess,
 	getRolesRequest,
-	getAllPermissionsFail,
 	getAllPermissionsRequest,
 	getAllPermissionsSuccess,
-	createRoleFail,
 	createRoleRequest,
 	createRoleSuccess,
-	getRoleByIdFail,
 	getRoleByIdRequest,
 	getRoleByIdSuccess,
-	updateRoleFail,
 	updateRoleRequest,
 	updateRoleSuccess,
-	removeRoleFail,
 	removeRoleRequest,
 	removeRoleSuccess,
+	genericRoleFail,
 } from "./slice";
+import { navigateSetter } from "../../../routes/NavigateSetter";
 
 function* getRoles() {
 	try {
@@ -37,7 +33,7 @@ function* getRoles() {
 			toast.error("Não foi possível buscar funções");
 		}
 
-		yield put(getRolesFail());
+		yield put(genericRoleFail());
 	}
 }
 
@@ -53,7 +49,7 @@ function* getPermissions() {
 			toast.error("Não foi possível buscar permissões");
 		}
 
-		yield put(getAllPermissionsFail());
+		yield put(genericRoleFail());
 	}
 }
 
@@ -62,7 +58,8 @@ function* createRole({ payload }: CreateUpdateRolesProps) {
 		const response: AxiosResponse = yield call(api.post, "/role", payload);
 
 		toast.success(`Função ${response.data.name} criada.`);
-		redirect("/roles");
+
+		navigateSetter("/roles");
 
 		yield put(createRoleSuccess(response.data));
 	} catch (error) {
@@ -72,13 +69,14 @@ function* createRole({ payload }: CreateUpdateRolesProps) {
 			toast.error("Não foi possível buscar permissões");
 		}
 
-		yield put(createRoleFail());
+		yield put(genericRoleFail());
 	}
 }
 
 function* getRoleById({ payload }: { type: string; payload: number }) {
 	try {
 		const response: AxiosResponse = yield call(api.get, `/role/${payload}`);
+
 		yield put(getRoleByIdSuccess(response.data));
 	} catch (error) {
 		if (isAxiosError(error)) {
@@ -87,13 +85,17 @@ function* getRoleById({ payload }: { type: string; payload: number }) {
 			toast.error("Não foi possível buscar função");
 		}
 
-		yield put(getRoleByIdFail());
+		yield put(genericRoleFail());
 	}
 }
 
 function* updateRole({ payload }: CreateUpdateRolesProps) {
 	try {
 		const response: AxiosResponse = yield call(api.patch, `/role/${payload.id}`, payload);
+
+		toast.success(`Função ${payload.name} modificada`);
+
+		navigateSetter("/roles");
 
 		yield put(updateRoleSuccess(response.data));
 	} catch (error) {
@@ -103,13 +105,15 @@ function* updateRole({ payload }: CreateUpdateRolesProps) {
 			toast.error("Não foi possível buscar função");
 		}
 
-		yield put(updateRoleFail());
+		yield put(genericRoleFail());
 	}
 }
 
 function* removeRole({ payload }: { payload: { id: number }; type: string }) {
 	try {
 		const response: AxiosResponse = yield call(api.delete, `/role/${payload.id}`);
+
+		navigateSetter("/roles");
 
 		yield put(removeRoleSuccess(response.data));
 	} catch (error) {
@@ -119,7 +123,7 @@ function* removeRole({ payload }: { payload: { id: number }; type: string }) {
 			toast.error("Não foi possível remover função");
 		}
 
-		yield put(removeRoleFail());
+		yield put(genericRoleFail());
 	}
 }
 

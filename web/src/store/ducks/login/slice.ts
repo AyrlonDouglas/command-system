@@ -7,7 +7,6 @@ export const loginSlice = createSlice({
 		data: {} as LoginDataProps,
 		loading: false,
 		error: false,
-		success: false,
 	},
 	reducers: {
 		loginRequest: (state, action) => {
@@ -32,7 +31,7 @@ export const loginSlice = createSlice({
 		},
 		recoverLoginSuccess: (state, action) => {
 			state.loading = false;
-			state.success = true;
+
 			state.error = false;
 			state.data = {
 				...state.data,

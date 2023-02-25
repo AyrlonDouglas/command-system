@@ -25,7 +25,7 @@ import * as yup from "yup";
 import { loginRequest } from "../../store/ducks/login/slice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { LOCAL } from "../../helper/constants/localStorage";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface ISignIn {
 	password: string;
@@ -41,6 +41,7 @@ export default function Login() {
 	const [showPassword, setShowPassword] = useState(false);
 	const loginState = useAppSelector((state) => state.login);
 	const token = localStorage.getItem(LOCAL.token);
+	const navigate = useNavigate();
 
 	const handleShowPassword = () => {
 		setShowPassword((state) => !state);
@@ -67,12 +68,11 @@ export default function Login() {
 
 	const singIn = (data: ISignIn) => {
 		const { employeeCode, password } = data;
-		dispatch(loginRequest({ employeeCode, password }));
+		dispatch(loginRequest({ credentials: { employeeCode, password }, navigate }));
 	};
 
 	return (
 		<>
-			{token && <Navigate to={"/orders/management"} />}
 			<NavBar />
 			<Container sx={{ marginTop: "1rem", minHeight: "calc(100vh - 9rem)" }}>
 				<Grid container spacing={2}>

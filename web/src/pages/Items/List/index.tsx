@@ -21,10 +21,8 @@ import { itemsDataProps } from "../../../helper/interfaces/Item";
 export default function ItemsList() {
 	const dispatch = useAppDispatch();
 	const itemsState = useAppSelector((state) => state.items);
-	const [openModalCreateItem, setOpenModalCreateItem] = useState(false);
-	const [openModalViewCategories, setOpenModalViewCategories] = useState(false);
-	const [openModalEditItem, setOpenModalEditItem] = useState(false);
-	const [itemIdSelected, setItemIdSelected] = useState(-1);
+	const [openCreateEditItem, setOpenCreateEditItem] = useState(false);
+	const [itemIdSelected, setItemIdSelected] = useState<null | number>(null);
 	const [filter, setFilter] = useState("");
 
 	useEffect(() => {
@@ -36,7 +34,7 @@ export default function ItemsList() {
 		setFilter(e.target.value);
 	};
 
-	const handleFilterItems = (item: typeof itemsState.data[0]) => {
+	const handleFilterItems = (item: (typeof itemsState.data)[0]) => {
 		if (!filter) {
 			return true;
 		}
@@ -49,14 +47,13 @@ export default function ItemsList() {
 		);
 	};
 
-	const handleCloseCreateItem = () => setOpenModalCreateItem(false);
-	const handleClickOpenCreateItem = () => setOpenModalCreateItem(true);
-
-	const handleCloseEditItem = () => setOpenModalEditItem(false);
-	const handleClickOpenEditItem = () => setOpenModalEditItem(true);
-
-	const handleCloseViewCategories = () => setOpenModalViewCategories(false);
-	const handleOpenViewCategories = () => setOpenModalViewCategories(true);
+	const closeCreateEditItem = () => setOpenCreateEditItem(false);
+	const handleOpenCreateEditItem = (type: "create" | "edit") => {
+		if (type === "create") {
+			setItemIdSelected(null);
+		}
+		setOpenCreateEditItem(true);
+	};
 
 	const groupItemsByCategory = (items: itemsDataProps[]) => {
 		interface groupedItemsProps {
@@ -82,8 +79,9 @@ export default function ItemsList() {
 
 		return itemsGrouped;
 	};
+
 	const onClickCard = (itemId: number) => {
-		handleClickOpenEditItem();
+		handleOpenCreateEditItem("edit");
 		setItemIdSelected(itemId);
 	};
 	return (
@@ -92,27 +90,32 @@ export default function ItemsList() {
 				<Grid xs={12}>
 					<PageTitle title="Cardápio" />
 				</Grid>
+
 				<Grid xs={12} container spacing={1} justifyContent={"space-between"}>
-					<Grid xs={12} sm={4}>
+					<Grid xs={12} sm={5} md={4}>
 						<InputSearch
 							placeholder="comida mexicana etc"
 							value={filter}
 							onChange={onChangeFilter}
 						/>
 					</Grid>
-					<Grid xs={12} sm={4}>
-						<Button variant="contained" onClick={handleClickOpenCreateItem} fullWidth>
+					<Grid xs={12} sm={5} md={4}>
+						<Button
+							variant="contained"
+							onClick={() => handleOpenCreateEditItem("create")}
+							fullWidth
+						>
 							Adicionar Item
 						</Button>
 					</Grid>
-					<Grid xs={12} sm={4}>
-						<Button variant="contained" onClick={handleOpenViewCategories} fullWidth>
-							Categorias
-						</Button>
-					</Grid>
 				</Grid>
+
 				<Grid container xs={12} spacing={1} sx={{ marginTop: "1rem" }}>
-					<ListEmpty label="items" action={handleClickOpenCreateItem} dataList={itemsState.data} />
+					<ListEmpty
+						label="items"
+						action={() => handleOpenCreateEditItem("create")}
+						dataList={itemsState.data}
+					/>
 					{groupItemsByCategory(itemsState.data.filter(handleFilterItems)).map((itemByCategory) => {
 						return (
 							<Grid container xs={12} key={itemByCategory.name}>
@@ -137,18 +140,13 @@ export default function ItemsList() {
 						);
 					})}
 				</Grid>
+
 				<DialogCreateOrUpdateItem
-					open={openModalEditItem}
-					handleClose={handleCloseEditItem}
+					open={openCreateEditItem}
+					handleClose={closeCreateEditItem}
 					idItem={itemIdSelected}
-					canEdit
 				/>
 			</Grid>
-			<DialogCreateOrUpdateItem open={openModalCreateItem} handleClose={handleCloseCreateItem} />
-			<DialogViewCategories
-				open={openModalViewCategories}
-				handleClose={handleCloseViewCategories}
-			/>
 		</>
 	);
 }

@@ -137,6 +137,7 @@ function MiniDrawer({ children }: MiniDrawerProps) {
 									justifyContent: open ? "initial" : "center",
 									px: 2.5,
 								}}
+								selected={isMenuMatched}
 								onClick={() => onClickMainMenu(item.title)}
 							>
 								<ListItemIcon
@@ -180,6 +181,7 @@ function MiniDrawer({ children }: MiniDrawerProps) {
 													paddingLeft: 10,
 												}}
 												onClick={() => onClickSubMenu(subMenu.title, subMenu.path)}
+												selected={isSubMenuMatched}
 											>
 												<ListItemText
 													primary={subMenu.title}

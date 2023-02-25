@@ -13,6 +13,7 @@ import store from "./store";
 import { ToastContainer } from "react-toastify";
 import Sidebar from "./components/Sidebar";
 import BackdropLoading from "./components/Backdrop";
+import NavigateSetter from "./routes/NavigateSetter";
 
 export default function App() {
 	const color = localStorage.getItem(LOCAL.colorMode) || "light";
@@ -23,12 +24,12 @@ export default function App() {
 			<ThemeProvider theme={theme(colorMode)}>
 				<ToastContainer theme={colorMode} />
 				<BrowserRouter>
+					<NavigateSetter />
 					<CssBaseline />
 					<BackdropLoading />
 					<Sidebar>
 						<Box
 							sx={{
-								// background: theme(colorMode).palette.primary.main,
 								minWidth: "100%",
 								minHeight: "calc(100vh - 48px)",
 							}}

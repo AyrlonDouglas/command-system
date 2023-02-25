@@ -4,15 +4,13 @@ import { call, put, takeLatest } from "redux-saga/effects";
 import { CreateOrUpdateItemProps } from "../../../helper/interfaces/Item";
 import { api } from "../../../service/axios";
 import {
-	getItemsFail,
 	getItemsRequest,
 	getItemsSuccess,
-	createItemFail,
 	createItemRequest,
 	createItemSuccess,
 	updateItemRequest,
-	updateItemFail,
 	updateItemSuccess,
+	genericItemFail,
 } from "./slice";
 
 function* getItems() {
@@ -27,7 +25,7 @@ function* getItems() {
 			toast.error("Não foi possível buscar items");
 		}
 
-		yield put(getItemsFail());
+		yield put(genericItemFail());
 	}
 }
 
@@ -44,7 +42,7 @@ function* createItem({ payload }: CreateOrUpdateItemProps) {
 			toast.error("Não foi possível criar item");
 		}
 
-		yield put(createItemFail());
+		yield put(genericItemFail());
 	}
 }
 
@@ -64,7 +62,7 @@ function* updateItem({ payload }: CreateOrUpdateItemProps) {
 			toast.error("Não foi possível editar item");
 		}
 
-		yield put(updateItemFail());
+		yield put(genericItemFail());
 	}
 }
 

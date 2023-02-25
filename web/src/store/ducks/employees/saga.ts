@@ -4,15 +4,13 @@ import { call, put, takeLatest } from "redux-saga/effects";
 import { CreateOrUpdateEmployeeProps } from "../../../helper/interfaces/Employee";
 import { api } from "../../../service/axios";
 import {
-	getEmployeesFail,
 	getEmployeesRequest,
 	getEmployeesSuccess,
-	createEmployeeFail,
 	createEmployeeRequest,
 	createEmployeeSuccess,
-	updateEmployeeFail,
 	updateEmployeeRequest,
 	updateEmployeeSuccess,
+	genericEmployeeFail,
 } from "./slice";
 
 function* getEmployees() {
@@ -26,7 +24,7 @@ function* getEmployees() {
 			toast.error("Não foi possível buscar profissionais");
 		}
 
-		yield put(getEmployeesFail());
+		yield put(genericEmployeeFail());
 	}
 }
 
@@ -43,7 +41,7 @@ function* createEmployee({ payload }: CreateOrUpdateEmployeeProps) {
 			toast.error("Não foi possível criar colaborador");
 		}
 
-		yield put(createEmployeeFail());
+		yield put(genericEmployeeFail());
 	}
 }
 
@@ -63,7 +61,7 @@ function* updateEmployee({ payload }: CreateOrUpdateEmployeeProps) {
 			toast.error("Não foi possível editar item");
 		}
 
-		yield put(updateEmployeeFail());
+		yield put(genericEmployeeFail());
 	}
 }
 

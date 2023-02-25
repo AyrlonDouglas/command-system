@@ -8,7 +8,6 @@ const LayoutSlice = createSlice({
 		data: [] as itemsDataProps[],
 		loading: false,
 		error: false,
-		success: true,
 		config: {
 			menu: {
 				menuSelected: "" as MainMenuTitleType,

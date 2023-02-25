@@ -24,6 +24,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
 import Button from "@mui/material/Button";
+import { routesApp } from "../../helper/constants/routes";
 
 export default function NavBar() {
 	const [openDrawer, setOpenDrawer] = useState(false);
@@ -31,10 +32,10 @@ export default function NavBar() {
 	const navigate = useNavigate();
 
 	const itemsNav = [
-		{ name: "Início", to: "/" },
-		{ name: "Faça seu pedido", to: "/" },
-		{ name: "Acompanhe seu pedido", to: "/" },
-		match ? { name: "Entrar", to: "/login" } : null,
+		{ name: "Início", to: routesApp.initial.main },
+		{ name: "Faça seu pedido", to: routesApp.initial.main },
+		{ name: "Acompanhe seu pedido", to: routesApp.initial.main },
+		match ? { name: "Entrar", to: routesApp.initial.login } : null,
 	];
 
 	const handleOpenDrawer = () => {
@@ -70,7 +71,7 @@ export default function NavBar() {
 						<Grid
 							sx={{ cursor: "pointer" }}
 							justifyContent={"center"}
-							onClick={() => navigate("/")}
+							onClick={() => navigate(routesApp.initial.main)}
 						>
 							<RestaurantMenuIcon />
 						</Grid>

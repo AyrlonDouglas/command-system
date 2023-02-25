@@ -10,6 +10,8 @@ import {
 	ListItemButton,
 	ListItemText,
 	Paper,
+	Divider,
+	Box,
 } from "@mui/material";
 //Components
 import PageTitle from "../../../components/common/PageTitle";
@@ -18,6 +20,7 @@ import InputSearch from "../../../components/Input/Search";
 //Redux
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getRolesRequest } from "../../../store/ducks/roles/slice";
+import { routesApp } from "../../../helper/constants/routes";
 
 export default function RoleList() {
 	const { roles: rolesState } = useAppSelector((state) => state);
@@ -48,8 +51,8 @@ export default function RoleList() {
 		return !rolesNoShow.includes(role.name);
 	};
 
-	const toCreateRole = () => navigate("/roles/create");
-	const toUpdateRole = (id: number) => navigate(`/roles/update/${id}`);
+	const toCreateRole = () => navigate(routesApp.roles.create);
+	const toUpdateRole = (id: number) => navigate(routesApp.roles.update(id));
 
 	return (
 		<Grid container>
@@ -70,17 +73,21 @@ export default function RoleList() {
 			</Grid>
 
 			<Grid xs={12}>
+				<ListEmpty dataList={rolesState.data} label="Funções" action={toCreateRole} />
 				<Paper sx={{ marginTop: "1rem" }}>
-					<ListEmpty dataList={rolesState.data} label="Funções" action={toCreateRole} />
 					<List disablePadding>
 						{rolesState.data
 							.filter((roleFilter) => isMatchedSearch(roleFilter) && isRoleShown(roleFilter))
-							.map((role) => (
-								<ListItem disablePadding key={role.id}>
-									<ListItemButton onClick={() => toUpdateRole(role.id)}>
-										<ListItemText primary={role.name} />
-									</ListItemButton>
-								</ListItem>
+							.sort((a, b) => (a.name < b.name ? -1 : 1))
+							.map((role, index, arrayOrigin) => (
+								<Box key={role.id}>
+									<ListItem disablePadding>
+										<ListItemButton onClick={() => toUpdateRole(role.id)}>
+											<ListItemText primary={role.name} />
+										</ListItemButton>
+									</ListItem>
+									{index !== arrayOrigin.length - 1 ? <Divider /> : null}
+								</Box>
 							))}
 					</List>
 				</Paper>

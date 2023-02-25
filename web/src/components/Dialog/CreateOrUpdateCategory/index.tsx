@@ -36,8 +36,7 @@ const schema = yup.object().shape({
 interface DialogCreateOrEditCategoryProps {
 	open: boolean;
 	handleClose: () => void;
-	canEdit?: boolean;
-	categoryId?: number;
+	categoryId?: number | null;
 }
 
 interface CreateOrEditCategoryProps {
@@ -45,7 +44,6 @@ interface CreateOrEditCategoryProps {
 }
 
 export default function DialogCreateOrEditCategory({
-	canEdit,
 	handleClose,
 	categoryId,
 	open,
@@ -55,9 +53,10 @@ export default function DialogCreateOrEditCategory({
 	const categoryFiltered = categoriesState.data.filter((category) => category.id === categoryId)[0];
 
 	useEffect(() => {
-		if (canEdit && open) {
+		if (categoryId && open) {
 			setValue("name", categoryFiltered.name);
 		}
+		return () => resetField("name");
 	}, [open]);
 
 	const {
@@ -65,7 +64,7 @@ export default function DialogCreateOrEditCategory({
 		control,
 		getValues,
 		formState: { errors },
-		// resetField,
+		resetField,
 		setValue,
 		// trigger,
 		// watch,
@@ -73,30 +72,30 @@ export default function DialogCreateOrEditCategory({
 	} = useForm({
 		resolver: yupResolver(schema),
 		defaultValues: {
-			name: undefined as string | undefined,
+			name: "" as string | undefined,
 		},
 	});
 
 	const handleCategory = (data: CreateOrEditCategoryProps) => {
-		if (!canEdit) {
+		if (!categoryId) {
 			dispatch(createCategoryRequest(data));
 			onClose();
 			return;
 		}
 
-		if (canEdit && dataChanged()) {
+		if (categoryId && dataChanged()) {
 			dispatch(updateCategoryRequest({ ...data, id: categoryId }));
 			onClose();
 			return;
 		}
 
-		if (canEdit && !dataChanged()) {
+		if (categoryId && !dataChanged()) {
 			toast.warning("Algum dado deve ser mudado para atualizar.");
 		}
 	};
 
 	const dataChanged = () => {
-		return getValues().name !== categoryFiltered.name;
+		return getValues("name") !== categoryFiltered.name;
 	};
 
 	const onClose = () => {
@@ -107,7 +106,7 @@ export default function DialogCreateOrEditCategory({
 	return (
 		<Dialog open={open} onClose={onClose}>
 			<form onSubmit={handleSubmit(handleCategory)}>
-				<DialogTitle>{canEdit ? "Editar Categoria" : "Adicionar Categoria"}</DialogTitle>
+				<DialogTitle>{categoryId ? "Editar Categoria" : "Adicionar Categoria"}</DialogTitle>
 				<DialogContent>
 					<Grid container spacing={2} mt={1}>
 						<Grid xs={12}>
@@ -118,7 +117,7 @@ export default function DialogCreateOrEditCategory({
 				<DialogActions>
 					<Button onClick={onClose}>Cancelar</Button>
 					<Button type="submit" disabled={Object.keys(errors).length !== 0} variant="contained">
-						{canEdit ? "Atualizar" : "Adicionar"}
+						{categoryId ? "Atualizar" : "Adicionar"}
 					</Button>
 				</DialogActions>
 			</form>

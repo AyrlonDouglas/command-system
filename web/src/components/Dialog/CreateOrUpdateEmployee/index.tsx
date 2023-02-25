@@ -70,7 +70,7 @@ export default function DialogCreateOrUpdateEmployee({
 	const {
 		handleSubmit,
 		control,
-		getValues,
+		// getValues,
 		// setError,
 		formState: { errors },
 		// resetField,
@@ -81,10 +81,10 @@ export default function DialogCreateOrUpdateEmployee({
 	} = useForm({
 		resolver: yupResolver(schema),
 		defaultValues: {
-			firstName: undefined as string | undefined,
-			lastName: undefined as string | undefined,
-			email: undefined as string | undefined,
-			role: undefined as string | undefined,
+			firstName: "" as string | undefined,
+			lastName: "" as string | undefined,
+			email: "" as string | undefined,
+			role: "" as string | undefined,
 			isActive: true,
 		},
 	});

@@ -2,7 +2,9 @@ import { AxiosResponse, isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { call, put, takeLatest } from "redux-saga/effects";
 import { LOCAL } from "../../../helper/constants/localStorage";
-import { CredentialProps } from "../../../helper/interfaces/Login";
+import { routesApp } from "../../../helper/constants/routes";
+import { LoginProps } from "../../../helper/interfaces/Login";
+import { navigateSetter } from "../../../routes/NavigateSetter";
 import { api } from "../../../service/axios";
 import {
 	loginFail,
@@ -12,13 +14,15 @@ import {
 	recoverLoginSuccess,
 } from "./slice";
 
-function* login({ payload }: CredentialProps) {
+function* login({ payload: { credentials, navigate } }: LoginProps) {
 	try {
-		const response: AxiosResponse = yield call(api.post, "/auth/login", payload);
+		const response: AxiosResponse = yield call(api.post, "/auth/login", credentials);
 		toast.success("Seja bem-vindo!");
 
 		localStorage.setItem(LOCAL.token, response.data.token);
 		localStorage.setItem(LOCAL.permissions, JSON.stringify(response.data.permissions));
+
+		navigateSetter(routesApp.orders.list);
 
 		yield put(loginSuccess(response.data));
 	} catch (error: unknown) {

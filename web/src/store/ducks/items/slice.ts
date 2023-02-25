@@ -7,7 +7,6 @@ const itemsSlice = createSlice({
 		data: [] as itemsDataProps[],
 		loading: false,
 		error: false,
-		success: true,
 	},
 	reducers: {
 		getItemsRequest: (state) => {
@@ -16,14 +15,8 @@ const itemsSlice = createSlice({
 		getItemsSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
-			state.success = true;
+
 			state.data = action.payload;
-		},
-		getItemsFail: (state) => {
-			state.loading = false;
-			state.error = true;
-			state.success = false;
-			state.data = itemsSlice.getInitialState().data;
 		},
 		createItemRequest: (state, action) => {
 			state.loading = true;
@@ -31,13 +24,8 @@ const itemsSlice = createSlice({
 		createItemSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
-			state.success = true;
+
 			state.data = [...state.data, action.payload];
-		},
-		createItemFail: (state) => {
-			state.loading = true;
-			state.error = true;
-			state.success = false;
 		},
 		updateItemRequest: (state, action) => {
 			state.loading = true;
@@ -45,30 +33,25 @@ const itemsSlice = createSlice({
 		updateItemSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
-			state.success = true;
-
 			state.data = state.data.map((item) =>
 				item.id === action.payload.id ? action.payload : item
 			);
 		},
-		updateItemFail: (state) => {
+		genericItemFail: (state) => {
 			state.loading = false;
 			state.error = true;
-			state.success = false;
 		},
 	},
 });
 
 export const {
-	getItemsFail,
 	getItemsRequest,
 	getItemsSuccess,
-	createItemFail,
 	createItemRequest,
 	createItemSuccess,
-	updateItemFail,
 	updateItemRequest,
 	updateItemSuccess,
+	genericItemFail,
 } = itemsSlice.actions;
 
 export default itemsSlice.reducer;

@@ -7,7 +7,6 @@ const categoriesSlice = createSlice({
 		data: [] as CategoriesDataProps[],
 		loading: false,
 		error: false,
-		success: true,
 	},
 	reducers: {
 		getCategoriesRequest: (state) => {
@@ -16,21 +15,10 @@ const categoriesSlice = createSlice({
 		getCategoriesSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
-			state.success = true;
 			state.data = action.payload;
-		},
-		getCategoriesFail: (state) => {
-			state.loading = false;
-			state.error = true;
-			state.success = false;
-			state.data = categoriesSlice.getInitialState().data;
 		},
 		createCategoryRequest: (state, action) => {
 			state.loading = true;
-		},
-		createCategoryFail: (state) => {
-			state.loading = false;
-			state.error = true;
 		},
 		createCategorySuccess: (state, action) => {
 			state.loading = false;
@@ -39,29 +27,27 @@ const categoriesSlice = createSlice({
 		updateCategoryRequest: (state, action) => {
 			state.loading = true;
 		},
-		updateCategoryFail: (state) => {
-			state.loading = false;
-			state.error = true;
-		},
 		updateCategorySuccess: (state, action) => {
 			state.loading = false;
 			state.data = state.data.map((category) =>
 				category.id === action.payload.id ? action.payload : category
 			);
 		},
+		genericCategoryFail: (state) => {
+			state.loading = false;
+			state.error = true;
+		},
 	},
 });
 
 export const {
-	getCategoriesFail,
 	getCategoriesRequest,
 	getCategoriesSuccess,
-	createCategoryFail,
 	createCategoryRequest,
 	createCategorySuccess,
-	updateCategoryFail,
 	updateCategoryRequest,
 	updateCategorySuccess,
+	genericCategoryFail,
 } = categoriesSlice.actions;
 
 export default categoriesSlice.reducer;
