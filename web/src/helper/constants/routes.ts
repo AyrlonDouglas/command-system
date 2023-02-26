@@ -3,7 +3,7 @@ export const routesApp = {
 	employees: { list: "/employees" },
 	items: { list: "/items" },
 	category: { list: "/category" },
-	settings: { main: "/settings" },
+	settings: { account: "/settings/account", changePassword: "/settings/account/changePassword" },
 	roles: {
 		list: "/roles",
 		create: "/roles/create",

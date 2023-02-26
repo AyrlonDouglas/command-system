@@ -6,6 +6,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Employee } from './entities/employee.entity';
 import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 import { Permissions } from 'src/helper/decorators/permission.decorator';
+import { ChangePassDto } from './dto/change-pass.dto';
 
 @ApiBearerAuth()
 @ApiTags('Employee')
@@ -27,6 +28,11 @@ export class EmployeeController {
   @Get(':id')
   findOne(@Param('id') id: string, @EmployeeLogged() employeeLogged: Employee) {
     return this.employeeService.findOne(+id, employeeLogged);
+  }
+
+  @Patch('/changePass')
+  changePass(@Body() changePassDto: ChangePassDto, @EmployeeLogged() employeeLogged: Employee) {
+    return this.employeeService.changePass(changePassDto, employeeLogged);
   }
 
   @Patch(':id')

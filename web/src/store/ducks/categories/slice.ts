@@ -37,6 +37,13 @@ const categoriesSlice = createSlice({
 			state.loading = false;
 			state.error = true;
 		},
+		removeCategoryRequest: (state, action) => {
+			state.loading = true;
+		},
+		removeCategorySuccess: (state, action) => {
+			state.loading = false;
+			state.data = state.data.filter((category) => category.name !== action.payload.name);
+		},
 	},
 });
 
@@ -48,6 +55,8 @@ export const {
 	updateCategoryRequest,
 	updateCategorySuccess,
 	genericCategoryFail,
+	removeCategoryRequest,
+	removeCategorySuccess,
 } = categoriesSlice.actions;
 
 export default categoriesSlice.reducer;

@@ -40,6 +40,12 @@ const employeesSlice = createSlice({
 			state.loading = false;
 			state.error = true;
 		},
+		updateEmployeePassRequest: (state, action) => {
+			state.loading = true;
+		},
+		updateEmployeePassSuccess: (state) => {
+			state.loading = false;
+		},
 	},
 });
 
@@ -51,6 +57,8 @@ export const {
 	updateEmployeeRequest,
 	updateEmployeeSuccess,
 	genericEmployeeFail,
+	updateEmployeePassRequest,
+	updateEmployeePassSuccess,
 } = employeesSlice.actions;
 
 export default employeesSlice.reducer;

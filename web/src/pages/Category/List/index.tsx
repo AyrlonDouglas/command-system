@@ -74,25 +74,27 @@ export default function CategoryList() {
 					label="Categorias"
 					action={() => handleOpenCreate("create")}
 				/>
-				<Paper>
-					<List>
-						{categoriesState.data.filter(filterByCategory).map((category, index, arrOrign) => (
-							<Box key={category.id}>
-								<ListItem disablePadding>
-									<ListItemButton
-										onClick={() => {
-											handleOpenCreate("edit");
-											setCategoryId(category.id);
-										}}
-									>
-										<ListItemText primary={category.name} />
-									</ListItemButton>
-								</ListItem>
-								{arrOrign.length - 1 !== index ? <Divider /> : null}
-							</Box>
-						))}
-					</List>
-				</Paper>
+				{categoriesState.data.filter(filterByCategory).length > 0 ? (
+					<Paper>
+						<List>
+							{categoriesState.data.filter(filterByCategory).map((category, index, arrOrign) => (
+								<Box key={category.id}>
+									<ListItem disablePadding>
+										<ListItemButton
+											onClick={() => {
+												handleOpenCreate("edit");
+												setCategoryId(category.id);
+											}}
+										>
+											<ListItemText primary={category.name} />
+										</ListItemButton>
+									</ListItem>
+									{arrOrign.length - 1 !== index ? <Divider /> : null}
+								</Box>
+							))}
+						</List>
+					</Paper>
+				) : null}
 			</Grid>
 			<DialogCreateOrEditCategory
 				open={openCreateEdit}

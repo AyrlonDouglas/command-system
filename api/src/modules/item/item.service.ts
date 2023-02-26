@@ -42,6 +42,12 @@ export class ItemService {
   // }
 
   async update(id: number, updateItemDto: UpdateItemDto, employeeLoged: Employee) {
+    const item = await Item.findOne({ where: { id, company: { id: employeeLoged.company.id } } });
+
+    if (!item) {
+      throw new HttpException('O item não existe', HttpStatus.PRECONDITION_FAILED);
+    }
+
     if (updateItemDto.categoryId) {
       updateItemDto.category = await Category.findOneBy({
         id: updateItemDto.categoryId,
@@ -59,7 +65,13 @@ export class ItemService {
     return new ItemDto(itemData);
   }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} item`;
-  // }
+  async remove(id: number, employeeLoged: Employee) {
+    const item = await Item.findOne({ where: { id, company: { id: employeeLoged.company.id } } });
+
+    if (!item) {
+      throw new HttpException('Item não existe', HttpStatus.PRECONDITION_FAILED);
+    }
+
+    return await item.remove();
+  }
 }

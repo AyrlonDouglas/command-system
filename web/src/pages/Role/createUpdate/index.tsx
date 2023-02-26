@@ -41,7 +41,6 @@ import { PermissionEntitiesTypes, PermissionProps } from "../../../helper/interf
 import DialogRemovalConfirmation from "../../../components/Dialog/RemovalConfirmation";
 import { RolesDataProps } from "../../../helper/interfaces/Roles";
 import { toast } from "react-toastify";
-import { routesApp } from "../../../helper/constants/routes";
 
 const schema = yup.object().shape({
 	name: yup.string().required("Preencha o nome"),
@@ -68,10 +67,7 @@ export default function RoleCreateUpdate() {
 		if (idRole) {
 			dispatch(getRoleByIdRequest(idRole));
 		}
-		return () => {
-			resetField("name");
-			resetField("permissionsIds");
-		};
+		return () => reset();
 	}, []);
 
 	useEffect(() => {
@@ -96,11 +92,11 @@ export default function RoleCreateUpdate() {
 		handleSubmit,
 		control,
 		formState: { errors, defaultValues },
-		resetField,
+		// resetField,
 		setValue,
 		getValues,
 		// trigger,
-		// reset,
+		reset,
 		// watch,
 	} = useForm({
 		resolver: yupResolver(schema),

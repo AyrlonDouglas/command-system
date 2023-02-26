@@ -148,10 +148,16 @@ export class RoleService {
       throw new HttpException('Companhia não existe', HttpStatus.PRECONDITION_FAILED);
     }
 
-    const role = await Role.findOne({ where: { id } });
-
+    const role = await Role.findOne({ where: { id }, relations: { employees: true } });
     if (!role) {
       throw new HttpException('Função não existe', HttpStatus.PRECONDITION_FAILED);
+    }
+
+    if (role.employees.length > 0) {
+      throw new HttpException(
+        'Você não pode excluir uma função em uso por algum colaborador!',
+        HttpStatus.PRECONDITION_FAILED,
+      );
     }
 
     return await role.remove();

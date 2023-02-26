@@ -35,8 +35,8 @@ export class ItemController {
     return this.itemService.update(+id, updateItemDto, employeeLogged);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.itemService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string, @EmployeeLogged() employeeLogged: Employee) {
+    return this.itemService.remove(+id, employeeLogged);
+  }
 }

@@ -26,8 +26,8 @@ export const SecondaryMenu: SecondaryMenuProps[] = [
 		permissionsToAcces: [{ entity: "CATEGORY", action: "VIEW" }],
 	},
 	{
-		path: routesApp.settings.main,
-		title: "Configurações",
+		path: routesApp.settings.account,
+		title: "Conta",
 		section: "Configurações",
 		permissionsToAcces: [],
 	},

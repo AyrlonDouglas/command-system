@@ -14,16 +14,16 @@ import { getRolesRequest } from "../../../store/ducks/roles/slice";
 export default function EmployeesList() {
 	const employeesState = useAppSelector((state) => state.employees);
 	const [search, setSearch] = useState("");
-	const [openCreateEmployee, setOpenCreateEmployee] = useState(false);
-	const [openUpdateEmployee, setOpenUpdateEmployee] = useState(false);
-	const [employeeId, setEmployeeId] = useState(-1);
+	const [openCreateEditEmployee, setOpenCreateEditEmployee] = useState(false);
+	const [employeeId, setEmployeeId] = useState<null | number>(null);
 
 	const dispatch = useAppDispatch();
 
-	const handleCloseCreate = () => setOpenCreateEmployee(false);
-	const handleOpenCreate = () => setOpenCreateEmployee(true);
-	const handleCloseUpdate = () => setOpenUpdateEmployee(false);
-	const handleOpenUpdate = () => setOpenUpdateEmployee(true);
+	const handleCloseCreateEdit = () => {
+		setEmployeeId(null);
+		setOpenCreateEditEmployee(false);
+	};
+	const handleOpenCreateEdit = () => setOpenCreateEditEmployee(true);
 
 	const handleSearch = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
 		setSearch(e.target.value);
@@ -37,7 +37,7 @@ export default function EmployeesList() {
 		return (
 			employee.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			employee.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			employee.role.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			employee.role?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			employee.employeeCode.toString().toLowerCase().includes(searchTerm.toLowerCase())
 		);
 	};
@@ -67,7 +67,7 @@ export default function EmployeesList() {
 						<InputSearch onChange={handleSearch} value={search} />
 					</Grid>
 					<Grid xs={12} sm={6}>
-						<Button variant="contained" onClick={handleOpenCreate} fullWidth>
+						<Button variant="contained" onClick={handleOpenCreateEdit} fullWidth>
 							Adicionar profissional
 						</Button>
 					</Grid>
@@ -77,26 +77,24 @@ export default function EmployeesList() {
 					<ListEmpty
 						dataList={employeesState.data}
 						label="Profissionais"
-						action={handleOpenCreate}
+						action={handleOpenCreateEdit}
 					/>
 					{employeesState.data.filter(handleSearchItems).map((employee) => (
 						<Grid xs={12} sm={6} md={4} key={employee.id}>
 							<CardEmployee
 								employee={employee}
 								onClick={() => {
-									handleOpenUpdate();
 									setEmployeeId(employee.id);
+									handleOpenCreateEdit();
 								}}
 							/>
 						</Grid>
 					))}
 				</Grid>
 			</Grid>
-			<DialogCreateOrUpdateEmployee open={openCreateEmployee} handleClose={handleCloseCreate} />
 			<DialogCreateOrUpdateEmployee
-				open={openUpdateEmployee}
-				handleClose={handleCloseUpdate}
-				canEdit
+				open={openCreateEditEmployee}
+				handleClose={handleCloseCreateEdit}
 				EmployeeId={employeeId}
 			/>
 		</>

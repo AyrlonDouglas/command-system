@@ -35,8 +35,7 @@ const schema = yup.object().shape({
 interface DialogCreateOrEditEmployeeProps {
 	open: boolean;
 	handleClose: () => void;
-	canEdit?: boolean;
-	EmployeeId?: number;
+	EmployeeId?: number | null;
 }
 
 interface CreateOrEditEmployeeProps {
@@ -51,7 +50,6 @@ export default function DialogCreateOrUpdateEmployee({
 	handleClose,
 	open,
 	EmployeeId,
-	canEdit,
 }: DialogCreateOrEditEmployeeProps) {
 	const dispatch = useAppDispatch();
 	const employeesState = useAppSelector((state) => state.employees);
@@ -59,13 +57,15 @@ export default function DialogCreateOrUpdateEmployee({
 
 	const employeeFiltered = employeesState.data.filter((employee) => employee.id === EmployeeId)[0];
 	useEffect(() => {
-		if (canEdit && open) {
+		if (EmployeeId && open) {
 			setValue("firstName", employeeFiltered.firstName);
 			setValue("lastName", employeeFiltered.lastName);
 			setValue("email", employeeFiltered.email);
-			setValue("role", employeeFiltered.role.name);
+			setValue("role", employeeFiltered?.role?.name);
 			setValue("isActive", employeeFiltered.isActive);
 		}
+
+		return () => reset();
 	}, [open]);
 	const {
 		handleSubmit,
@@ -92,7 +92,7 @@ export default function DialogCreateOrUpdateEmployee({
 	const handleEmployee = (data: CreateOrEditEmployeeProps) => {
 		const roleId = rolesState.data.filter((role) => role.name === data.role)[0].id;
 
-		if (!canEdit) {
+		if (!EmployeeId) {
 			delete data.role;
 
 			dispatch(createEmployeeRequest({ ...data, roleId }));
@@ -100,7 +100,7 @@ export default function DialogCreateOrUpdateEmployee({
 			return;
 		}
 
-		if (canEdit && dataChanged(data)) {
+		if (EmployeeId && dataChanged(data)) {
 			delete data.role;
 
 			dispatch(updateEmployeeRequest({ ...data, roleId, id: EmployeeId }));
@@ -108,7 +108,7 @@ export default function DialogCreateOrUpdateEmployee({
 			return;
 		}
 
-		if (canEdit && !dataChanged(data)) {
+		if (EmployeeId && !dataChanged(data)) {
 			toast.warning("Algum dado deve ser mudado para atualizar.");
 		}
 	};
@@ -119,7 +119,7 @@ export default function DialogCreateOrUpdateEmployee({
 			data.lastName !== employeeFiltered.lastName ||
 			data.email !== employeeFiltered.email ||
 			data.isActive !== employeeFiltered.isActive ||
-			data.role !== employeeFiltered.role.name
+			data.role !== employeeFiltered?.role?.name
 		);
 	};
 
@@ -131,7 +131,7 @@ export default function DialogCreateOrUpdateEmployee({
 	return (
 		<Dialog open={open} onClose={onClose}>
 			<form onSubmit={handleSubmit(handleEmployee)}>
-				<DialogTitle>{canEdit ? "Editar profissional" : "Adicionar profissional"}</DialogTitle>
+				<DialogTitle>{EmployeeId ? "Editar profissional" : "Adicionar profissional"}</DialogTitle>
 				<DialogContent>
 					<Grid container spacing={2} mt={1}>
 						<Grid xs={12}>
@@ -170,7 +170,7 @@ export default function DialogCreateOrUpdateEmployee({
 				<DialogActions>
 					<Button onClick={onClose}>Cancelar</Button>
 					<Button type="submit" disabled={Object.keys(errors).length !== 0} variant="contained">
-						{canEdit ? "Atualizar" : "Adicionar"}
+						{EmployeeId ? "Atualizar" : "Adicionar"}
 					</Button>
 				</DialogActions>
 			</form>

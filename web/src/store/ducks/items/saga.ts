@@ -11,6 +11,8 @@ import {
 	updateItemRequest,
 	updateItemSuccess,
 	genericItemFail,
+	removeItemRequest,
+	removeItemSuccess,
 } from "./slice";
 
 function* getItems() {
@@ -66,8 +68,27 @@ function* updateItem({ payload }: CreateOrUpdateItemProps) {
 	}
 }
 
+function* removeItem({ payload }: { payload: number; type: string }) {
+	try {
+		const response: AxiosResponse = yield call(api.delete, `/item/${payload}`);
+
+		toast.success(`Item ${response.data.name} removido`);
+
+		yield put(removeItemSuccess(response.data));
+	} catch (error) {
+		if (isAxiosError(error)) {
+			toast.error(error.response?.data.message);
+		} else {
+			toast.error("Não foi possível remover item");
+		}
+
+		yield put(genericItemFail());
+	}
+}
+
 export default function* itemsSaga() {
 	yield takeLatest(getItemsRequest().type, getItems);
 	yield takeLatest(createItemRequest("").type, createItem);
 	yield takeLatest(updateItemRequest("").type, updateItem);
+	yield takeLatest(removeItemRequest("").type, removeItem);
 }

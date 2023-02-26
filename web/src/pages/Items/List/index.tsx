@@ -13,7 +13,6 @@ import { getItemsRequest } from "../../../store/ducks/items/slice";
 import { getCategoriesRequest } from "../../../store/ducks/categories/slice";
 //IMAGE
 import ImageDefault from "../../../assets/images/cutlery.jpg";
-import DialogViewCategories from "../../../components/Dialog/ViewCategories";
 import ListEmpty from "../../../components/common/listEmpty";
 import { itemsDataProps } from "../../../helper/interfaces/Item";
 // interface

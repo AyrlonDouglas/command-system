@@ -1,29 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 //MUI
 import {
 	Button,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
-	TextField,
 	Unstable_Grid2 as Grid,
-	Autocomplete,
-	CircularProgress,
-	Switch,
-	FormControlLabel,
 } from "@mui/material";
+//componentes
+import DialogRemovalConfirmation from "../RemovalConfirmation";
 
 // Redux
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
 	createCategoryRequest,
+	removeCategoryRequest,
 	updateCategoryRequest,
 } from "../../../store/ducks/categories/slice";
 // style
 import { DialogStyled as Dialog } from "./styles";
 
 //VALIDADOR
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import InputTextFieldControlled from "../../Input/TextFieldControlled";
@@ -48,6 +46,7 @@ export default function DialogCreateOrEditCategory({
 	categoryId,
 	open,
 }: DialogCreateOrEditCategoryProps) {
+	const [openRemoveConfirm, setOpenRemoveConfirm] = useState(false);
 	const dispatch = useAppDispatch();
 	const categoriesState = useAppSelector((state) => state.categories);
 	const categoryFiltered = categoriesState.data.filter((category) => category.id === categoryId)[0];
@@ -56,7 +55,7 @@ export default function DialogCreateOrEditCategory({
 		if (categoryId && open) {
 			setValue("name", categoryFiltered.name);
 		}
-		return () => resetField("name");
+		return () => reset();
 	}, [open]);
 
 	const {
@@ -64,7 +63,7 @@ export default function DialogCreateOrEditCategory({
 		control,
 		getValues,
 		formState: { errors },
-		resetField,
+		// resetField,
 		setValue,
 		// trigger,
 		// watch,
@@ -103,6 +102,14 @@ export default function DialogCreateOrEditCategory({
 		reset();
 	};
 
+	const onCloseConfirmation = () => {
+		setOpenRemoveConfirm(false);
+	};
+	const onRemoveConfirmation = () => {
+		dispatch(removeCategoryRequest(categoryId));
+		onClose();
+	};
+
 	return (
 		<Dialog open={open} onClose={onClose}>
 			<form onSubmit={handleSubmit(handleCategory)}>
@@ -116,11 +123,26 @@ export default function DialogCreateOrEditCategory({
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={onClose}>Cancelar</Button>
+					{categoryId ? (
+						<Button color="error" variant="contained" onClick={() => setOpenRemoveConfirm(true)}>
+							Remover
+						</Button>
+					) : null}
+
 					<Button type="submit" disabled={Object.keys(errors).length !== 0} variant="contained">
 						{categoryId ? "Atualizar" : "Adicionar"}
 					</Button>
 				</DialogActions>
 			</form>
+			<DialogRemovalConfirmation
+				handleClose={onCloseConfirmation}
+				open={openRemoveConfirm}
+				title={`Tem certeza que quer remover a categoria ${getValues("name")}?`}
+				subtitle={
+					"ESSA AÇÃO REMOVERÁ EM CONJUNTO TODOS OS ITEMS CADASTRADOS NESSA CATEGORIA DE FORMA IRREVERSÍVEL!"
+				}
+				onConfirmation={onRemoveConfirmation}
+			/>
 		</Dialog>
 	);
 }

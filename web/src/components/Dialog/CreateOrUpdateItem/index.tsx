@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 //MUI
 import {
 	Button,
@@ -14,7 +14,11 @@ import {
 	FormControlLabel,
 } from "@mui/material";
 // REDUX E SAGA
-import { createItemRequest, updateItemRequest } from "../../../store/ducks/items/slice";
+import {
+	createItemRequest,
+	removeItemRequest,
+	updateItemRequest,
+} from "../../../store/ducks/items/slice";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 
 //VALIDADOR
@@ -22,6 +26,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { toast } from "react-toastify";
+import DialogRemovalConfirmation from "../RemovalConfirmation";
 
 //IMAGE
 
@@ -59,6 +64,7 @@ export default function DialogCreateOrUpdateItem({
 	idItem,
 	open,
 }: DialogCreateOrEditItemProps) {
+	const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
 	const categoriesState = useAppSelector((state) => state.categories);
 	const itemsState = useAppSelector((state) => state.items);
 
@@ -75,13 +81,7 @@ export default function DialogCreateOrUpdateItem({
 			setValue("price", itemFiltered.price);
 		}
 
-		return () => {
-			resetField("avaliable");
-			resetField("category");
-			resetField("description");
-			resetField("name");
-			resetField("price");
-		};
+		return () => reset();
 	}, [open]);
 
 	const {
@@ -89,7 +89,7 @@ export default function DialogCreateOrUpdateItem({
 		control,
 		getValues,
 		formState: { errors },
-		resetField,
+		// resetField,
 		setValue,
 		// trigger,
 		// watch,
@@ -143,7 +143,14 @@ export default function DialogCreateOrUpdateItem({
 		handleClose();
 		reset();
 	};
-
+	const onCloseDeleteConfirmation = () => {
+		setOpenDeleteConfirmation(false);
+	};
+	const onConfirmationDelete = () => {
+		dispatch(removeItemRequest(idItem));
+		setOpenDeleteConfirmation(false);
+		onClose();
+	};
 	return (
 		<Dialog open={open} onClose={onClose}>
 			<form onSubmit={handleSubmit(handleItem)}>
@@ -274,11 +281,27 @@ export default function DialogCreateOrUpdateItem({
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={onClose}>Cancelar</Button>
+					{idItem ? (
+						<Button
+							onClick={() => setOpenDeleteConfirmation(true)}
+							variant="contained"
+							color="error"
+						>
+							Remover
+						</Button>
+					) : null}
 					<Button type="submit" disabled={Object.keys(errors).length !== 0} variant="contained">
 						{idItem ? "Atualizar" : "Adicionar"}
 					</Button>
 				</DialogActions>
 			</form>
+			<DialogRemovalConfirmation
+				open={openDeleteConfirmation}
+				handleClose={onCloseDeleteConfirmation}
+				title={`Tem certeza que deseja remover o item ${getValues("name")}?`}
+				subtitle="ESSA AÇÃO É IRREVERSÍVEL!"
+				onConfirmation={onConfirmationDelete}
+			/>
 		</Dialog>
 	);
 }

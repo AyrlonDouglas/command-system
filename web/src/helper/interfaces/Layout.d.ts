@@ -37,4 +37,5 @@ export type SecondaryMenuTitleType =
 	| "Clientes"
 	| "Configurações"
 	| "Funções"
-	| "Funções";
+	| "Funções"
+	| "Conta";

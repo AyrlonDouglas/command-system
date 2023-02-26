@@ -51,7 +51,9 @@ export default function CardEmployee({ canEdit, onClick, employee }: CardEmploye
 							</Typography>
 						</Grid>
 						<Grid>
-							<Typography variant="body2">{`Função: ${employee.role.name}`}</Typography>
+							<Typography variant="body2">{`Função: ${
+								employee?.role?.name ?? "-----"
+							}`}</Typography>
 						</Grid>
 					</Grid>
 				</GridContainer>

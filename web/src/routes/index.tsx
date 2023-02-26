@@ -13,6 +13,8 @@ import Login from "../pages/Login";
 import RoleList from "../pages/Role/list";
 import RoleCreateUpdate from "../pages/Role/createUpdate";
 import CategoryList from "../pages/Category/List";
+import Settings from "../pages/Settings";
+import ChangePassword from "../pages/Settings/ChangePassword";
 
 export default function SwitchRoutes() {
 	const token = localStorage.getItem(LOCAL.token);
@@ -80,6 +82,22 @@ export default function SwitchRoutes() {
 				element={
 					<ProtectedRoute>
 						<CategoryList />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path={routesApp.settings.account}
+				element={
+					<ProtectedRoute>
+						<Settings />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path={routesApp.settings.changePassword}
+				element={
+					<ProtectedRoute>
+						<ChangePassword />
 					</ProtectedRoute>
 				}
 			/>

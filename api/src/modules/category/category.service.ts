@@ -62,7 +62,23 @@ export class CategoryService {
     return new CategoryDto(categoryData);
   }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} category`;
-  // }
+  async remove(id: number, employeeLogged: Employee) {
+    const category = await Category.findOne({
+      where: { id, company: { id: employeeLogged.company.id } },
+      relations: { items: true },
+    });
+
+    if (!category) {
+      throw new HttpException('Categoria não existe', HttpStatus.PRECONDITION_REQUIRED);
+    }
+
+    if (category.items.length > 0) {
+      throw new HttpException(
+        'Você não pode excluir uma categoria em uso por algum item!',
+        HttpStatus.PRECONDITION_FAILED,
+      );
+    }
+
+    return await category.remove();
+  }
 }

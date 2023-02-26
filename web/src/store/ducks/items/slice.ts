@@ -41,6 +41,13 @@ const itemsSlice = createSlice({
 			state.loading = false;
 			state.error = true;
 		},
+		removeItemRequest: (state, action) => {
+			state.loading = true;
+		},
+		removeItemSuccess: (state, action) => {
+			state.loading = false;
+			state.data = state.data.filter((item) => item.name !== action.payload.name);
+		},
 	},
 });
 
@@ -52,6 +59,8 @@ export const {
 	updateItemRequest,
 	updateItemSuccess,
 	genericItemFail,
+	removeItemRequest,
+	removeItemSuccess,
 } = itemsSlice.actions;
 
 export default itemsSlice.reducer;

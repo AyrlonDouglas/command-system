@@ -23,3 +23,12 @@ export interface CreateOrUpdateEmployeeProps {
 	};
 	type: string;
 }
+
+export interface ChangePassProps {
+	payload: {
+		oldPass: string;
+		newPass: string;
+		newPassConfirm?: string;
+	};
+	type: string;
+}

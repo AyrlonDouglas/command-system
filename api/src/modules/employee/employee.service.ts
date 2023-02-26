@@ -5,6 +5,8 @@ import { EmployeeDto } from './dto/employee.dto';
 import { Employee } from './entities/employee.entity';
 import { Company } from '../company/entities/company.entity';
 import { Role } from '../role/entities/role.entity';
+import { ChangePassDto } from './dto/change-pass.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class EmployeeService {
@@ -73,6 +75,22 @@ export class EmployeeService {
     await Employee.update({ id }, { ...updateEmployeeDto, role });
 
     return this.findOne(id, employeeLogged);
+  }
+
+  async changePass(changePass: ChangePassDto, employeeLogged: Employee) {
+    const employee = await Employee.findOne({ where: { id: employeeLogged.id } });
+    console.log('entrou', changePass);
+    const matchPassword = await bcrypt.compare(changePass.oldPass, employee.password);
+
+    if (!matchPassword) {
+      throw new HttpException('Senha errada', HttpStatus.PRECONDITION_FAILED);
+    }
+
+    employee.password = changePass.newPass;
+
+    const employyeData = await employee.save();
+
+    return new EmployeeDto(employyeData);
   }
 
   // remove(id: number) {
