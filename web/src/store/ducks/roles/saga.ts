@@ -19,6 +19,7 @@ import {
 	removeRoleSuccess,
 	genericRoleFail,
 } from "./slice";
+import { recoverLoginRequest } from "../login/slice";
 import { navigateSetter } from "../../../routes/NavigateSetter";
 
 function* getRoles() {
@@ -97,6 +98,7 @@ function* updateRole({ payload }: CreateUpdateRolesProps) {
 
 		navigateSetter("/roles");
 
+		yield put(recoverLoginRequest());
 		yield put(updateRoleSuccess(response.data));
 	} catch (error) {
 		if (isAxiosError(error)) {

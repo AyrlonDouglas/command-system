@@ -1,11 +1,18 @@
 import { SecondaryMenuProps } from "../interfaces/Layout";
 import { routesApp } from "./routes";
+
 export const SecondaryMenu: SecondaryMenuProps[] = [
 	{
-		path: routesApp.orders.list,
+		path: routesApp.orders.command.list,
 		title: "Comandas",
-		section: "Comandas",
+		section: "Pedidos",
 		permissionsToAcces: [{ entity: "COMMAND", action: "VIEW" }],
+	},
+	{
+		path: routesApp.orders.list,
+		title: "Pedidos",
+		section: "Pedidos",
+		permissionsToAcces: [{ entity: "ORDER", action: "VIEW" }],
 	},
 	{
 		path: routesApp.employees.list,

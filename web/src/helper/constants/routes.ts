@@ -1,5 +1,5 @@
 export const routesApp = {
-	orders: { list: "/orders" },
+	orders: { list: "/orders", command: { list: "/order/command" } },
 	employees: { list: "/employees" },
 	items: { list: "/items" },
 	category: { list: "/category" },

@@ -15,7 +15,7 @@ import RoleCreateUpdate from "../pages/Role/createUpdate";
 import CategoryList from "../pages/Category/List";
 import Settings from "../pages/Settings";
 import ChangePassword from "../pages/Settings/ChangePassword";
-
+import CommandList from "../pages/Command/List";
 export default function SwitchRoutes() {
 	const token = localStorage.getItem(LOCAL.token);
 
@@ -29,6 +29,8 @@ export default function SwitchRoutes() {
 				path={routesApp.initial.login}
 				element={token ? <Navigate to={routesApp.orders.list} /> : <Login />}
 			/>
+
+			{/* orders */}
 			<Route
 				path={routesApp.orders.list}
 				element={
@@ -38,6 +40,16 @@ export default function SwitchRoutes() {
 				}
 			/>
 			<Route
+				path={routesApp.orders.command.list}
+				element={
+					<ProtectedRoute>
+						<CommandList />
+					</ProtectedRoute>
+				}
+			/>
+
+			{/* items */}
+			<Route
 				path={routesApp.items.list}
 				element={
 					<ProtectedRoute>
@@ -45,6 +57,8 @@ export default function SwitchRoutes() {
 					</ProtectedRoute>
 				}
 			/>
+
+			{/* employee */}
 			<Route
 				path={routesApp.employees.list}
 				element={
@@ -53,6 +67,8 @@ export default function SwitchRoutes() {
 					</ProtectedRoute>
 				}
 			/>
+
+			{/* roles */}
 			<Route
 				path={routesApp.roles.list}
 				element={
@@ -77,6 +93,8 @@ export default function SwitchRoutes() {
 					</ProtectedRoute>
 				}
 			/>
+
+			{/* category */}
 			<Route
 				path={routesApp.category.list}
 				element={
@@ -85,6 +103,8 @@ export default function SwitchRoutes() {
 					</ProtectedRoute>
 				}
 			/>
+
+			{/* settings */}
 			<Route
 				path={routesApp.settings.account}
 				element={

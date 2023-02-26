@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 // MUI
@@ -18,7 +18,7 @@ import {
 // components
 import DialogLogout from "../Dialog/Logout";
 // icons
-import DashboardIcon from "@mui/icons-material/Dashboard";
+// import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsApplicationsIcon from "@mui/icons-material/SettingsApplications";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -50,7 +50,6 @@ import { PermissionProps } from "../../helper/interfaces/Permission";
 import { Drawer, DrawerHeader } from "./styles";
 
 const MainMenu: MainMenuProps[] = [
-	{ title: "Comandas", icon: <DashboardIcon color="primary" /> },
 	{ title: "Pedidos", icon: <SoupKitchenIcon color="primary" /> },
 	{ title: "Cardápio", icon: <MenuBookIcon color="primary" /> },
 	{ title: "Usuários", icon: <HailIcon color="primary" /> },
@@ -72,9 +71,12 @@ function MiniDrawer({ children }: MiniDrawerProps) {
 	const token = localStorage.getItem(LOCAL.token);
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
-	const permissionsLogin = JSON.parse(
-		localStorage.getItem(LOCAL.permissions) || "[]"
-	) as PermissionProps[];
+	const [permissionsLogin, setPermissionsLogin] = useState([]);
+	const permissionsInStorage = localStorage.getItem(LOCAL.permissions);
+
+	useEffect(() => {
+		setPermissionsLogin(JSON.parse(permissionsInStorage || "[]"));
+	}, [permissionsInStorage]);
 
 	const onFixedMenu = () => {
 		dispatch(setPinnedMenu(!layoutState.config.menu.isMenuPinned));

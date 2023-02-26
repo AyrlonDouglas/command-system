@@ -132,6 +132,12 @@ export default function RoleCreateUpdate() {
 			}
 		});
 
+		group.forEach((grouItem) => {
+			const order = ["VIEW", "CREATE", "EDIT", "REMOVE"];
+
+			return grouItem?.items.sort((a, b) => order.indexOf(a.action) - order.indexOf(b.action));
+		});
+
 		return group;
 	};
 

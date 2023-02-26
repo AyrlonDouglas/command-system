@@ -40,6 +40,9 @@ function* login({ payload: { credentials, navigate } }: LoginProps) {
 function* recoveryDataLogin() {
 	try {
 		const response: AxiosResponse = yield call(api.get, "/auth/login");
+
+		localStorage.setItem(LOCAL.permissions, JSON.stringify(response.data.permissions));
+
 		yield put(recoverLoginSuccess(response.data));
 	} catch (error) {
 		if (isAxiosError(error)) {

@@ -21,7 +21,6 @@ export interface SecondaryMenuProps {
 }
 
 export type MainMenuTitleType =
-	| "Comandas"
 	| "Pedidos"
 	| "Cardápio"
 	| "Usuários"
@@ -36,6 +35,5 @@ export type SecondaryMenuTitleType =
 	| "Categorias"
 	| "Clientes"
 	| "Configurações"
-	| "Funções"
 	| "Funções"
 	| "Conta";
