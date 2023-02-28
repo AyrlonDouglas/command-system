@@ -13,6 +13,12 @@ import {
 	Switch,
 	FormControlLabel,
 } from "@mui/material";
+
+//COMPONENTS
+import InputTextFieldControlled from "../../Input/TextFieldControlled";
+import InputSelectControlled from "../../Input/SelectControlled";
+import InputSwitchControlled from "../../Input/SwitchControlled";
+
 // REDUX E SAGA
 import {
 	createItemRequest,
@@ -88,7 +94,7 @@ export default function DialogCreateOrUpdateItem({
 		handleSubmit,
 		control,
 		getValues,
-		formState: { errors },
+		formState: { errors, defaultValues },
 		// resetField,
 		setValue,
 		// trigger,
@@ -97,24 +103,26 @@ export default function DialogCreateOrUpdateItem({
 	} = useForm({
 		resolver: yupResolver(schema),
 		defaultValues: {
-			name: undefined as string | undefined,
-			description: undefined as string | undefined,
-			price: undefined as number | undefined,
-			imagePath: undefined as string | undefined,
+			name: "" as string,
+			description: "" as string,
+			price: "" as number | string,
+			imagePath: "" as string,
 			avaliable: true,
 			category: null as { id: number; name: string } | null,
 		},
 	});
 
-	const handleItem = (data: CreateOrEditItemProps) => {
+	const handleItem = (data: typeof defaultValues) => {
 		if (idItem && !dataChanged()) {
 			toast.warning("Algum dado deve ser mudado para atualizar.");
 			return;
 		}
 
+		if (!data?.category) return;
+
 		const categoryId = data.category?.id;
 
-		delete data.category;
+		// delete data.category;
 
 		if (!idItem) {
 			dispatch(createItemRequest({ ...data, categoryId }));
@@ -158,61 +166,17 @@ export default function DialogCreateOrUpdateItem({
 				<DialogContent>
 					<Grid container spacing={2} mt={1}>
 						<Grid xs={12}>
-							<Controller
-								name="name"
+							<InputTextFieldControlled control={control} label="Nome do item" nameField="name" />
+						</Grid>
+						<Grid xs={12}>
+							<InputTextFieldControlled
 								control={control}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										id="name"
-										label="Nome do item"
-										name="name"
-										variant="outlined"
-										size="small"
-										error={!!fieldState.error?.message}
-										helperText={fieldState.error?.message}
-										fullWidth
-									/>
-								)}
+								label="Descrição do item"
+								nameField="description"
 							/>
 						</Grid>
 						<Grid xs={12}>
-							<Controller
-								name="description"
-								control={control}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										id="description"
-										label="Descrição do item"
-										name="description"
-										variant="outlined"
-										size="small"
-										error={!!fieldState.error?.message}
-										helperText={fieldState.error?.message}
-										fullWidth
-									/>
-								)}
-							/>
-						</Grid>
-						<Grid xs={12}>
-							<Controller
-								name="price"
-								control={control}
-								render={({ field, fieldState }) => (
-									<TextField
-										{...field}
-										id="price"
-										label="Preço do item"
-										name="price"
-										variant="outlined"
-										size="small"
-										error={!!fieldState.error?.message}
-										helperText={fieldState.error?.message}
-										fullWidth
-									/>
-								)}
-							/>
+							<InputTextFieldControlled control={control} label="Preço do item" nameField="price" />
 						</Grid>
 						<Grid xs={12}>
 							<Controller
@@ -228,8 +192,9 @@ export default function DialogCreateOrUpdateItem({
 										id="category"
 										options={categoriesState.data}
 										getOptionLabel={(option) => option.name}
-										noOptionsText="Não existe opções"
+										noOptionsText={"Não existe categorias cadastradas"}
 										loadingText={"Carregando..."}
+										loading={categoriesState.loading}
 										isOptionEqualToValue={(option, value) => {
 											return option.id === value.id;
 										}}
@@ -257,24 +222,10 @@ export default function DialogCreateOrUpdateItem({
 							/>
 						</Grid>
 						<Grid xs={12} sx={{ display: "flex", alignItems: "center" }}>
-							<Controller
-								name="avaliable"
+							<InputSwitchControlled
 								control={control}
-								render={({ field: { onChange, value } }) => (
-									<FormControlLabel
-										control={
-											<Switch
-												name="avaliable"
-												id="avaliable"
-												onChange={(event, item) => {
-													onChange(item);
-												}}
-												checked={value}
-											/>
-										}
-										label="Item disponível ?"
-									/>
-								)}
+								label="Item disponível ?"
+								nameField="avaliable"
 							/>
 						</Grid>
 					</Grid>

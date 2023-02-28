@@ -9,10 +9,7 @@ import { Command } from './entities/command.entity';
 
 @Injectable()
 export class CommandService {
-  async create(
-    createCommandDto: CreateCommandDto,
-    employeeLogged: Employee,
-  ): Promise<CommandDto> {
+  async create(createCommandDto: CreateCommandDto, employeeLogged: Employee): Promise<CommandDto> {
     const command = new Command();
 
     command.requesterCPF = createCommandDto.requesterCPF;
@@ -31,8 +28,12 @@ export class CommandService {
       }
       command.table = table;
     }
+    const commandSaved = await command.save();
 
-    const commandData = await command.save();
+    const commandData = await Command.findOne({
+      where: { id: commandSaved.id },
+      relations: { table: true },
+    });
 
     return new CommandDto(commandData);
   }
@@ -40,7 +41,7 @@ export class CommandService {
   async findAll(employeeLogged: Employee): Promise<CommandDto[]> {
     const commands = await Command.find({
       where: { employee: { company: { id: employeeLogged.company.id } } },
-      relations: { orders: { orderItems: true } },
+      relations: { orders: { orderItems: true }, table: true },
     });
 
     return commands.map((command) => new CommandDto(command));

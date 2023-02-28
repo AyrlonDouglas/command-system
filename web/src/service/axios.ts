@@ -1,7 +1,6 @@
 import axios from "axios";
 
 import { LOCAL } from "../helper/constants/localStorage";
-import { redirect } from "react-router-dom";
 import { navigateSetter } from "../routes/NavigateSetter";
 import { routesApp } from "../helper/constants/routes";
 

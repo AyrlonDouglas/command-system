@@ -5,9 +5,13 @@ import { MainMenuTitleType, SecondaryMenuTitleType } from "../../../helper/inter
 const LayoutSlice = createSlice({
 	name: "layout",
 	initialState: {
-		data: [] as itemsDataProps[],
+		data: [],
 		loading: false,
 		error: false,
+		modals: {
+			primary: { isOpen: false },
+			secondary: { isOpen: false },
+		},
 		config: {
 			menu: {
 				menuSelected: "" as MainMenuTitleType,
@@ -30,10 +34,22 @@ const LayoutSlice = createSlice({
 		setMenuOpen: (state, action) => {
 			state.config.menu.menuOpen = action.payload;
 		},
+		setModalPrimaryOpen: (state, action) => {
+			state.modals.primary.isOpen = action.payload;
+		},
+		setModalSecondaryOpen: (state, action) => {
+			state.modals.secondary.isOpen = action.payload;
+		},
 	},
 });
 
-export const { setMenuSelected, setSubMenuSelected, setPinnedMenu, setMenuOpen } =
-	LayoutSlice.actions;
+export const {
+	setMenuSelected,
+	setSubMenuSelected,
+	setPinnedMenu,
+	setMenuOpen,
+	setModalPrimaryOpen,
+	setModalSecondaryOpen,
+} = LayoutSlice.actions;
 
 export default LayoutSlice.reducer;

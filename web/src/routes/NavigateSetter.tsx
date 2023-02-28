@@ -1,4 +1,4 @@
-import { useNavigate, NavigateFunction, To, NavigateOptions } from "react-router-dom";
+import { useNavigate, NavigateFunction } from "react-router-dom";
 
 export let navigateSetter = {} as NavigateFunction;
 

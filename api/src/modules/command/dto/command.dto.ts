@@ -12,7 +12,7 @@ export class CommandDto {
 
   readonly orders: Order[];
 
-  readonly requesterCpf: number;
+  readonly requesterCPF: number;
 
   readonly requesterName: string;
 
@@ -24,13 +24,11 @@ export class CommandDto {
     this.id = command.id;
     this.employee = command.employee;
     this.orders = command.orders;
-    this.requesterCpf = command.requesterCPF;
+    this.requesterCPF = command.requesterCPF;
     this.requesterName = command.requesterName;
     this.isActive = command.isActive;
-    this.totalCost = command?.orders?.reduce(
-      (prev, current) => prev + current.amount,
-      0,
-    );
+    this.table = command.table;
+    this.totalCost = command?.orders?.reduce((prev, current) => prev + current.amount, 0) || 0;
     if (command.table) {
       this.table = command.table;
     }
