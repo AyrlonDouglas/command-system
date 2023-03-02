@@ -27,7 +27,6 @@ export default function CommandList() {
 	useEffect(() => {
 		dispatch(getCommandsRequest());
 	}, []);
-	console.log("commandState", commandState);
 
 	const handleSearch = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
 		setSearch(e.target.value);
@@ -41,6 +40,16 @@ export default function CommandList() {
 
 	const handleClose = () => {
 		dispatch(setModalPrimaryOpen(false));
+	};
+
+	const isMatchedBySearchTerm = (command: (typeof commandState.data)[0]) => {
+		const searchTerm = search;
+
+		return (
+			command.requesterCPF.toString().includes(searchTerm.toLowerCase()) ||
+			command.requesterName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			command?.table?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+		);
 	};
 
 	return (
@@ -80,7 +89,7 @@ export default function CommandList() {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{commandState.data.map((command) => (
+						{commandState.data.filter(isMatchedBySearchTerm).map((command) => (
 							<TableRow
 								onClick={() => handleOpen("edit", command.id)}
 								key={command.id}

@@ -6,10 +6,10 @@ import { ItemSubscriber } from 'src/modules/item/entities/item.entity';
 import { OrderSubscriber } from 'src/modules/order/entities/order.entity';
 import { PermissionSubscriber } from 'src/modules/permission/entities/permission.entity';
 import {
-  DataSource,
+  // DataSource,
   EntitySubscriberInterface,
   EventSubscriber,
-  LoadEvent,
+  // LoadEvent,
   MixedList,
 } from 'typeorm';
 
@@ -67,7 +67,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT),
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
       subscribers: subscribers,
       // logging: true,
       dropSchema: false, // SEMPRE DEIXAR FALSE EM PRODUÇÃO!!!

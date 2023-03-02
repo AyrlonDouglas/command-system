@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 import { Employee } from '../employee/entities/employee.entity';
@@ -20,10 +12,7 @@ export class CommandController {
   constructor(private readonly commandService: CommandService) {}
 
   @Post()
-  create(
-    @Body() createCommandDto: CreateCommandDto,
-    @EmployeeLogged() employeeLogged: Employee,
-  ) {
+  create(@Body() createCommandDto: CreateCommandDto, @EmployeeLogged() employeeLogged: Employee) {
     return this.commandService.create(createCommandDto, employeeLogged);
   }
 
@@ -32,18 +21,22 @@ export class CommandController {
     return this.commandService.findAll(employeeLogged);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.commandService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string, @EmployeeLogged() employeeLogged: Employee) {
+    return this.commandService.findOne(+id, employeeLogged);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateCommandDto: UpdateCommandDto) {
-  //   return this.commandService.update(+id, updateCommandDto);
-  // }
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateCommandDto: UpdateCommandDto,
+    @EmployeeLogged() employeeLogged: Employee,
+  ) {
+    return this.commandService.update(+id, updateCommandDto, employeeLogged);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.commandService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string, @EmployeeLogged() employeeLogged: Employee) {
+    return this.commandService.remove(+id, employeeLogged);
+  }
 }

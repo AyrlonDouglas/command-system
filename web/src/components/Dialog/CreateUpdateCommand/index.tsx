@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 //MUI
 import {
 	Button,
@@ -6,26 +6,23 @@ import {
 	DialogActions,
 	DialogContent,
 	DialogTitle,
-	TextField,
 	Unstable_Grid2 as Grid,
-	Autocomplete,
-	CircularProgress,
-	Switch,
-	FormControlLabel,
 } from "@mui/material";
 
 //COMPONENTS
 import InputTextFieldControlled from "../../Input/TextFieldControlled";
-import InputSelectControlled from "../../Input/SelectControlled";
-import InputSwitchControlled from "../../Input/SwitchControlled";
 
 // REDUX E SAGA
-import { createCommandRequest } from "../../../store/ducks/commands/slice";
+import {
+	createCommandRequest,
+	updateCommandRequest,
+	deleteCommandRequest,
+} from "../../../store/ducks/commands/slice";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setModalSecondaryOpen } from "../../../store/ducks/layout/slice";
 
 //VALIDADOR
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { toast } from "react-toastify";
@@ -59,6 +56,7 @@ export default function DialogCreateUpdateCommand({
 	const openDeleteConfirmation = useAppSelector((state) => state.layout.modals.secondary);
 
 	const commandFiltered = commandState.data.filter((command) => command.id === commandId)[0];
+
 	useEffect(() => {
 		if (commandId && open) {
 			setValue("requesterCPF", commandFiltered.requesterCPF);
@@ -94,16 +92,30 @@ export default function DialogCreateUpdateCommand({
 		dispatch(setModalSecondaryOpen(false));
 	};
 	const onConfirmationDelete = () => {
-		dispatch(setModalSecondaryOpen(false));
-		onClose();
+		dispatch(deleteCommandRequest(commandId));
 	};
 
 	const onSubmit = (data: typeof defaultValues) => {
-		console.log("submit", data);
+		const requesterCPF = Number(data?.requesterCPF);
 
 		if (!commandId) {
 			dispatch(createCommandRequest(data));
 		}
+
+		if (commandId && dataChanged(data)) {
+			dispatch(updateCommandRequest({ ...data, requesterCPF, id: commandId }));
+		}
+
+		if (!dataChanged(data)) {
+			toast.warning("Nenhum dado foi editado");
+		}
+	};
+
+	const dataChanged = (data: typeof defaultValues) => {
+		return (
+			commandFiltered.requesterCPF !== data?.requesterCPF ||
+			commandFiltered.requesterName !== data.requesterName
+		);
 	};
 
 	return (

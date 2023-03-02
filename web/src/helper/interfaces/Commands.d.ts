@@ -16,6 +16,7 @@ export interface CommandCreateActionProps {
 }
 
 export interface CommandCreateProps {
+	id?: number;
 	requesterCPF: number;
 	requesterName: string;
 	tableId?: number;

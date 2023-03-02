@@ -72,6 +72,6 @@ export class ItemService {
       throw new HttpException('Item não existe', HttpStatus.PRECONDITION_FAILED);
     }
 
-    return await item.remove();
+    return item.remove();
   }
 }
