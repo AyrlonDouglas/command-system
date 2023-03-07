@@ -89,10 +89,7 @@ export class CompanySubscriber implements EntitySubscriberInterface {
     });
 
     if (companyWithSameCNPJ) {
-      throw new HttpException(
-        'Já existe empresa com este CNPJ cadastrada.',
-        HttpStatus.CONFLICT,
-      );
+      throw new HttpException('Já existe empresa com este CNPJ cadastrada.', HttpStatus.CONFLICT);
     }
 
     const companyWithSameName = await event.manager.findOne(Company, {
@@ -100,10 +97,7 @@ export class CompanySubscriber implements EntitySubscriberInterface {
     });
 
     if (companyWithSameName) {
-      throw new HttpException(
-        'Já existe empresa com este nome cadastrada.',
-        HttpStatus.CONFLICT,
-      );
+      throw new HttpException('Já existe empresa com este nome cadastrada.', HttpStatus.CONFLICT);
     }
   }
 }
