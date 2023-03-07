@@ -11,6 +11,7 @@ import ListEmpty from "../../../components/common/listEmpty";
 import CardEmployee from "../../../components/Card/Employee";
 import DialogCreateOrUpdateEmployee from "../../../components/Dialog/CreateOrUpdateEmployee";
 import { getRolesRequest } from "../../../store/ducks/roles/slice";
+import Page from "../../../components/common/Layout/Page";
 export default function EmployeesList() {
 	const employeesState = useAppSelector((state) => state.employees);
 	const [search, setSearch] = useState("");
@@ -57,12 +58,10 @@ export default function EmployeesList() {
 
 	return (
 		<>
-			<Grid container>
-				<Grid xs={12}>
-					<PageTitle title="Profissionais" />
-				</Grid>
+			<Page.Page>
+				<Page.Title title="Profissionais" />
 
-				<Grid xs={12} container spacing={1} justifyContent={"space-between"}>
+				<Page.Content container spacing={1} justifyContent={"space-between"}>
 					<Grid xs={12} sm={6}>
 						<InputSearch onChange={handleSearch} value={search} />
 					</Grid>
@@ -71,9 +70,9 @@ export default function EmployeesList() {
 							Adicionar profissional
 						</Button>
 					</Grid>
-				</Grid>
+				</Page.Content>
 
-				<Grid xs={12} container spacing={1} sx={{ marginTop: "1rem" }}>
+				<Page.Content container spacing={1}>
 					<ListEmpty
 						dataList={employeesState.data}
 						label="Profissionais"
@@ -90,8 +89,8 @@ export default function EmployeesList() {
 							/>
 						</Grid>
 					))}
-				</Grid>
-			</Grid>
+				</Page.Content>
+			</Page.Page>
 			<DialogCreateOrUpdateEmployee
 				open={openCreateEditEmployee}
 				handleClose={handleCloseCreateEdit}

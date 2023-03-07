@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 //mui
-import { Button, Unstable_Grid2 as Grid } from "@mui/material";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import {
+	Button,
+	Unstable_Grid2 as Grid,
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableHead,
+	TableRow,
+	Paper,
+} from "@mui/material";
 //componentes
-import PageTitle from "../../../components/common/PageTitle";
 import InputSearch from "../../../components/Input/Search";
+import ListEmpty from "../../../components/common/listEmpty";
+import Page from "../../../components/common/Layout/Page";
 // Redux
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getCommandsRequest } from "../../../store/ducks/commands/slice";
@@ -53,12 +57,10 @@ export default function CommandList() {
 	};
 
 	return (
-		<Grid container spacing={1}>
-			<Grid xs={12}>
-				<PageTitle title="Comandas" />
-			</Grid>
+		<Page.Page>
+			<Page.Title title="Comandas" />
 
-			<Grid xs={12} container spacing={1} justifyContent={"space-between"}>
+			<Page.Content container spacing={1} justifyContent={"space-between"}>
 				<Grid xs={12} sm={5} md={4}>
 					<InputSearch onChange={handleSearch} value={search} />
 				</Grid>
@@ -67,57 +69,65 @@ export default function CommandList() {
 						Adicionar comanda
 					</Button>
 				</Grid>
-			</Grid>
+			</Page.Content>
 
-			<TableContainer component={Paper} sx={{ mt: 2 }}>
-				<Table>
-					<TableHead sx={{ background: (t) => t.palette.primary.light }}>
-						<TableRow
-							sx={{
-								"& th": {
-									fontWeight: 700,
-									padding: "8px 16px",
-									color: (t) => t.palette.common.white,
-								},
-							}}
-						>
-							<TableCell>Id</TableCell>
-							<TableCell>CPF</TableCell>
-							<TableCell align="left">Nome</TableCell>
-							<TableCell align="left">Mesa</TableCell>
-							<TableCell align="left">Custo total</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{commandState.data.filter(isMatchedBySearchTerm).map((command) => (
-							<TableRow
-								onClick={() => handleOpen("edit", command.id)}
-								key={command.id}
-								sx={{
-									"&:last-child td, &:last-child th": { border: 0 },
-									"&:hover": { background: (t) => t.palette.background.default, cursor: "pointer" },
-									"& th": { padding: "0 16px" },
-								}}
-							>
-								<TableCell component="th" scope="row">
-									{command.id}
-								</TableCell>
-								<TableCell component="th" scope="row">
-									{command.requesterCPF}
-								</TableCell>
-								<TableCell align="left">{command.requesterName}</TableCell>
-								<TableCell align="left">{command?.table?.name}</TableCell>
-								<TableCell align="left">{`R$ ${command.totalCost?.toFixed(2)}`}</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</TableContainer>
+			<Page.Content>
+				{commandState.data.length === 0 ? (
+					<ListEmpty
+						dataList={commandState.data}
+						label="Comandas"
+						action={() => handleOpen("create")}
+					/>
+				) : (
+					<TableContainer component={Paper}>
+						<Table size="small">
+							<TableHead>
+								<TableRow>
+									<TableCell>Id</TableCell>
+									<TableCell>CPF</TableCell>
+									<TableCell align="left">Nome</TableCell>
+									<TableCell align="left">Mesa</TableCell>
+									<TableCell align="left">Custo total</TableCell>
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								{commandState.data.filter(isMatchedBySearchTerm).map((command) => (
+									<TableRow
+										onClick={() => handleOpen("edit", command.id)}
+										key={command.id}
+										sx={{
+											// "&:last-child td, &:last-child th": { border: 0 },
+											// "&:hover": {
+											// 	background: (t) => t.palette.background.default,
+
+											// },
+											cursor: "pointer",
+											// "& th": { padding: "0 16px" },
+										}}
+										hover
+									>
+										<TableCell component="th" scope="row">
+											{command.id}
+										</TableCell>
+										<TableCell component="th" scope="row">
+											{command.requesterCPF}
+										</TableCell>
+										<TableCell align="left">{command.requesterName}</TableCell>
+										<TableCell align="left">{command?.table?.name}</TableCell>
+										<TableCell align="left">{`R$ ${command.totalCost?.toFixed(2)}`}</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</TableContainer>
+				)}
+			</Page.Content>
+
 			<DialogCreateUpdateCommand
 				open={openCreateEdit.isOpen}
 				commandId={commandId}
 				handleClose={handleClose}
 			/>
-		</Grid>
+		</Page.Page>
 	);
 }

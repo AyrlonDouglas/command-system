@@ -7,6 +7,7 @@ import PageTitle from "../../../components/common/PageTitle";
 import CardFood from "../../../components/Card/Food";
 import DialogCreateOrUpdateItem from "../../../components/Dialog/CreateOrUpdateItem";
 import InputSearch from "../../../components/Input/Search";
+import Page from "../../../components/common/Layout/Page";
 // REDUX E SAGA
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getItemsRequest } from "../../../store/ducks/items/slice";
@@ -85,12 +86,10 @@ export default function ItemsList() {
 	};
 	return (
 		<>
-			<Grid container>
-				<Grid xs={12}>
-					<PageTitle title="Cardápio" />
-				</Grid>
+			<Page.Page>
+				<Page.Title title="Cardápio" />
 
-				<Grid xs={12} container spacing={1} justifyContent={"space-between"}>
+				<Page.Content container spacing={1} justifyContent={"space-between"}>
 					<Grid xs={12} sm={5} md={4}>
 						<InputSearch
 							placeholder="comida mexicana etc"
@@ -107,11 +106,11 @@ export default function ItemsList() {
 							Adicionar Item
 						</Button>
 					</Grid>
-				</Grid>
+				</Page.Content>
 
-				<Grid container xs={12} spacing={1} sx={{ marginTop: "1rem" }}>
+				<Page.Content container spacing={1}>
 					<ListEmpty
-						label="items"
+						label="itens"
 						action={() => handleOpenCreateEditItem("create")}
 						dataList={itemsState.data}
 					/>
@@ -138,14 +137,14 @@ export default function ItemsList() {
 							</Grid>
 						);
 					})}
-				</Grid>
+				</Page.Content>
 
 				<DialogCreateOrUpdateItem
 					open={openCreateEditItem}
 					handleClose={closeCreateEditItem}
 					idItem={itemIdSelected}
 				/>
-			</Grid>
+			</Page.Page>
 		</>
 	);
 }

@@ -9,6 +9,12 @@ export const SecondaryMenu: SecondaryMenuProps[] = [
 		permissionsToAcces: [{ entity: "COMMAND", action: "VIEW" }],
 	},
 	{
+		path: routesApp.orders.table.list,
+		title: "Mesas",
+		section: "Pedidos",
+		permissionsToAcces: [{ entity: "TABLE", action: "VIEW" }],
+	},
+	{
 		path: routesApp.orders.list,
 		title: "Pedidos",
 		section: "Pedidos",

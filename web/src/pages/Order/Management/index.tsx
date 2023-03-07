@@ -1,11 +1,9 @@
 import { Unstable_Grid2 as Grid } from "@mui/material";
-import PageTitle from "../../../components/common/PageTitle";
+import Page from "../../../components/common/Layout/Page";
 export default function OrderManagement() {
 	return (
-		<Grid container>
-			<Grid xs={12}>
-				<PageTitle title="Pedidos" />
-			</Grid>
-		</Grid>
+		<Page.Page>
+			<Page.Title title="Pedidos" />
+		</Page.Page>
 	);
 }

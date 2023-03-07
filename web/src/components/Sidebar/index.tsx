@@ -46,7 +46,6 @@ import {
 	setMenuSelected,
 	setSubMenuSelected,
 } from "../../store/ducks/layout/slice";
-import { PermissionProps } from "../../helper/interfaces/Permission";
 import { Drawer, DrawerHeader } from "./styles";
 
 const MainMenu: MainMenuProps[] = [
@@ -121,7 +120,6 @@ function MiniDrawer({ children }: MiniDrawerProps) {
 				permissionsLogin?.some(({ entity: e, action: a }) => e === entity && a === action)
 			);
 		});
-
 		const render = listSubMenus.length || item.title === "sair";
 
 		const isMenuMatched = layoutState.config.menu.menuSelected === item.title;
@@ -191,8 +189,6 @@ function MiniDrawer({ children }: MiniDrawerProps) {
 														opacity: open ? 1 : 0,
 														"& span": {
 															fontSize: (theme) => theme.typography.body2.fontSize,
-															color: (theme) =>
-																isSubMenuMatched ? theme.palette.primary.main : "initial",
 														},
 													}}
 												/>
@@ -268,6 +264,7 @@ function MiniDrawer({ children }: MiniDrawerProps) {
 								display: "flex",
 								flexDirection: "column",
 								justifyContent: "flex-end",
+								paddingBottom: 0,
 							}}
 						>
 							{BottomMenu.map((item, index) => (
@@ -275,13 +272,7 @@ function MiniDrawer({ children }: MiniDrawerProps) {
 							))}
 						</List>
 					</Drawer>
-					<Container
-					// sx={{
-					// 	width: !open
-					// 		? `calc(100% - ${theme.spacing(7)} - 1px)`
-					// 		: `calc(100% - ${drawerWidth}px) !important`,
-					// }}
-					>
+					<Container>
 						<Box
 							component="main"
 							sx={{

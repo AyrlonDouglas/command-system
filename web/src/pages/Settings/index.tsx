@@ -7,18 +7,16 @@ import { Button, Unstable_Grid2 as Grid, Divider, Typography } from "@mui/materi
 //Components
 import ListEmpty from "../../components/common/listEmpty";
 import PageTitle from "../../components/common/PageTitle";
+import Page from "../../components/common/Layout/Page";
 
 export default function Settings() {
 	const navigate = useNavigate();
 	return (
-		<Grid container>
-			<Grid xs={12}>
-				<PageTitle title="Configuração de conta" />
-			</Grid>
-
-			<Grid xs={12}>
+		<Page.Page>
+			<Page.Title title="Configuração de conta" />
+			<Page.Content>
 				<Button onClick={() => navigate(routesApp.settings.changePassword)}>Alterar senha</Button>
-			</Grid>
-		</Grid>
+			</Page.Content>
+		</Page.Page>
 	);
 }

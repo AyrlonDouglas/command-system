@@ -16,6 +16,7 @@ import PageTitle from "../../../components/common/PageTitle";
 import InputSearch from "../../../components/Input/Search";
 import ListEmpty from "../../../components/common/listEmpty";
 import DialogCreateOrEditCategory from "../../../components/Dialog/CreateOrUpdateCategory";
+import Page from "../../../components/common/Layout/Page";
 //redux
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getCategoriesRequest } from "../../../store/ducks/categories/slice";
@@ -52,12 +53,10 @@ export default function CategoryList() {
 	}, []);
 
 	return (
-		<Grid container spacing={2}>
-			<Grid xs={12}>
-				<PageTitle title="Categorias" />
-			</Grid>
+		<Page.Page>
+			<Page.Title title="Categorias" />
 
-			<Grid xs={12} container spacing={1} justifyContent={"space-between"}>
+			<Page.Content container spacing={1} justifyContent={"space-between"}>
 				<Grid xs={12} sm={5} md={4}>
 					<InputSearch onChange={handleSearch} value={search} />
 				</Grid>
@@ -66,9 +65,9 @@ export default function CategoryList() {
 						Adicionar Categoria
 					</Button>
 				</Grid>
-			</Grid>
+			</Page.Content>
 
-			<Grid xs={12}>
+			<Page.Content>
 				<ListEmpty
 					dataList={categoriesState.data}
 					label="Categorias"
@@ -95,12 +94,12 @@ export default function CategoryList() {
 						</List>
 					</Paper>
 				) : null}
-			</Grid>
+			</Page.Content>
 			<DialogCreateOrEditCategory
 				open={openCreateEdit}
 				handleClose={closeCreateEditCategory}
 				categoryId={categoryId}
 			/>
-		</Grid>
+		</Page.Page>
 	);
 }

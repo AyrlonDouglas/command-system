@@ -23,6 +23,7 @@ import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutli
 //Components
 import PageTitle from "../../../components/common/PageTitle";
 import InputTextFieldControlled from "../../../components/Input/TextFieldControlled";
+import Page from "../../../components/common/Layout/Page";
 // validator
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -193,26 +194,22 @@ export default function RoleCreateUpdate() {
 
 	return (
 		<>
-			<Grid container>
-				<Grid xs={12}>
-					<PageTitle title={idRole ? "Editar função" : "Criar função"} />
-				</Grid>
+			<Page.Page>
+				<Page.Title title={idRole ? "Editar função" : "Criar função"} />
 
-				<Grid component={"form"} xs={12} container spacing={2} onSubmit={handleSubmit(onSubmit)}>
+				<Page.Content
+					component={"form"}
+					xs={12}
+					container
+					spacing={2}
+					onSubmit={handleSubmit(onSubmit)}
+				>
 					<Grid xs={12}>
 						<FormControl fullWidth error={!!errors.permissionsIds}>
 							<TableContainer component={Paper}>
-								<Table>
-									<TableHead sx={{ background: (t) => t.palette.primary.light }}>
-										<TableRow
-											sx={{
-												"& th": {
-													fontWeight: 700,
-													padding: "8px 16px",
-													color: (t) => t.palette.common.white,
-												},
-											}}
-										>
+								<Table size="small">
+									<TableHead>
+										<TableRow>
 											<TableCell align="left">Módulo</TableCell>
 											<TableCell align="center">Visualizar</TableCell>
 											<TableCell align="center">Criar</TableCell>
@@ -223,14 +220,7 @@ export default function RoleCreateUpdate() {
 									<TableBody>
 										{groupPermissionsByEntity(allPermissions).map((group) => {
 											return (
-												<TableRow
-													key={group.name}
-													sx={{
-														"&:last-child td, &:last-child th": { border: 0 },
-														"&:hover": { background: (t) => t.palette.background.default },
-														"& th": { padding: "0 16px" },
-													}}
-												>
+												<TableRow key={group.name} hover>
 													<TableCell component="th" scope="row" align="left">
 														{translateEntity(group.name)}
 													</TableCell>
@@ -243,6 +233,11 @@ export default function RoleCreateUpdate() {
 																	control={control}
 																	render={({ field }) => (
 																		<Checkbox
+																			sx={{
+																				"&.MuiButtonBase-root": {
+																					padding: 0,
+																				},
+																			}}
 																			onBlur={field.onBlur}
 																			name={field.name}
 																			ref={field.ref}
@@ -311,8 +306,8 @@ export default function RoleCreateUpdate() {
 							</Button>
 						</Grid>
 					</Grid>
-				</Grid>
-			</Grid>
+				</Page.Content>
+			</Page.Page>
 			<DialogRemovalConfirmation
 				title={`Tem certeza que deseja remover a função ${getValues("name")}?`}
 				subtitle={"Essa ação é irreversível!"}

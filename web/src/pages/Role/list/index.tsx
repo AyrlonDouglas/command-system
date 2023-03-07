@@ -17,6 +17,7 @@ import {
 import PageTitle from "../../../components/common/PageTitle";
 import ListEmpty from "../../../components/common/listEmpty";
 import InputSearch from "../../../components/Input/Search";
+import Page from "../../../components/common/Layout/Page";
 //Redux
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getRolesRequest } from "../../../store/ducks/roles/slice";
@@ -55,12 +56,10 @@ export default function RoleList() {
 	const toUpdateRole = (id: number) => navigate(routesApp.roles.update(id));
 
 	return (
-		<Grid container>
-			<Grid xs={12}>
-				<PageTitle title="Funções" />
-			</Grid>
+		<Page.Page>
+			<Page.Title title="Funções" />
 
-			<Grid xs={12} container spacing={1} justifyContent={"space-between"}>
+			<Page.Content container spacing={1} justifyContent={"space-between"}>
 				<Grid xs={12} sm={6}>
 					<InputSearch onChange={handleSearch} value={search} />
 				</Grid>
@@ -70,11 +69,10 @@ export default function RoleList() {
 						Adicionar Função
 					</Button>
 				</Grid>
-			</Grid>
-
-			<Grid xs={12}>
+			</Page.Content>
+			<Page.Content>
 				<ListEmpty dataList={rolesState.data} label="Funções" action={toCreateRole} />
-				<Paper sx={{ marginTop: "1rem" }}>
+				<Paper>
 					<List disablePadding>
 						{rolesState.data
 							.filter((roleFilter) => isMatchedSearch(roleFilter) && isRoleShown(roleFilter))
@@ -91,7 +89,7 @@ export default function RoleList() {
 							))}
 					</List>
 				</Paper>
-			</Grid>
-		</Grid>
+			</Page.Content>
+		</Page.Page>
 	);
 }
