@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsObject, IsArray } from 'class-validator';
+import { IsArray } from 'class-validator';
 import { ALLPermissions } from 'src/helper/constants/permissions';
 import { PermissionProps } from 'src/helper/interfaces/permissions';
 

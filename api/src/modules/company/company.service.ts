@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CreateCompanyDto } from './dto/create-company.dto';
 // import { UpdateCompanyDto } from './dto/update-company.dto';
 import { Company } from './entities/company.entity';
@@ -11,15 +11,19 @@ import { Employee } from '../employee/entities/employee.entity';
 import { Role } from '../role/entities/role.entity';
 import { RolePermission } from '../role-permission/entities/role-permission.entity';
 import { Permission } from '../permission/entities/permission.entity';
+import { ALLPermissions } from 'src/helper/constants/permissions';
 
 @Injectable()
 export class CompanyService {
   constructor(@InjectRepository(Company) private companyRepository: Repository<Company>) {}
 
-  async create(createCompanyDto: CreateCompanyDto): Promise<CompanyDto> {
+  async create(
+    createCompanyDto: CreateCompanyDto,
+    entityManager: EntityManager,
+  ): Promise<CompanyDto> {
     try {
       if (!/^[a-zA-Z]+$/.test(createCompanyDto.prefix)) {
-        throw new HttpException('O prefixo deve ser apenas letras!', HttpStatus.BAD_REQUEST);
+        throw new HttpException('O prefixo deve ser apenas letras.', HttpStatus.BAD_REQUEST);
       }
 
       const company = new Company();
@@ -28,13 +32,13 @@ export class CompanyService {
       company.logo = createCompanyDto.logo;
       company.prefix = createCompanyDto.prefix.toLocaleUpperCase();
 
-      const companySaved = await company.save();
+      const companySaved = await entityManager.save(company);
 
-      const mainRoles = await this.createMainRoles(companySaved);
+      const mainRoles = await this.createMainRoles(companySaved, entityManager);
 
-      await this.createMainEmployees(companySaved, mainRoles);
+      await this.createMainEmployees(companySaved, mainRoles, entityManager);
 
-      const companyData = await Company.findOneBy({ id: companySaved.id });
+      const companyData = await entityManager.findOneBy(Company, { id: companySaved.id });
 
       return new CompanyDto(companyData);
     } catch (error) {
@@ -48,43 +52,72 @@ export class CompanyService {
     return companies.map((company) => new CompanyDto(company));
   }
 
-  async createMainRoles(company: Company): Promise<Role[]> {
+  async createMainRoles(company: Company, entityManager: EntityManager): Promise<Role[]> {
     const roleAdmin = new Role();
     roleAdmin.company = company;
     roleAdmin.name = 'admin';
-    const roleAdminData = await roleAdmin.save();
 
     const roleBot = new Role();
     roleBot.company = company;
     roleBot.name = 'bot';
-    const roleBotData = await roleBot.save();
 
-    (await Permission.find()).forEach(async (elementPermission) => {
-      const permission = await Permission.findOneBy({
+    const [roleAdminData, roleBotData] = await Promise.all([
+      entityManager.save(roleAdmin),
+      entityManager.save(roleBot),
+    ]);
+
+    let permissions = await Permission.find();
+
+    if (permissions.length === 0) {
+      const permissionsData: Promise<Permission>[] = [];
+
+      for (const permission of ALLPermissions) {
+        const newPermission = new Permission();
+        newPermission.entity = permission.entity;
+        newPermission.action = permission.action;
+        const permissionSaved = entityManager.save(newPermission);
+        permissionsData.push(permissionSaved);
+      }
+
+      permissions = await Promise.all(permissionsData);
+    }
+    const pemissionsToResolve = [];
+
+    permissions.forEach(async (elementPermission) => {
+      const permission = await entityManager.findOneBy(Permission, {
         id: elementPermission.id,
       });
 
-      await RolePermission.insert({ permission, role: roleAdminData });
-      await RolePermission.insert({ permission, role: roleBotData });
+      const rolePermissionAdmin = new RolePermission();
+      rolePermissionAdmin.permission = permission;
+      rolePermissionAdmin.role = roleAdminData;
+
+      const rolePermissionBot = new RolePermission();
+      rolePermissionBot.permission = permission;
+      rolePermissionBot.role = roleBotData;
+
+      pemissionsToResolve.push(entityManager.save([rolePermissionAdmin, rolePermissionBot]));
     });
+
+    await Promise.all(pemissionsToResolve);
 
     return [roleAdminData, roleBotData];
   }
 
-  async createMainEmployees(company: Company, roles: Role[]) {
-    await Employee.insert({
-      company: company,
-      firstName: 'Admin',
-      lastName: company.prefix,
-      role: roles[0],
-    });
+  async createMainEmployees(company: Company, roles: Role[], entityManager: EntityManager) {
+    const employeeAdmin = new Employee();
+    employeeAdmin.company = company;
+    employeeAdmin.firstName = 'Admin';
+    employeeAdmin.lastName = company.prefix;
+    employeeAdmin.role = roles[0];
+    await entityManager.save(employeeAdmin);
 
-    await Employee.insert({
-      company: company,
-      firstName: 'Bot',
-      lastName: company.prefix,
-      role: roles[1],
-    });
+    const employeeBot = new Employee();
+    employeeBot.company = company;
+    employeeBot.firstName = 'Bot';
+    employeeBot.lastName = company.prefix;
+    employeeBot.role = roles[1];
+    await entityManager.save(employeeBot);
   }
 
   // findOne(id: number) {

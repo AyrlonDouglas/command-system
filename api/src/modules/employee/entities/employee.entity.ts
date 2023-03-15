@@ -67,12 +67,15 @@ export class EmployeeSubscriber implements EntitySubscriberInterface {
   }
 
   async beforeInsert(event: InsertEvent<Employee>): Promise<any> {
-    const company = await Company.findOne({
+    const company = await event.manager.findOne(Company, {
       where: { id: event.entity.company.id },
     });
+    //  Company.findOne({
+    //   where: { id: event.entity.company.id },
+    // });
 
     company.registeredEmployees += 1;
-    await company.save();
+    await event.manager.save(company);
 
     event.manager.update(
       Company,

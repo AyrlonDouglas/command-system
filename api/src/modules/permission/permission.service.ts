@@ -1,4 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { PermissionDto } from './dto/permission.dto';
 // import { UpdatePermissionDto } from './dto/update-permission.dto';
@@ -6,7 +7,7 @@ import { Permission } from './entities/permission.entity';
 
 @Injectable()
 export class PermissionService {
-  async create(createPermissionDto: CreatePermissionDto) {
+  async create(createPermissionDto: CreatePermissionDto, entityManager: EntityManager) {
     for (const permission of createPermissionDto.permissions) {
       const permissionExists = await Permission.findOneBy({
         entity: permission.entity,
@@ -21,16 +22,20 @@ export class PermissionService {
       }
     }
 
-    const permissionsData: Permission[] = [];
+    const permissionsData: Promise<Permission>[] = [];
+
     for (const permission of createPermissionDto.permissions) {
       const newPermission = new Permission();
       newPermission.entity = permission.entity;
       newPermission.action = permission.action;
-      const permissionSaved = await newPermission.save();
+
+      const permissionSaved = entityManager.save(newPermission);
       permissionsData.push(permissionSaved);
     }
 
-    return permissionsData.map((permission) => new PermissionDto(permission));
+    const permissionsResolved = await Promise.all(permissionsData);
+
+    return permissionsResolved.map((permission) => new PermissionDto(permission));
   }
 
   async findAll() {
