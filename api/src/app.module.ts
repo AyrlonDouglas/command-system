@@ -6,8 +6,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/database.config';
 // middleware
 import { AuthMiddleware } from './middlewares/auth.middleware';
+import { TransactionMiddleware } from './middlewares/transaction.middleware';
+
 // controller
 import { AuthController } from './modules/auth/auth.controller';
+// guards
+import { PermissionsGuard } from './helper/guards/permissions.guard';
 // provides
 import { JwtService } from '@nestjs/jwt';
 // modules
@@ -23,7 +27,6 @@ import { TableModule } from './modules/table/table.module';
 import { RoleModule } from './modules/role/role.module';
 import { RolePermissionModule } from './modules/role-permission/role-permission.module';
 import { PermissionModule } from './modules/permission/permission.module';
-import { PermissionsGuard } from './helper/guards/permissions.guard';
 
 @Module({
   imports: [
@@ -63,5 +66,7 @@ export class AppModule implements NestModule {
         { path: '/permission', method: RequestMethod.GET },
       )
       .forRoutes('');
+
+    consumer.apply(TransactionMiddleware).forRoutes('');
   }
 }
