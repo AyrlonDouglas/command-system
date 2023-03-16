@@ -27,6 +27,7 @@ const rolesSlice = createSlice({
 			state.error = false;
 			state.allPermissions = action.payload;
 		},
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		createRoleRequest: (state, action) => {
 			state.loading = true;
 		},
@@ -35,6 +36,7 @@ const rolesSlice = createSlice({
 			state.error = false;
 			state.data = [...state.data, action.payload];
 		},
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		getRoleByIdRequest: (state, action) => {
 			state.loading = true;
 		},
@@ -43,6 +45,7 @@ const rolesSlice = createSlice({
 			state.error = false;
 			state.data = [...state.data.filter((el) => el.id !== action.payload.id), action.payload];
 		},
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		updateRoleRequest: (state, action) => {
 			state.loading = true;
 		},
@@ -51,6 +54,7 @@ const rolesSlice = createSlice({
 			state.error = false;
 			state.data = [...state.data.filter((el) => el.id !== action.payload.id), action.payload];
 		},
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		removeRoleRequest: (state, action) => {
 			state.loading = true;
 		},

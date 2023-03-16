@@ -16,6 +16,7 @@ import CategoryList from "../pages/Category/List";
 import Settings from "../pages/Settings";
 import ChangePassword from "../pages/Settings/ChangePassword";
 import CommandList from "../pages/Command/List";
+import TableList from "../pages/Table/List";
 export default function SwitchRoutes() {
 	const token = localStorage.getItem(LOCAL.token);
 
@@ -44,6 +45,14 @@ export default function SwitchRoutes() {
 				element={
 					<ProtectedRoute>
 						<CommandList />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path={routesApp.orders.table.list}
+				element={
+					<ProtectedRoute>
+						<TableList />
 					</ProtectedRoute>
 				}
 			/>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice } from "@reduxjs/toolkit";
 import { itemsDataProps } from "../../../helper/interfaces/Item";
 
@@ -18,6 +19,7 @@ const itemsSlice = createSlice({
 
 			state.data = action.payload;
 		},
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		createItemRequest: (state, action) => {
 			state.loading = true;
 		},

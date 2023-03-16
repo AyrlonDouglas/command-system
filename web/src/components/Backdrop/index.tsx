@@ -1,19 +1,18 @@
 import React, { useCallback } from "react";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { useAppSelector } from "../../store/hooks";
+import { RootState } from "../../store";
 
 export default function BackdropLoading() {
-	const appState = useAppSelector((state) => state) as any;
+	const appState = useAppSelector((state) => state) as RootState;
 
 	const checkLoading = useCallback(() => {
 		let loading = false;
 
-		const statesKeys = Object.keys(appState);
+		const states = Object.values(appState);
 
-		for (let i = 0; i < statesKeys.length; i++) {
-			if (appState[`${statesKeys[i]}`]?.loading) {
-				loading = true;
-			}
+		if (states.some((state) => state.loading)) {
+			loading = true;
 		}
 
 		return loading;
@@ -27,7 +26,7 @@ export default function BackdropLoading() {
 			}}
 			open={checkLoading()}
 		>
-			<CircularProgress color="inherit" />
+			<CircularProgress color="primary" />
 		</Backdrop>
 	);
 }

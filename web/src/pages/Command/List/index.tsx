@@ -95,15 +95,7 @@ export default function CommandList() {
 									<TableRow
 										onClick={() => handleOpen("edit", command.id)}
 										key={command.id}
-										sx={{
-											// "&:last-child td, &:last-child th": { border: 0 },
-											// "&:hover": {
-											// 	background: (t) => t.palette.background.default,
-
-											// },
-											cursor: "pointer",
-											// "& th": { padding: "0 16px" },
-										}}
+										sx={{ cursor: "pointer" }}
 										hover
 									>
 										<TableCell component="th" scope="row">
