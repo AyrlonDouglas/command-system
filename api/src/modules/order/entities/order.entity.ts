@@ -11,7 +11,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   ManyToOne,
-  ManyToMany,
+  // ManyToMany,
   OneToMany,
   UpdateDateColumn,
   DeleteDateColumn,
@@ -19,7 +19,7 @@ import {
   BaseEntity,
   EventSubscriber,
   EntitySubscriberInterface,
-  InsertEvent,
+  // InsertEvent,
   UpdateEvent,
   EntityManager,
 } from 'typeorm';

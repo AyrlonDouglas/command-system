@@ -6,10 +6,7 @@ import {
 	DialogActions,
 	DialogContent,
 	DialogTitle,
-	TextField,
 	Unstable_Grid2 as Grid,
-	Autocomplete,
-	CircularProgress,
 } from "@mui/material";
 
 //COMPONENTS
@@ -25,11 +22,12 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 
 //VALIDADOR
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import DialogRemovalConfirmation from "../RemovalConfirmation";
+import AutocompleteControlled from "../../Input/AutocompleteControlled";
 
 //IMAGE
 
@@ -38,14 +36,7 @@ const schema = yup.object().shape({
 	description: yup.string().required("Preencha a descrição"),
 	price: yup.number().required("Preencha o preço").typeError("Preencha um preço válido"),
 	avaliable: yup.boolean().required("Preencha se o item está disponível"),
-	category: yup
-		.object()
-		.shape({
-			name: yup.string().required("Escolha uma categoria"),
-			id: yup.number().moreThan(0, "Escolha uma categoria"),
-		})
-		.typeError("Escolha uma categoria")
-		.required("Escolha uma catgoria"),
+	categoryId: yup.number().required("Escolha uma categoria"),
 });
 
 interface DialogCreateOrEditItemProps {
@@ -70,7 +61,7 @@ export default function DialogCreateOrUpdateItem({
 	useEffect(() => {
 		if (idItem && open) {
 			setValue("avaliable", itemFiltered.avaliable);
-			setValue("category", itemFiltered.category);
+			setValue("categoryId", itemFiltered.category.id);
 			setValue("description", itemFiltered.description);
 			setValue("name", itemFiltered.name);
 			setValue("price", itemFiltered.price);
@@ -87,7 +78,6 @@ export default function DialogCreateOrUpdateItem({
 		// resetField,
 		setValue,
 		// trigger,
-		// watch,
 		reset,
 	} = useForm({
 		resolver: yupResolver(schema),
@@ -97,7 +87,7 @@ export default function DialogCreateOrUpdateItem({
 			price: "" as number | string,
 			imagePath: "" as string,
 			avaliable: true,
-			category: null as { id: number; name: string } | null,
+			categoryId: undefined as number | undefined,
 		},
 	});
 
@@ -107,20 +97,14 @@ export default function DialogCreateOrUpdateItem({
 			return;
 		}
 
-		if (!data?.category) return;
-
-		const categoryId = data.category?.id;
-
-		// delete data.category;
-
 		if (!idItem) {
-			dispatch(createItemRequest({ ...data, categoryId }));
+			dispatch(createItemRequest(data));
 			onClose();
 			return;
 		}
 
 		if (idItem && dataChanged()) {
-			dispatch(updateItemRequest({ ...data, categoryId, id: itemFiltered.id }));
+			dispatch(updateItemRequest({ ...data, id: itemFiltered.id }));
 			onClose();
 			return;
 		}
@@ -129,7 +113,7 @@ export default function DialogCreateOrUpdateItem({
 	const dataChanged = () => {
 		return (
 			getValues().avaliable !== itemFiltered.avaliable ||
-			getValues().category?.id !== itemFiltered.category.id ||
+			getValues().categoryId !== itemFiltered.category.id ||
 			getValues().description !== itemFiltered.description ||
 			getValues().name !== itemFiltered.name ||
 			getValues().price !== itemFiltered.price
@@ -168,7 +152,16 @@ export default function DialogCreateOrUpdateItem({
 							<InputTextFieldControlled control={control} label="Preço do item" nameField="price" />
 						</Grid>
 						<Grid xs={12}>
-							<Controller
+							<AutocompleteControlled
+								control={control}
+								label="Categoria"
+								nameField="categoryId"
+								noOptionsText="Não existe categorias cadastradas"
+								options={categoriesState.data.map(({ id, name }) => ({ id, text: name }))}
+								loading={categoriesState.loading}
+							/>
+
+							{/* <Controller
 								control={control}
 								name="category"
 								render={({ field: { onChange, value }, fieldState }) => (
@@ -208,7 +201,7 @@ export default function DialogCreateOrUpdateItem({
 										)}
 									/>
 								)}
-							/>
+							/> */}
 						</Grid>
 						<Grid xs={12} sx={{ display: "flex", alignItems: "center" }}>
 							<InputSwitchControlled

@@ -1,4 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 import { Employee } from '../employee/entities/employee.entity';
 import { CategoryDto } from './dto/category.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -10,18 +11,19 @@ export class CategoryService {
   async create(
     createCategoryDto: CreateCategoryDto,
     employeeLogged: Employee,
+    entityManager: EntityManager,
   ): Promise<CategoryDto> {
     const category = new Category();
     category.name = createCategoryDto.name;
     category.company = employeeLogged.company;
 
-    const categoryData = await category.save();
+    const categoryData = await entityManager.save(category);
 
     return new CategoryDto(categoryData);
   }
 
-  async findAll(EmployeeLogged: Employee): Promise<CategoryDto[]> {
-    const categories = await Category.find({
+  async findAll(EmployeeLogged: Employee, entityManager: EntityManager): Promise<CategoryDto[]> {
+    const categories = await entityManager.find(Category, {
       where: { company: { id: EmployeeLogged.company.id } },
     });
 
@@ -32,14 +34,19 @@ export class CategoryService {
   //   return `This action returns a #${id} category`;
   // }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto, employeeLogged: Employee) {
-    if (!(await Category.findOneBy({ id }))) {
+  async update(
+    id: number,
+    updateCategoryDto: UpdateCategoryDto,
+    employeeLogged: Employee,
+    entityManager: EntityManager,
+  ) {
+    if (!(await entityManager.findOneBy(Category, { id }))) {
       throw new HttpException('Esta categoria não existe.', HttpStatus.NOT_FOUND);
     }
 
     if (
       updateCategoryDto.name &&
-      (await Category.findOneBy({
+      (await entityManager.findOneBy(Category, {
         name: updateCategoryDto.name,
         company: { id: employeeLogged.company.id },
       }))
@@ -55,21 +62,21 @@ export class CategoryService {
       }
     });
 
-    await Category.update({ id }, update);
+    await entityManager.update(Category, { id }, update);
 
-    const categoryData = await Category.findOneBy({ id });
+    const categoryData = await entityManager.findOneBy(Category, { id });
 
     return new CategoryDto(categoryData);
   }
 
-  async remove(id: number, employeeLogged: Employee) {
-    const category = await Category.findOne({
+  async remove(id: number, employeeLogged: Employee, entityManager: EntityManager) {
+    const category = await entityManager.findOne(Category, {
       where: { id, company: { id: employeeLogged.company.id } },
       relations: { items: true },
     });
 
     if (!category) {
-      throw new HttpException('Categoria não existe', HttpStatus.PRECONDITION_REQUIRED);
+      throw new HttpException('Categoria não existe', HttpStatus.PRECONDITION_FAILED);
     }
 
     if (category.items.length > 0) {
@@ -79,6 +86,6 @@ export class CategoryService {
       );
     }
 
-    return await category.remove();
+    return await entityManager.remove(category);
   }
 }

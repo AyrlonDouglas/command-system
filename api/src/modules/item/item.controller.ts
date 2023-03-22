@@ -5,6 +5,8 @@ import { UpdateItemDto } from './dto/update-item.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Employee } from '../employee/entities/employee.entity';
 import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
+import EntityManagerParam from 'src/helper/decorators/entityManager.decorator';
+import { EntityManager } from 'typeorm';
 
 @ApiBearerAuth()
 @ApiTags('Item')
@@ -13,13 +15,20 @@ export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
   @Post()
-  create(@Body() createItemDto: CreateItemDto, @EmployeeLogged() employeeLogged: Employee) {
-    return this.itemService.create(createItemDto, employeeLogged);
+  create(
+    @Body() createItemDto: CreateItemDto,
+    @EmployeeLogged() employeeLogged: Employee,
+    @EntityManagerParam() entityManager: EntityManager,
+  ) {
+    return this.itemService.create(createItemDto, employeeLogged, entityManager);
   }
 
   @Get()
-  findAll(@EmployeeLogged() employeeLogged: Employee) {
-    return this.itemService.findAll(employeeLogged);
+  findAll(
+    @EmployeeLogged() employeeLogged: Employee,
+    @EntityManagerParam() entityManager: EntityManager,
+  ) {
+    return this.itemService.findAll(employeeLogged, entityManager);
   }
 
   // @Get(':id')
@@ -31,12 +40,17 @@ export class ItemController {
     @Param('id') id: string,
     @Body() updateItemDto: UpdateItemDto,
     @EmployeeLogged() employeeLogged: Employee,
+    @EntityManagerParam() entityManager: EntityManager,
   ) {
-    return this.itemService.update(+id, updateItemDto, employeeLogged);
+    return this.itemService.update(+id, updateItemDto, employeeLogged, entityManager);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @EmployeeLogged() employeeLogged: Employee) {
-    return this.itemService.remove(+id, employeeLogged);
+  remove(
+    @Param('id') id: string,
+    @EmployeeLogged() employeeLogged: Employee,
+    @EntityManagerParam() entityManager: EntityManager,
+  ) {
+    return this.itemService.remove(+id, employeeLogged, entityManager);
   }
 }

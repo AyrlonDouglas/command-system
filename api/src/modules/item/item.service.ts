@@ -1,4 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 import { Category } from '../category/entities/category.entity';
 import { Employee } from '../employee/entities/employee.entity';
 import { CreateItemDto } from './dto/create-item.dto';
@@ -8,8 +9,12 @@ import { Item } from './entities/item.entity';
 
 @Injectable()
 export class ItemService {
-  async create(createItemDto: CreateItemDto, employeeLogged: Employee) {
-    const category = await Category.findOneBy({ id: createItemDto.categoryId });
+  async create(
+    createItemDto: CreateItemDto,
+    employeeLogged: Employee,
+    entityManager: EntityManager,
+  ) {
+    const category = await entityManager.findOneBy(Category, { id: createItemDto.categoryId });
 
     if (!category) {
       throw new HttpException('Esta categoria não existe.', HttpStatus.BAD_GATEWAY);
@@ -23,13 +28,13 @@ export class ItemService {
     item.company = employeeLogged.company;
     item.avaliable = createItemDto.avaliable;
 
-    const itemData = await item.save();
+    const itemData = await entityManager.save(item);
 
     return new ItemDto(itemData);
   }
 
-  async findAll(employeeLoged: Employee) {
-    const items = await Item.find({
+  async findAll(employeeLoged: Employee, entityManager: EntityManager) {
+    const items = await entityManager.find(Item, {
       where: { company: { id: employeeLoged.company.id } },
       relations: { category: true },
       select: { category: { id: true, name: true } },
@@ -41,23 +46,30 @@ export class ItemService {
   //   return `This action returns a #${id} item`;
   // }
 
-  async update(id: number, updateItemDto: UpdateItemDto, employeeLoged: Employee) {
-    const item = await Item.findOne({ where: { id, company: { id: employeeLoged.company.id } } });
+  async update(
+    id: number,
+    updateItemDto: UpdateItemDto,
+    employeeLoged: Employee,
+    entityManager: EntityManager,
+  ) {
+    const item = await entityManager.findOne(Item, {
+      where: { id, company: { id: employeeLoged.company.id } },
+    });
 
     if (!item) {
       throw new HttpException('O item não existe', HttpStatus.PRECONDITION_FAILED);
     }
 
     if (updateItemDto.categoryId) {
-      updateItemDto.category = await Category.findOneBy({
+      updateItemDto.category = await entityManager.findOneBy(Category, {
         id: updateItemDto.categoryId,
       });
       delete updateItemDto.categoryId;
     }
 
-    await Item.update({ id }, updateItemDto);
+    await entityManager.update(Item, { id }, updateItemDto);
 
-    const itemData = await Item.findOne({
+    const itemData = await entityManager.findOne(Item, {
       where: { id },
       relations: { category: true },
     });
@@ -65,13 +77,15 @@ export class ItemService {
     return new ItemDto(itemData);
   }
 
-  async remove(id: number, employeeLoged: Employee) {
-    const item = await Item.findOne({ where: { id, company: { id: employeeLoged.company.id } } });
+  async remove(id: number, employeeLoged: Employee, entityManager: EntityManager) {
+    const item = await entityManager.findOne(Item, {
+      where: { id, company: { id: employeeLoged.company.id } },
+    });
 
     if (!item) {
       throw new HttpException('Item não existe', HttpStatus.PRECONDITION_FAILED);
     }
 
-    return item.remove();
+    return entityManager.remove(item);
   }
 }
