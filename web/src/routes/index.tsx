@@ -17,6 +17,7 @@ import Settings from "../pages/Settings";
 import ChangePassword from "../pages/Settings/ChangePassword";
 import CommandList from "../pages/Command/List";
 import TableList from "../pages/Table/List";
+import OrderCreateUpdate from "../pages/Order/CreateUpdate";
 export default function SwitchRoutes() {
 	const token = localStorage.getItem(LOCAL.token);
 
@@ -41,7 +42,7 @@ export default function SwitchRoutes() {
 				}
 			/>
 			<Route
-				path={routesApp.orders.command.list}
+				path={routesApp.command.list}
 				element={
 					<ProtectedRoute>
 						<CommandList />
@@ -49,10 +50,26 @@ export default function SwitchRoutes() {
 				}
 			/>
 			<Route
-				path={routesApp.orders.table.list}
+				path={routesApp.table.list}
 				element={
 					<ProtectedRoute>
 						<TableList />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path={routesApp.orders.create}
+				element={
+					<ProtectedRoute>
+						<OrderCreateUpdate />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path={routesApp.orders.update()}
+				element={
+					<ProtectedRoute>
+						<OrderCreateUpdate />
 					</ProtectedRoute>
 				}
 			/>

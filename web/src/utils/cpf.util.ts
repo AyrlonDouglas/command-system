@@ -1,5 +1,5 @@
-export function cpfIsValid(strCPF: string): boolean {
-	const cpfWithoutSpecialCharacters: string = strCPF.replace(/[.-]/g, "");
+export function cpfIsValid(strCPF: number | string): boolean {
+	const cpfWithoutSpecialCharacters: string = strCPF.toString().replace(/[.-]/g, "");
 
 	let sum = 0;
 	let module;

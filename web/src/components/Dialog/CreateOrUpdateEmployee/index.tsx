@@ -28,7 +28,10 @@ const schema = yup.object().shape({
 	firstName: yup.string().required("Preencha o primeiro nome"),
 	lastName: yup.string().required("Preencha o sobrenome"),
 	email: yup.string().email("Preencha um e-mail válido").required("Preencha o e-mail"),
-	role: yup.string().required("Escolha a função"),
+	roleId: yup
+		.number()
+		.required("Escolha uma função")
+		.test("is-not-minus-one", "Escolha uma função", (value) => value !== -1),
 	isActive: yup.boolean().required("Escolha o status"),
 });
 
@@ -36,14 +39,6 @@ interface DialogCreateOrEditEmployeeProps {
 	open: boolean;
 	handleClose: () => void;
 	EmployeeId?: number | null;
-}
-
-interface CreateOrEditEmployeeProps {
-	firstName: string | undefined;
-	lastName: string | undefined;
-	email: string | undefined;
-	role: string | undefined;
-	isActive: boolean | undefined;
 }
 
 export default function DialogCreateOrUpdateEmployee({
@@ -56,12 +51,13 @@ export default function DialogCreateOrUpdateEmployee({
 	const rolesState = useAppSelector((state) => state.roles);
 
 	const employeeFiltered = employeesState.data.filter((employee) => employee.id === EmployeeId)[0];
+
 	useEffect(() => {
 		if (EmployeeId && open) {
 			setValue("firstName", employeeFiltered.firstName);
 			setValue("lastName", employeeFiltered.lastName);
 			setValue("email", employeeFiltered.email);
-			setValue("role", employeeFiltered?.role?.name);
+			setValue("roleId", employeeFiltered?.role?.id);
 			setValue("isActive", employeeFiltered.isActive);
 		}
 
@@ -72,11 +68,12 @@ export default function DialogCreateOrUpdateEmployee({
 		control,
 		// getValues,
 		// setError,
-		formState: { errors },
+		formState: { errors, defaultValues },
 		// resetField,
 		setValue,
 		// trigger,
 		// watch,
+
 		reset,
 	} = useForm({
 		resolver: yupResolver(schema),
@@ -84,26 +81,20 @@ export default function DialogCreateOrUpdateEmployee({
 			firstName: "" as string | undefined,
 			lastName: "" as string | undefined,
 			email: "" as string | undefined,
-			role: "" as string | undefined,
+			roleId: -1,
 			isActive: true,
 		},
 	});
 
-	const handleEmployee = (data: CreateOrEditEmployeeProps) => {
-		const roleId = rolesState.data.filter((role) => role.name === data.role)[0].id;
-
+	const handleEmployee = (data: typeof defaultValues) => {
 		if (!EmployeeId) {
-			delete data.role;
-
-			dispatch(createEmployeeRequest({ ...data, roleId }));
+			dispatch(createEmployeeRequest(data));
 			onClose();
 			return;
 		}
 
 		if (EmployeeId && dataChanged(data)) {
-			delete data.role;
-
-			dispatch(updateEmployeeRequest({ ...data, roleId, id: EmployeeId }));
+			dispatch(updateEmployeeRequest({ ...data, id: EmployeeId }));
 			onClose();
 			return;
 		}
@@ -113,13 +104,13 @@ export default function DialogCreateOrUpdateEmployee({
 		}
 	};
 
-	const dataChanged = (data: CreateOrEditEmployeeProps) => {
+	const dataChanged = (data: typeof defaultValues) => {
 		return (
-			data.firstName !== employeeFiltered.firstName ||
+			data?.firstName !== employeeFiltered.firstName ||
 			data.lastName !== employeeFiltered.lastName ||
 			data.email !== employeeFiltered.email ||
 			data.isActive !== employeeFiltered.isActive ||
-			data.role !== employeeFiltered?.role?.name
+			data.roleId !== employeeFiltered?.role?.id
 		);
 	};
 
@@ -151,11 +142,10 @@ export default function DialogCreateOrUpdateEmployee({
 							<InputSelectControlled
 								control={control}
 								label="Função"
-								nameField="role"
-								options={rolesState.data.filter((role) => role.name !== "bot").map((el) => el.name)}
-								// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-								//@ts-ignore
-								error={errors}
+								nameField="roleId"
+								options={rolesState.data
+									.filter((role) => role.name !== "bot")
+									.map((el) => ({ text: el.name, id: el.id }))}
 							/>
 						</Grid>
 						<Grid xs={6}>

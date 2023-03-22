@@ -11,6 +11,7 @@ import {
 
 //COMPONENTS
 import InputTextFieldControlled from "../../Input/TextFieldControlled";
+import InputSelectControlled from "../../Input/SelectControlled";
 
 // REDUX E SAGA
 import {
@@ -36,6 +37,7 @@ const schema = yup.object().shape({
 		.required("Preencha o seu CPF")
 		.test("teste-invalid-cpf", "Adicione um CPF válido", (cpf) => cpfIsValid(cpf)),
 	requesterName: yup.string().required("Preencha o seu nome"),
+	tableId: yup.number().notRequired(),
 });
 
 interface DialogCreateEditCommandProps {
@@ -53,6 +55,7 @@ export default function DialogCreateUpdateCommand({
 
 	// const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
 	const commandState = useAppSelector((state) => state.commands);
+	const tablesState = useAppSelector((state) => state.tables);
 	const openDeleteConfirmation = useAppSelector((state) => state.layout.modals.secondary);
 
 	const commandFiltered = commandState.data.filter((command) => command.id === commandId)[0];
@@ -61,6 +64,7 @@ export default function DialogCreateUpdateCommand({
 		if (commandId && open) {
 			setValue("requesterCPF", commandFiltered.requesterCPF);
 			setValue("requesterName", commandFiltered.requesterName);
+			setValue("tableId", commandFiltered.table?.id);
 		}
 
 		return () => reset();
@@ -80,7 +84,8 @@ export default function DialogCreateUpdateCommand({
 		resolver: yupResolver(schema),
 		defaultValues: {
 			requesterName: "" as string,
-			requesterCPF: "" as string | number,
+			requesterCPF: null as string | number | null,
+			tableId: -1 as number | null,
 		},
 	});
 
@@ -99,25 +104,39 @@ export default function DialogCreateUpdateCommand({
 		const requesterCPF = Number(data?.requesterCPF);
 
 		if (!commandId) {
+			if (data?.tableId === -1) {
+				data = { ...data, tableId: null };
+			}
 			dispatch(createCommandRequest(data));
+			return;
 		}
 
 		if (commandId && dataChanged(data)) {
-			dispatch(updateCommandRequest({ ...data, requesterCPF, id: commandId }));
+			if (data?.tableId === -1) {
+				data = { ...data, tableId: null };
+			}
+			dispatch(
+				updateCommandRequest({
+					...data,
+					requesterCPF,
+					id: commandId,
+					tableId: data?.tableId ?? null,
+				})
+			);
+			return;
 		}
 
-		if (!dataChanged(data)) {
-			toast.warning("Nenhum dado foi editado");
-		}
+		toast.warning("Nenhum dado foi editado");
 	};
 
 	const dataChanged = (data: typeof defaultValues) => {
+		const commandTableFiltered = commandFiltered?.table?.id ?? -1;
 		return (
-			commandFiltered.requesterCPF !== data?.requesterCPF ||
-			commandFiltered.requesterName !== data.requesterName
+			commandFiltered.requesterCPF.toString() !== data?.requesterCPF?.toString() ||
+			commandFiltered.requesterName !== data.requesterName ||
+			commandTableFiltered !== data.tableId
 		);
 	};
-
 	return (
 		<Dialog open={open} onClose={onClose}>
 			<form onSubmit={handleSubmit(onSubmit)}>
@@ -136,6 +155,15 @@ export default function DialogCreateUpdateCommand({
 								control={control}
 								label="CPF do responsável"
 								nameField="requesterCPF"
+							/>
+						</Grid>
+						<Grid xs={12}>
+							<InputSelectControlled
+								control={control}
+								nameField="tableId"
+								label="Mesa"
+								options={tablesState.data.map(({ id, name }) => ({ id, text: name }))}
+								emptyField
 							/>
 						</Grid>
 					</Grid>

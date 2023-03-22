@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
+import EntityManagerParam from 'src/helper/decorators/entityManager.decorator';
+import { EntityManager } from 'typeorm';
 import { Employee } from '../employee/entities/employee.entity';
 import { CommandService } from './command.service';
 import { CreateCommandDto } from './dto/create-command.dto';
@@ -31,8 +33,9 @@ export class CommandController {
     @Param('id') id: string,
     @Body() updateCommandDto: UpdateCommandDto,
     @EmployeeLogged() employeeLogged: Employee,
+    @EntityManagerParam() entityManager: EntityManager,
   ) {
-    return this.commandService.update(+id, updateCommandDto, employeeLogged);
+    return this.commandService.update(+id, updateCommandDto, employeeLogged, entityManager);
   }
 
   @Delete(':id')

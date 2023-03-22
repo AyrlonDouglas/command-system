@@ -10,13 +10,10 @@ import {
 	Unstable_Grid2 as Grid,
 	Autocomplete,
 	CircularProgress,
-	Switch,
-	FormControlLabel,
 } from "@mui/material";
 
 //COMPONENTS
 import InputTextFieldControlled from "../../Input/TextFieldControlled";
-import InputSelectControlled from "../../Input/SelectControlled";
 import InputSwitchControlled from "../../Input/SwitchControlled";
 
 // REDUX E SAGA
@@ -55,14 +52,6 @@ interface DialogCreateOrEditItemProps {
 	open: boolean;
 	handleClose: () => void;
 	idItem?: number | null;
-}
-
-interface CreateOrEditItemProps {
-	name: string | undefined;
-	description: string | undefined;
-	price: number | undefined;
-	avaliable: boolean;
-	category?: { name: string; id: number } | null;
 }
 
 export default function DialogCreateOrUpdateItem({

@@ -1,4 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 import { Command } from '../command/entities/command.entity';
 import { Employee } from '../employee/entities/employee.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -8,7 +9,11 @@ import { Order } from './entities/order.entity';
 
 @Injectable()
 export class OrderService {
-  async create(createOrderDto: CreateOrderDto, employeeLogged: Employee): Promise<OrderDto> {
+  async create(
+    createOrderDto: CreateOrderDto,
+    employeeLogged: Employee,
+    entityManager: EntityManager,
+  ): Promise<OrderDto> {
     if (createOrderDto.Items.length === 0) {
       throw new HttpException(
         'Para cadastrar um pedido você deve adicionar pelo menos um item',
@@ -16,7 +21,7 @@ export class OrderService {
       );
     }
 
-    const command = await Command.findOne({
+    const command = await entityManager.findOne(Command, {
       where: { id: createOrderDto.commandId },
     });
 
@@ -27,24 +32,26 @@ export class OrderService {
     const order = new Order();
     order.command = command;
 
-    const orderData = await order.save();
+    const orderData = await entityManager.save(order);
 
     for (const item of createOrderDto.Items) {
-      await Order.addItemToOrder(orderData, item, employeeLogged);
+      await Order.addItemToOrder(orderData, item, employeeLogged, entityManager);
     }
 
-    const orderDataUpdated = await Order.findOne({
+    const orderDataUpdated = await entityManager.findOne(Order, {
       where: { id: orderData.id },
+      relations: { command: { table: true }, orderItems: { item: true } },
     });
 
     return new OrderDto(orderDataUpdated);
   }
 
-  async findAll(employeeLogged: Employee) {
-    const orders = await Order.find({
+  async findAll(employeeLogged: Employee, entityManager: EntityManager) {
+    const orders = await entityManager.find(Order, {
       where: {
         command: { employee: { company: { id: employeeLogged.company.id } } },
       },
+      relations: { command: { table: true }, orderItems: { item: true } },
     });
     return orders.map((order) => new OrderDto(order));
   }

@@ -78,7 +78,7 @@ export default function ChangePassword() {
 				<Grid xs={12}>
 					<InputTextFieldControlled
 						control={control}
-						label="repita a senha nova"
+						label="Confirmar nova senha"
 						nameField="newPassConfirm"
 					/>
 				</Grid>

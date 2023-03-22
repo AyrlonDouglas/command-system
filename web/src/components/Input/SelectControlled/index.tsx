@@ -1,12 +1,13 @@
-import { Controller, Control, FieldErrors } from "react-hook-form";
+import { Controller, Control } from "react-hook-form";
 import { FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@mui/material";
 interface InputSelectControlledProps {
 	//TODO: ajustar tipo do control
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	control: Control<any>;
 	nameField: string;
-	options: string[] | number[];
+	options: { id: number; text: string }[];
 	label: string;
-	error: FieldErrors<{ [key: string]: string }>;
+	emptyField?: boolean;
 }
 
 export default function InputSelectControlled({
@@ -14,29 +15,37 @@ export default function InputSelectControlled({
 	nameField,
 	options,
 	label,
-	error,
+	emptyField = false,
 }: InputSelectControlledProps) {
+	const handleOptions = () => {
+		const values = [...options];
+		if (emptyField) {
+			values.unshift({ id: -1, text: "-" });
+		}
+		return values;
+	};
+
 	return (
-		<FormControl fullWidth error={!!error[nameField]?.message} size="small">
+		<FormControl fullWidth error={!!control.getFieldState(nameField).error} size="small">
 			<InputLabel id={`select-${label}`}>{label}</InputLabel>
 			<Controller
 				name={nameField}
 				control={control}
 				render={({ field, fieldState }) => (
-					<Select labelId={label} {...field} id={nameField} name={nameField} label={label}>
-						{options.map((el) => (
-							<MenuItem value={el} key={el}>
-								{el}
-							</MenuItem>
-						))}
-					</Select>
+					<>
+						<Select labelId={label} {...field} id={nameField} name={nameField} label={label}>
+							{handleOptions().map(({ id, text }) => (
+								<MenuItem value={id} key={id}>
+									{text}
+								</MenuItem>
+							))}
+						</Select>
+						{fieldState.error ? (
+							<FormHelperText error={!!fieldState.error}>{fieldState.error.message}</FormHelperText>
+						) : null}
+					</>
 				)}
 			/>
-			{error[nameField]?.message ? (
-				<FormHelperText error={Boolean(error[nameField]?.message)}>
-					{error[nameField]?.message}
-				</FormHelperText>
-			) : null}
 		</FormControl>
 	);
 }

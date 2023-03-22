@@ -21,6 +21,7 @@ import {
   EntitySubscriberInterface,
   InsertEvent,
   UpdateEvent,
+  EntityManager,
 } from 'typeorm';
 import { IItems } from '../dto/create-order.dto';
 
@@ -57,8 +58,13 @@ export class Order extends BaseEntity {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  static async addItemToOrder(order: Order, item: IItems, employee: Employee) {
-    const itemSearch = await Item.findOne({
+  static async addItemToOrder(
+    order: Order,
+    item: IItems,
+    employee: Employee,
+    entityManager: EntityManager,
+  ) {
+    const itemSearch = await entityManager.findOne(Item, {
       where: { id: item.id, company: { id: employee.company.id } },
     });
 
@@ -71,10 +77,10 @@ export class Order extends BaseEntity {
     orderItem.order = order;
     orderItem.quantity = item.quantity;
 
-    await orderItem.save();
+    await entityManager.save(orderItem);
 
     order.amount = order.amount + itemSearch.price * item.quantity;
-    await order.save();
+    await entityManager.save(order);
   }
 }
 

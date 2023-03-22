@@ -2,6 +2,7 @@ import { Controller, Control } from "react-hook-form";
 import { FormControlLabel, Switch } from "@mui/material";
 
 interface InputSwitchCOntrolledProps {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	control: Control<any>;
 	nameField: string;
 	label: string;

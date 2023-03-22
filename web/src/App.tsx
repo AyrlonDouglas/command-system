@@ -3,7 +3,7 @@ import { useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import Routes from "./routes";
 //MUI
-import { CssBaseline, PaletteMode, ThemeProvider, Box } from "@mui/material";
+import { CssBaseline, PaletteMode, ThemeProvider } from "@mui/material";
 import theme from "./theme";
 //HELPER
 import "react-toastify/dist/ReactToastify.css";
@@ -17,6 +17,7 @@ import NavigateSetter from "./routes/NavigateSetter";
 
 export default function App() {
 	const color = localStorage.getItem(LOCAL.colorMode) || "light";
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [colorMode, setColorMode] = useState<PaletteMode>(color as PaletteMode);
 
 	return (
@@ -28,14 +29,7 @@ export default function App() {
 					<CssBaseline />
 					<BackdropLoading />
 					<Sidebar>
-						<Box
-							sx={{
-								minWidth: "100%",
-								minHeight: "calc(100vh - 48px)",
-							}}
-						>
-							<Routes />
-						</Box>
+						<Routes />
 					</Sidebar>
 				</BrowserRouter>
 			</ThemeProvider>

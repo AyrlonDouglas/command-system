@@ -1,5 +1,11 @@
 export const routesApp = {
-	orders: { list: "/orders", command: { list: "/order/command" }, table: { list: "/order/table" } },
+	orders: {
+		list: "/orders",
+		create: "/orders/create",
+		update: (id?: number) => (id ? `/orders/update/${id}` : "/orders/update/:idOrder"),
+	},
+	command: { list: "/command" },
+	table: { list: "/table" },
 	employees: { list: "/employees" },
 	items: { list: "/items" },
 	category: { list: "/category" },

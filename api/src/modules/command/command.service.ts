@@ -1,4 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 import { Employee } from '../employee/entities/employee.entity';
 // import { Order } from '../order/entities/order.entity';
 import { Table } from '../table/entities/table.entity';
@@ -59,8 +60,13 @@ export class CommandService {
     return new CommandDto(command);
   }
 
-  async update(id: number, updateCommandDto: UpdateCommandDto, employeeLogged: Employee) {
-    const command = await Command.findOne({
+  async update(
+    id: number,
+    updateCommandDto: UpdateCommandDto,
+    employeeLogged: Employee,
+    entityManager: EntityManager,
+  ) {
+    const command = await entityManager.findOne(Command, {
       where: { id },
       relations: { table: true },
     });
@@ -73,7 +79,7 @@ export class CommandService {
     command.requesterName = updateCommandDto.requesterName;
 
     if (updateCommandDto.tableId && command?.table?.id !== updateCommandDto.tableId) {
-      const table = await Table.findOne({
+      const table = await entityManager.findOne(Table, {
         where: { id: updateCommandDto.tableId, company: { id: employeeLogged.company.id } },
       });
 
@@ -84,7 +90,11 @@ export class CommandService {
       command.table = table;
     }
 
-    const commandData = await command.save();
+    if (command.table && !updateCommandDto.tableId) {
+      command.table = null;
+    }
+
+    const commandData = await entityManager.save(command);
 
     return new CommandDto(commandData);
   }

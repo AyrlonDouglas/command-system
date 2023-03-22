@@ -31,6 +31,7 @@ function* getTables() {
 		yield put(genericTablesFail(error));
 	}
 }
+
 function* createTable({ payload }: CreateUpdateTableProps) {
 	try {
 		const response: AxiosResponse = yield call(api.post, "/table", payload);

@@ -42,6 +42,7 @@ import { PermissionEntitiesTypes, PermissionProps } from "../../../helper/interf
 import DialogRemovalConfirmation from "../../../components/Dialog/RemovalConfirmation";
 import { RolesDataProps } from "../../../helper/interfaces/Roles";
 import { toast } from "react-toastify";
+import { routesApp } from "../../../helper/constants/routes";
 
 const schema = yup.object().shape({
 	name: yup.string().required("Preencha o nome"),
@@ -284,7 +285,7 @@ export default function RoleCreateUpdate() {
 					</Grid>
 					<Grid container spacing={1} justifyContent={"flex-end"} xs={12} md={8}>
 						<Grid xs={idRole ? 4 : 6} md={idRole ? 4 : 6}>
-							<Button variant="outlined" onClick={() => navigate(-1)} fullWidth>
+							<Button variant="outlined" onClick={() => navigate(routesApp.roles.list)} fullWidth>
 								Cancelar
 							</Button>
 						</Grid>

@@ -3,13 +3,13 @@ import { routesApp } from "./routes";
 
 export const SecondaryMenu: SecondaryMenuProps[] = [
 	{
-		path: routesApp.orders.command.list,
+		path: routesApp.command.list,
 		title: "Comandas",
 		section: "Pedidos",
 		permissionsToAcces: [{ entity: "COMMAND", action: "VIEW" }],
 	},
 	{
-		path: routesApp.orders.table.list,
+		path: routesApp.table.list,
 		title: "Mesas",
 		section: "Pedidos",
 		permissionsToAcces: [{ entity: "TABLE", action: "VIEW" }],

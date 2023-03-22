@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 // mui
 import {
 	Button,
@@ -15,10 +14,11 @@ import {
 // components
 import Page from "../../../components/common/Layout/Page";
 import InputSearch from "../../../components/Input/Search";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getTablesRequest } from "../../../store/ducks/tables/slice";
 import ListEmpty from "../../../components/common/listEmpty";
 import DialogCreateUpdateTable from "../../../components/Dialog/CreateUpdateTable";
+// redux
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getTablesRequest } from "../../../store/ducks/tables/slice";
 import { setModalPrimaryOpen } from "../../../store/ducks/layout/slice";
 
 export default function TableList() {

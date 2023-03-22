@@ -15,11 +15,12 @@ import {
 import InputSearch from "../../../components/Input/Search";
 import ListEmpty from "../../../components/common/listEmpty";
 import Page from "../../../components/common/Layout/Page";
+import DialogCreateUpdateCommand from "../../../components/Dialog/CreateUpdateCommand";
 // Redux
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getCommandsRequest } from "../../../store/ducks/commands/slice";
-import DialogCreateUpdateCommand from "../../../components/Dialog/CreateUpdateCommand";
 import { setModalPrimaryOpen } from "../../../store/ducks/layout/slice";
+import { getTablesRequest } from "../../../store/ducks/tables/slice";
 
 export default function CommandList() {
 	const dispatch = useAppDispatch();
@@ -30,6 +31,7 @@ export default function CommandList() {
 
 	useEffect(() => {
 		dispatch(getCommandsRequest());
+		dispatch(getTablesRequest());
 	}, []);
 
 	const handleSearch = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {

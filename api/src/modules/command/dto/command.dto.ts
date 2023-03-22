@@ -24,7 +24,7 @@ export class CommandDto {
     this.id = command.id;
     this.employee = command.employee;
     this.orders = command.orders;
-    this.requesterCPF = command.requesterCPF;
+    this.requesterCPF = Number(command.requesterCPF);
     this.requesterName = command.requesterName;
     this.isActive = command.isActive;
     this.table = command.table;
