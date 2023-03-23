@@ -14,7 +14,6 @@ declare module "@mui/material/styles" {
 
 export default function theme(mode?: PaletteMode | undefined) {
 	let colors: PaletteOptions;
-	const themeT = useTheme();
 
 	if (mode === "dark") {
 		colors = {
@@ -27,8 +26,8 @@ export default function theme(mode?: PaletteMode | undefined) {
 		};
 	} else {
 		colors = {
-			background: { paper: "#F5F5F5", default: "#fff" },
-			primary: { main: "#1f01b9" },
+			background: { paper: "#FFF", default: "#F6F7FB" },
+			primary: { main: "#296DEC" },
 			terciary: { main: "#fcd581" },
 			// secondary: { main: "#95c623" },
 		};
@@ -36,7 +35,7 @@ export default function theme(mode?: PaletteMode | undefined) {
 
 	let theme = createTheme({
 		typography: {
-			fontFamily: "Open Sans, sans-serif",
+			fontFamily: "Inter, sans-serif",
 		},
 		palette: {
 			mode,
@@ -64,8 +63,8 @@ export default function theme(mode?: PaletteMode | undefined) {
 			MuiTableHead: {
 				styleOverrides: {
 					root: () => ({
-						"& th": { fontWeight: 700, color: theme.palette.common.white },
-						backgroundColor: theme.palette.primary.main,
+						"& th": { fontWeight: 700, color: theme.palette.common.black },
+						backgroundColor: theme.palette.background.paper,
 					}),
 				},
 			},

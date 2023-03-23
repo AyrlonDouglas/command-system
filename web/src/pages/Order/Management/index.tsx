@@ -91,7 +91,7 @@ export default function OrderManagement() {
 												{order.command.id}
 											</TableCell>
 											<TableCell component="th" scope="row">
-												{order?.table?.name ?? "--"}
+												{order?.command?.table?.name ?? "--"}
 											</TableCell>
 										</TableRow>
 									))}

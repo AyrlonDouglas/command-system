@@ -11,7 +11,7 @@ export class CreateOrderDto {
     example: [{ id: 1, quantity: 2 }],
     description: 'orders items id',
   })
-  Items: IItems[];
+  items: IItems[];
 
   @ApiProperty({ example: 1, description: 'Order command id' })
   @IsNumber()

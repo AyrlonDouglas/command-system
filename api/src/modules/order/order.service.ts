@@ -14,7 +14,7 @@ export class OrderService {
     employeeLogged: Employee,
     entityManager: EntityManager,
   ): Promise<OrderDto> {
-    if (createOrderDto.Items.length === 0) {
+    if (createOrderDto.items.length === 0) {
       throw new HttpException(
         'Para cadastrar um pedido você deve adicionar pelo menos um item',
         HttpStatus.BAD_REQUEST,
@@ -34,7 +34,7 @@ export class OrderService {
 
     const orderData = await entityManager.save(order);
 
-    for (const item of createOrderDto.Items) {
+    for (const item of createOrderDto.items) {
       await Order.addItemToOrder(orderData, item, employeeLogged, entityManager);
     }
 

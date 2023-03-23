@@ -10,6 +10,11 @@ export interface OrderDataProps {
 	status: string;
 }
 
+export interface createUpdateOrderProps {
+	items: { id: number; quantity: number }[];
+	commandId: number;
+}
+
 export type OrderStatusType =
 	| "waiting"
 	| "confirmed"

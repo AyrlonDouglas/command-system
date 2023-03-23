@@ -161,47 +161,7 @@ export default function DialogCreateOrUpdateItem({
 								loading={categoriesState.loading}
 							/>
 
-							{/* <Controller
-								control={control}
-								name="category"
-								render={({ field: { onChange, value }, fieldState }) => (
-									<Autocomplete
-										onChange={(event, item) => {
-											onChange(item);
-										}}
-										value={value}
-										size="small"
-										id="category"
-										options={categoriesState.data}
-										getOptionLabel={(option) => option.name}
-										noOptionsText={"Não existe categorias cadastradas"}
-										loadingText={"Carregando..."}
-										loading={categoriesState.loading}
-										isOptionEqualToValue={(option, value) => {
-											return option.id === value.id;
-										}}
-										renderInput={(params) => (
-											<TextField
-												{...params}
-												label="Categoria"
-												error={!!fieldState.error?.message}
-												helperText={fieldState.error?.message}
-												InputProps={{
-													...params.InputProps,
-													endAdornment: (
-														<>
-															{categoriesState.loading ? (
-																<CircularProgress color="inherit" size={20} />
-															) : null}
-															{params.InputProps.endAdornment}
-														</>
-													),
-												}}
-											/>
-										)}
-									/>
-								)}
-							/> */}
+
 						</Grid>
 						<Grid xs={12} sx={{ display: "flex", alignItems: "center" }}>
 							<InputSwitchControlled
