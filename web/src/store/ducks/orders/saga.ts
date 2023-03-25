@@ -12,6 +12,8 @@ import {
 	ordersFail,
 	createOrderRequest,
 	createOrderSuccess,
+	updateOrderRequest,
+	updateOrderSuccess,
 } from "./slice";
 
 function* getOrders() {
@@ -29,6 +31,7 @@ function* getOrders() {
 		yield put(ordersFail(error));
 	}
 }
+
 function* createOrder({ payload }: { type: string; payload: createUpdateOrderProps }) {
 	try {
 		const response: AxiosResponse = yield call(api.post, "/order", payload);
@@ -49,7 +52,28 @@ function* createOrder({ payload }: { type: string; payload: createUpdateOrderPro
 	}
 }
 
+function* updateOrder({ payload }: { type: string; payload: createUpdateOrderProps }) {
+	try {
+		const response: AxiosResponse = yield call(api.patch, `/order/${payload.id}`, payload);
+
+		toast.success(`Pedido ${payload.id} editado.`);
+
+		navigateSetter(routesApp.orders.list);
+
+		yield put(updateOrderSuccess(response.data));
+	} catch (error) {
+		if (isAxiosError(error)) {
+			toast.error(error.response?.data.message);
+		} else {
+			toast.error("Não foi possível criar o pedido");
+		}
+
+		yield put(ordersFail(error));
+	}
+}
+
 export default function* orderSaga() {
 	yield takeLatest(getOrdersRequest().type, getOrders);
 	yield takeLatest(createOrderRequest("").type, createOrder);
+	yield takeLatest(updateOrderRequest("").type, updateOrder);
 }

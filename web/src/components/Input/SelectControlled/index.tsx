@@ -24,7 +24,6 @@ export default function InputSelectControlled({
 		}
 		return values;
 	};
-
 	return (
 		<FormControl fullWidth error={!!control.getFieldState(nameField).error} size="small">
 			<InputLabel id={`select-${label}`}>{label}</InputLabel>
@@ -33,7 +32,7 @@ export default function InputSelectControlled({
 				control={control}
 				render={({ field, fieldState }) => (
 					<>
-						<Select labelId={label} {...field} id={nameField} name={nameField} label={label}>
+						<Select labelId={label} id={nameField} {...field} label={label}>
 							{handleOptions().map(({ id, text }) => (
 								<MenuItem value={id} key={id}>
 									{text}

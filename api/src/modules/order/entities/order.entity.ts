@@ -30,9 +30,6 @@ export class Order extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ default: 0, type: 'float' })
-  amount: number;
-
   @Column({
     default: OrderStatusEnum.WAITING,
     type: 'enum',
@@ -69,7 +66,14 @@ export class Order extends BaseEntity {
     });
 
     if (!itemSearch) {
-      throw new HttpException('Item não Cadastrado.', HttpStatus.BAD_GATEWAY);
+      throw new HttpException('Item não Cadastrado.', HttpStatus.BAD_REQUEST);
+    }
+
+    if (!itemSearch.avaliable) {
+      throw new HttpException(
+        `Item ${itemSearch.name} não está disponível`,
+        HttpStatus.PRECONDITION_FAILED,
+      );
     }
 
     const orderItem = new OrderItem();
@@ -78,9 +82,6 @@ export class Order extends BaseEntity {
     orderItem.quantity = item.quantity;
 
     await entityManager.save(orderItem);
-
-    order.amount = order.amount + itemSearch.price * item.quantity;
-    await entityManager.save(order);
   }
 }
 

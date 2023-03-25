@@ -79,7 +79,7 @@ export default function EmployeesList() {
 						action={handleOpenCreateEdit}
 					/>
 					{employeesState.data.filter(handleSearchItems).map((employee) => (
-						<Grid xs={12} sm={6} md={4} key={employee.id}>
+						<Grid xs={12} sm={6} lg={4} key={employee.id}>
 							<CardEmployee
 								employee={employee}
 								onClick={() => {

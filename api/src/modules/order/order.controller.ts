@@ -49,8 +49,9 @@ export class OrderController {
     @Param('id') id: string,
     @Body() updateOrderDto: UpdateOrderDto,
     @EmployeeLogged() employeeLogged: Employee,
+    @EntityManagerParam() entityManager: EntityManager,
   ) {
-    return this.orderService.update(+id, updateOrderDto, employeeLogged);
+    return this.orderService.update(+id, updateOrderDto, employeeLogged, entityManager);
   }
 
   // @Delete(':id')

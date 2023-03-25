@@ -43,7 +43,7 @@ export const databaseConfig = (): TypeOrmModuleOptions => {
       autoLoadEntities: true,
       synchronize: true,
       subscribers: subscribers,
-      logging: true,
+      // logging: true,
       dropSchema: process.env.DB_RESET === 'true',
     },
     test: {

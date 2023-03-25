@@ -71,7 +71,13 @@ export default function RoleList() {
 				</Grid>
 			</Page.Content>
 			<Page.Content>
-				<ListEmpty dataList={rolesState.data} label="Funções" action={toCreateRole} />
+				<ListEmpty
+					dataList={rolesState.data.filter(
+						(roleFilter) => isMatchedSearch(roleFilter) && isRoleShown(roleFilter)
+					)}
+					label="Funções"
+					action={toCreateRole}
+				/>
 				<Paper>
 					<List disablePadding>
 						{rolesState.data

@@ -10,7 +10,7 @@ export interface CreateOrUpdateItemProps {
 	type: string;
 }
 
-export interface itemsDataProps {
+export interface ItemsDataProps {
 	id: number;
 	name: string;
 	description: string;

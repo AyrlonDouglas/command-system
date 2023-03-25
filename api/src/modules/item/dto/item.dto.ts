@@ -31,7 +31,7 @@ export class ItemDto {
     this.category = item.category;
     this.avaliable = item.avaliable;
     this.company = item.company;
-    this.orderItems = item.orderItems;
+    this.orderItems = item?.orderItems;
     this.imagePath = item.imagePath;
   }
 }

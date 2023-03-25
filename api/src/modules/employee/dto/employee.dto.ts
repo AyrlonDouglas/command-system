@@ -1,3 +1,4 @@
+import { CompanyDto } from 'src/modules/company/dto/company.dto';
 import { Company } from 'src/modules/company/entities/company.entity';
 import { Role } from 'src/modules/role/entities/role.entity';
 import { Employee } from '../entities/employee.entity';
@@ -15,7 +16,7 @@ export class EmployeeDto {
 
   readonly isActive: boolean;
 
-  readonly company: Company;
+  readonly company: CompanyDto;
 
   readonly role: Role;
 
@@ -26,7 +27,7 @@ export class EmployeeDto {
     this.employeeCode = employee.employeeCode;
     this.email = employee.email;
     this.isActive = employee.isActive;
-    this.company = employee.company;
+    this.company = employee.company ? new CompanyDto(employee.company) : undefined;
     this.role = employee.role;
   }
 }

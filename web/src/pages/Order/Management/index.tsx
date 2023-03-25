@@ -23,6 +23,7 @@ import { getOrdersRequest } from "../../../store/ducks/orders/slice";
 
 // const
 import { routesApp } from "../../../helper/constants/routes";
+import { optionsOrderStatus } from "../../../helper/constants/orderStatus";
 
 export default function OrderManagement() {
 	const [search, setSearch] = useState("");
@@ -53,7 +54,7 @@ export default function OrderManagement() {
 				</Grid>
 			</Page.Content>
 
-			<Page.Content>
+			<Page.Content container>
 				{ordersState.data.length === 0 ? (
 					<ListEmpty
 						label="Pedidos"
@@ -69,11 +70,13 @@ export default function OrderManagement() {
 									<TableCell align="left">Status</TableCell>
 									<TableCell align="left">Comanda</TableCell>
 									<TableCell align="left">Mesa</TableCell>
+									<TableCell align="left">Valor</TableCell>
 								</TableRow>
 							</TableHead>
 							<TableBody>
 								{ordersState.data
 									.filter((e) => e)
+									.sort((a, b) => (a.id > b.id ? 1 : -1))
 									.map((order) => (
 										<TableRow
 											onClick={() => navigate(routesApp.orders.update(order.id))}
@@ -85,13 +88,21 @@ export default function OrderManagement() {
 												{order.id}
 											</TableCell>
 											<TableCell component="th" scope="row">
-												{order.status}
+												{optionsOrderStatus.find((opt) => opt.key === order.status)?.text}
 											</TableCell>
 											<TableCell component="th" scope="row">
 												{order.command.id}
 											</TableCell>
 											<TableCell component="th" scope="row">
 												{order?.command?.table?.name ?? "--"}
+											</TableCell>
+											<TableCell component="th" scope="row">
+												{order?.orderItems
+													.reduce((acc, current) => acc + current.quantity * current.item.price, 0)
+													.toLocaleString("pt-br", {
+														style: "currency",
+														currency: "BRL",
+													})}
 											</TableCell>
 										</TableRow>
 									))}

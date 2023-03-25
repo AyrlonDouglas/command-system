@@ -42,7 +42,7 @@ export class CommandService {
   async findAll(employeeLogged: Employee): Promise<CommandDto[]> {
     const commands = await Command.find({
       where: { employee: { company: { id: employeeLogged.company.id } } },
-      relations: { orders: { orderItems: true }, table: true },
+      relations: { orders: { orderItems: { item: true } }, table: true },
     });
 
     return commands.map((command) => new CommandDto(command));
@@ -51,6 +51,7 @@ export class CommandService {
   async findOne(id: number, employeeLogged: Employee) {
     const command = await Command.findOne({
       where: { id, employee: { company: { id: employeeLogged.company.id } } },
+      relations: { orders: { orderItems: { item: true } } },
     });
 
     if (!command) {

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice } from "@reduxjs/toolkit";
-import { itemsDataProps } from "../../../helper/interfaces/Item";
+import { ItemsDataProps } from "../../../helper/interfaces/Item";
 
 const itemsSlice = createSlice({
 	name: "items",
 	initialState: {
-		data: [] as itemsDataProps[],
+		data: [] as ItemsDataProps[],
 		loading: false,
 		error: false,
 	},

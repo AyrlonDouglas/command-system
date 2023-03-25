@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { itemsDataProps } from "../../../helper/interfaces/Item";
+import { ItemsDataProps } from "../../../helper/interfaces/Item";
 import { MainMenuTitleType, SecondaryMenuTitleType } from "../../../helper/interfaces/Layout";
 
 const LayoutSlice = createSlice({

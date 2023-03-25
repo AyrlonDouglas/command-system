@@ -17,6 +17,7 @@ import {
 	TableRow,
 	TableCell,
 	TableBody,
+	TableFooter,
 } from "@mui/material";
 
 import Page from "../../../components/common/Layout/Page";
@@ -25,17 +26,21 @@ import ListEmpty from "../../../components/common/listEmpty";
 import TextField from "@mui/material/TextField/TextField";
 import AutocompleteControlled from "../../../components/Input/AutocompleteControlled";
 import DialogItems from "./components/DialogItems";
+import InputSelectControlled from "../../../components/Input/SelectControlled";
 
 // redux
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getCommandsRequest } from "../../../store/ducks/commands/slice";
 import { getItemsRequest } from "../../../store/ducks/items/slice";
-import { createOrderRequest } from "../../../store/ducks/orders/slice";
+import { createOrderRequest, updateOrderRequest } from "../../../store/ducks/orders/slice";
 
 // validator
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+
+// const
+import { optionsOrderStatus } from "../../../helper/constants/orderStatus";
 
 const schema = yup.object().shape({
 	commandId: yup.number().required("Selecione uma comanda"),
@@ -51,6 +56,7 @@ const schema = yup.object().shape({
 			})
 		)
 		.min(1, "Adicione algum item"),
+	status: yup.number().notRequired(),
 });
 
 export default function CreateUpdate() {
@@ -58,18 +64,47 @@ export default function CreateUpdate() {
 	const { idOrder } = useParams();
 	const dispatch = useAppDispatch();
 	const [openItems, setOpenItems] = useState(false);
-	const { items: itemsState, commands: commandsState } = useAppSelector((state) => state);
+	const {
+		items: itemsState,
+		commands: commandsState,
+		orders: orderState,
+	} = useAppSelector((state) => state);
+
+	const orderFiltered = orderState.data.find((order) => order.id === Number(idOrder));
+
+	const commandOptions = commandsState.data.map((el) => ({
+		text: el.requesterName,
+		id: el.id,
+	}));
 
 	useEffect(() => {
 		dispatch(getCommandsRequest());
 		dispatch(getItemsRequest());
 	}, []);
 
+	useEffect(() => {
+		if (idOrder) {
+			const items = orderFiltered?.orderItems.map((orderItem) => ({
+				id: orderItem.item.id,
+				quantity: orderItem.quantity,
+			}));
+
+			const statusId = optionsOrderStatus.find(
+				(optStatus) => optStatus.key === orderFiltered?.status
+			)?.id;
+
+			!!orderFiltered && setValue("commandId", orderFiltered.command.id);
+			!!statusId && setValue("status", statusId);
+			!!items && setValue("items", items);
+		}
+	}, [commandsState]);
+
 	const addItem = (id: number) => {
 		const items = getValues("items");
 		const newItem = { id, quantity: 1 };
 		setValue("items", [...items, newItem]);
 	};
+
 	const {
 		handleSubmit,
 		control,
@@ -83,13 +118,21 @@ export default function CreateUpdate() {
 	} = useForm({
 		resolver: yupResolver(schema),
 		defaultValues: {
-			commandId: undefined as undefined | number,
+			commandId: undefined as number | undefined,
 			items: [] as { id: number; quantity: number }[],
+			...(idOrder ? { status: "" as string | number } : {}),
 		},
 	});
 
 	const onSubmit = (data: typeof defaultValues) => {
-		dispatch(createOrderRequest(data));
+		if (!idOrder) {
+			dispatch(createOrderRequest(data));
+			return;
+		}
+
+		const status = optionsOrderStatus.find((option) => option.id === data?.status)?.key;
+
+		dispatch(updateOrderRequest({ ...data, status, id: idOrder }));
 	};
 
 	const changeQuantity = (id: number, value: number) => {
@@ -131,16 +174,14 @@ export default function CreateUpdate() {
 
 			<Page.Content container>
 				<Grid xs={12} sm={6} md={8}>
+					{/* //FIXME: Não carrega valor no update */}
 					<AutocompleteControlled
 						control={control}
 						label="Comanda"
 						nameField="commandId"
 						noOptionsText="Sem comandas cadastradas"
 						loading={commandsState.loading}
-						options={commandsState.data.map((el) => ({
-							text: el.requesterName,
-							id: el.id,
-						}))}
+						options={commandOptions}
 					/>
 				</Grid>
 				<Grid xs={12} sm={6} md={4}>
@@ -150,7 +191,7 @@ export default function CreateUpdate() {
 						onClick={() => setOpenItems(true)}
 						fullWidth
 					>
-						Adicionar item ao pedido
+						Adicionar item
 					</Button>
 					{!!errors.items && (
 						<FormHelperText error={!!errors.items}>{errors.items?.message}</FormHelperText>
@@ -177,71 +218,97 @@ export default function CreateUpdate() {
 									<TableCell align="left"></TableCell>
 								</TableRow>
 							</TableHead>
-							<TableBody>
-								<ListEmpty
-									dataList={getValues("items")}
-									label="Itens"
-									action={() => setOpenItems(true)}
-								/>
-								{getValues("items").map((item) => {
-									const itemFiltered = itemsState.data.find((itemData) => itemData.id === item.id);
 
-									if (!itemFiltered) return null;
+							{getValues("items").length > 0 && (
+								<TableBody>
+									{getValues("items").map((item) => {
+										const itemFiltered = itemsState.data.find(
+											(itemData) => itemData.id === item.id
+										);
 
-									return (
-										<TableRow key={itemFiltered.id} hover>
-											<TableCell component="th" scope="row">
-												{itemFiltered.id}
-											</TableCell>
-											<TableCell component="th" scope="row">
-												{itemFiltered.name}
-											</TableCell>
-											<TableCell component="th" scope="row">
-												{itemFiltered.avaliable ? "Disponível" : "Indisponível"}
-											</TableCell>
-											<TableCell component="th" scope="row">
-												{itemFiltered.price.toLocaleString("pt-br", {
-													style: "currency",
-													currency: "BRL",
-												})}
-											</TableCell>
-											<TableCell component="th" scope="row">
-												<TextField
-													size="small"
-													type={"number"}
-													InputProps={{ inputProps: { min: 1 } }}
-													value={
-														watch("items").find((itemData) => itemData.id === item.id)?.quantity
-													}
-													onChange={(e) => changeQuantity(item.id, Number(e.target.value))}
-												/>
-											</TableCell>
-											<TableCell component="th" scope="row">
-												{(itemFiltered.price * item.quantity).toLocaleString("pt-br", {
-													style: "currency",
-													currency: "BRL",
-												})}
-											</TableCell>
-											<TableCell component="th" scope="row">
-												<Button
-													variant="outlined"
-													color="warning"
-													onClick={() => removeItem(item.id)}
-												>
-													Remover
-												</Button>
-											</TableCell>
-										</TableRow>
-									);
-								})}
-							</TableBody>
+										if (!itemFiltered) return null;
+
+										return (
+											<TableRow key={itemFiltered.id} hover>
+												<TableCell component="th" scope="row">
+													{itemFiltered.id}
+												</TableCell>
+												<TableCell component="th" scope="row">
+													{itemFiltered.name}
+												</TableCell>
+												<TableCell component="th" scope="row">
+													{itemFiltered.avaliable ? "Disponível" : "Indisponível"}
+												</TableCell>
+												<TableCell component="th" scope="row">
+													{itemFiltered.price.toLocaleString("pt-br", {
+														style: "currency",
+														currency: "BRL",
+													})}
+												</TableCell>
+												<TableCell component="th" scope="row">
+													<TextField
+														size="small"
+														type={"number"}
+														InputProps={{ inputProps: { min: 1 } }}
+														value={
+															watch("items").find((itemData) => itemData.id === item.id)?.quantity
+														}
+														onChange={(e) => changeQuantity(item.id, Number(e.target.value))}
+													/>
+												</TableCell>
+												<TableCell component="th" scope="row">
+													{(itemFiltered.price * item.quantity).toLocaleString("pt-br", {
+														style: "currency",
+														currency: "BRL",
+													})}
+												</TableCell>
+												<TableCell component="th" scope="row">
+													<Button
+														variant="outlined"
+														color="warning"
+														onClick={() => removeItem(item.id)}
+													>
+														Remover
+													</Button>
+												</TableCell>
+											</TableRow>
+										);
+									})}
+								</TableBody>
+							)}
+							{getValues("items").length === 0 && (
+								<TableFooter>
+									<TableRow>
+										<TableCell colSpan={4}>
+											<ListEmpty
+												dataList={getValues("items")}
+												label="Itens"
+												action={() => setOpenItems(true)}
+											/>
+										</TableCell>
+									</TableRow>
+								</TableFooter>
+							)}
 						</Table>
 					</TableContainer>
 				</Grid>
 			</Page.Content>
 			<Page.Content container justifyContent={"flex-end"} mt={1}>
-				<Grid>
+				{!!idOrder && (
+					<Grid xs={4}>
+						<InputSelectControlled
+							control={control}
+							label="Status"
+							nameField="status"
+							options={optionsOrderStatus}
+							emptyField
+						/>
+					</Grid>
+				)}
+
+				<Grid xs={4}>
 					<TextField
+						fullWidth
 						size={"small"}
 						label="Valor Total"
 						value={amount().toLocaleString("pt-br", {
@@ -255,7 +322,7 @@ export default function CreateUpdate() {
 			<Page.Content container justifyContent={"flex-end"}>
 				<Grid>
 					<Button variant="outlined" onClick={() => navigate(routesApp.orders.list)}>
-						Cancelar
+						Voltar
 					</Button>
 				</Grid>
 				<Grid>
@@ -264,7 +331,7 @@ export default function CreateUpdate() {
 						onClick={handleSubmit(onSubmit)}
 						disabled={!!Object.values(errors).length}
 					>
-						Finalizar pedido
+						{idOrder ? "Atualizar Pedido" : "Finalizar pedido"}
 					</Button>
 				</Grid>
 			</Page.Content>

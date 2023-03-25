@@ -15,7 +15,7 @@ import { getCategoriesRequest } from "../../../store/ducks/categories/slice";
 //IMAGE
 import ImageDefault from "../../../assets/images/cutlery.jpg";
 import ListEmpty from "../../../components/common/listEmpty";
-import { itemsDataProps } from "../../../helper/interfaces/Item";
+import { ItemsDataProps } from "../../../helper/interfaces/Item";
 // interface
 
 export default function ItemsList() {
@@ -55,10 +55,10 @@ export default function ItemsList() {
 		setOpenCreateEditItem(true);
 	};
 
-	const groupItemsByCategory = (items: itemsDataProps[]) => {
+	const groupItemsByCategory = (items: ItemsDataProps[]) => {
 		interface groupedItemsProps {
 			name: string;
-			items: itemsDataProps[];
+			items: ItemsDataProps[];
 		}
 
 		const itemsGrouped: groupedItemsProps[] = [];
@@ -89,7 +89,7 @@ export default function ItemsList() {
 			<Page.Page>
 				<Page.Title title="Cardápio" />
 
-				<Page.Content container spacing={1} justifyContent={"space-between"}>
+				<Page.Content container justifyContent={"space-between"}>
 					<Grid xs={12} sm={5} md={4}>
 						<InputSearch
 							placeholder="comida mexicana etc"
@@ -108,7 +108,7 @@ export default function ItemsList() {
 					</Grid>
 				</Page.Content>
 
-				<Page.Content container spacing={1}>
+				<Page.Content>
 					<ListEmpty
 						label="itens"
 						action={() => handleOpenCreateEditItem("create")}

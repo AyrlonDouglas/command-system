@@ -7,10 +7,10 @@ import { Unstable_Grid2 as Grid, Typography, CardActionArea } from "@mui/materia
 import { GridContainer, ImageFood } from "./styles";
 import DialogCreateOrUpdateItem from "../../Dialog/CreateOrUpdateItem";
 // interface
-import { itemsDataProps } from "../../../helper/interfaces/Item";
+import { ItemsDataProps } from "../../../helper/interfaces/Item";
 
 interface CardFoodProps {
-	item: itemsDataProps;
+	item: ItemsDataProps;
 	imagePath?: string;
 	canEdit: boolean;
 	onClick: (id: number) => void;

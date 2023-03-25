@@ -14,6 +14,7 @@ export class OrderItemService {
   async findAll(employeeLogged: Employee) {
     const orderItems = await OrderItem.find({
       where: { item: { company: { id: employeeLogged.company.id } } },
+      relations: { order: true, item: true },
     });
     return orderItems.map((orderItem) => new OrderItemDto(orderItem));
   }
