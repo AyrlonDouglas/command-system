@@ -19,7 +19,11 @@ export class OrderItem extends BaseEntity {
   @Column()
   quantity: number;
 
-  @ManyToOne(() => Order, (order) => order.orderItems, { nullable: false, cascade: true })
+  @ManyToOne(() => Order, (order) => order.orderItems, {
+    nullable: false,
+    // cascade: true,
+    // persistence: false,
+  })
   order: Order;
 
   @ManyToOne(() => Item, (item) => item.orderItems)

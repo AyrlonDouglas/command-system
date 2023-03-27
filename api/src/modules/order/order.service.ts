@@ -8,9 +8,15 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderDto } from './dto/order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
-
+import { OrderItemService } from '../order-item/order-item.service';
+import { Inject } from '@nestjs/common/decorators';
+import { forwardRef } from '@nestjs/common/utils';
 @Injectable()
 export class OrderService {
+  constructor(
+    @Inject(forwardRef(() => OrderItemService)) private readonly orderItemService: OrderItemService,
+  ) {}
+
   async create(
     createOrderDto: CreateOrderDto,
     employeeLogged: Employee,
@@ -37,13 +43,14 @@ export class OrderService {
     const orderData = await entityManager.save(order);
 
     for (const item of createOrderDto.items) {
-      await Order.addItemToOrder(orderData, item, employeeLogged, entityManager);
+      await this.orderItemService.create(
+        { itemId: item.id, orderId: order.id, quantity: item.quantity },
+        employeeLogged,
+        entityManager,
+      );
     }
 
-    const orderDataUpdated = await entityManager.findOne(Order, {
-      where: { id: orderData.id },
-      relations: { command: { table: true }, orderItems: { item: true } },
-    });
+    const orderDataUpdated = await this.findOne(orderData.id, employeeLogged, entityManager);
 
     return new OrderDto(orderDataUpdated);
   }
@@ -58,22 +65,9 @@ export class OrderService {
     return orders.map((order) => new OrderDto(order));
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} order`;
-  // }
-
-  async update(
-    id: number,
-    updateOrderDto: UpdateOrderDto,
-    employeeLogged: Employee,
-    entityManager: EntityManager,
-  ) {
-    // FIXME: FUNÇÃO NÃO FUNCIONA ADEQUADAMENTE, SÓ ATUALIZA O STATUS
+  async findOne(id: number, employeeLogged: Employee, entityManager: EntityManager) {
     const order = await entityManager.findOne(Order, {
-      where: {
-        id,
-        command: { employee: { company: { id: employeeLogged.company.id } } },
-      },
+      where: { id, command: { employee: { company: { id: employeeLogged.company.id } } } },
       relations: { command: { table: true }, orderItems: { item: true } },
     });
 
@@ -81,59 +75,90 @@ export class OrderService {
       throw new HttpException('Este pedido não existe.', HttpStatus.BAD_REQUEST);
     }
 
+    return order;
+  }
+
+  async update(
+    id: number,
+    updateOrderDto: UpdateOrderDto,
+    employeeLogged: Employee,
+    entityManager: EntityManager,
+  ) {
+    const order = await this.findOne(id, employeeLogged, entityManager);
+
+    if (order.status !== 'waiting') {
+      throw new HttpException(
+        'Pedidos confirmados não podem ser alterados.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const itemsToAdd = updateOrderDto.items.filter(
       (item) => !order.orderItems.some((orderItem) => orderItem.item.id === item.id),
     );
-    const orderItemsToAddPromise: Promise<OrderItem>[] = [];
-
-    for (const item of itemsToAdd) {
-      const itemData = await entityManager.findOne(Item, { where: { id: item.id } });
-      const orderItem = entityManager
-        .create(OrderItem, {
-          item: itemData,
-          order: order,
-          quantity: item.quantity,
-        })
-        .save();
-
-      orderItemsToAddPromise.push(orderItem);
-    }
-
-    if (updateOrderDto.status) {
-      order.status = updateOrderDto.status;
-    }
 
     const orderItemsToRemove = order.orderItems.filter(
       (orderItem) => !updateOrderDto.items.some((item) => item.id === orderItem.item.id),
     );
 
-    const orderItemsToModifyQuantity = order.orderItems
-      .filter(
-        (orderItem) =>
-          !orderItemsToRemove.some(
-            (orderItemRemove) => orderItemRemove.item.id === orderItem.item.id,
-          ),
-      )
-      .filter(
-        (orderItem) =>
-          updateOrderDto.items.find((item) => item.id === orderItem.item.id).quantity !==
-          orderItem.quantity,
-      )
-      .map((orderItem) => {
-        orderItem.quantity = updateOrderDto.items.find(
-          (item) => item.id === orderItem.item.id,
-        ).quantity;
+    const orderItemsToModifyQuantity = order.orderItems.filter((orderItem) => {
+      const itemFinded = updateOrderDto.items.find((item) => item.id === orderItem.item.id);
+      return itemFinded && itemFinded.quantity !== orderItem.quantity;
+    });
 
-        return orderItem;
-      });
+    const promiseToResolve: Promise<any>[] = [];
 
-    await Promise.all([
-      Promise.all(orderItemsToAddPromise),
-      entityManager.remove(orderItemsToRemove),
-      entityManager.save(orderItemsToModifyQuantity),
-    ]);
+    // add
+    for (const item of itemsToAdd) {
+      const { id: itemId, quantity } = item;
+      const { id: orderId } = order;
 
-    const orderData = await entityManager.save(order);
+      const orderItem = this.orderItemService.create(
+        { itemId, orderId, quantity },
+        employeeLogged,
+        entityManager,
+      );
+
+      promiseToResolve.push(orderItem);
+    }
+
+    // remove
+    for (const orderItemToRemove of orderItemsToRemove) {
+      const { id } = orderItemToRemove;
+      const orderItem = this.orderItemService.remove(id, employeeLogged, entityManager);
+
+      promiseToResolve.push(orderItem);
+    }
+
+    // modify
+    for (const orderItemMod of orderItemsToModifyQuantity) {
+      const { id, item } = orderItemMod;
+
+      const quantity = updateOrderDto.items.find(
+        (itemReceveid) => itemReceveid.id === item.id,
+      ).quantity;
+
+      const orderItem = this.orderItemService.update(
+        id,
+        { quantity },
+        employeeLogged,
+        entityManager,
+      );
+
+      promiseToResolve.push(orderItem);
+    }
+
+    await Promise.all(promiseToResolve);
+
+    let orderData = await this.findOne(id, employeeLogged, entityManager);
+
+    if (updateOrderDto.status !== orderData.status) {
+      const { status } = updateOrderDto;
+      orderData.status = status;
+
+      orderData = await entityManager.getRepository(Order).save(orderData);
+    }
+
     return new OrderDto(orderData);
   }
 
