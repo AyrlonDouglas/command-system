@@ -43,7 +43,9 @@ export class Order extends BaseEntity {
   @ManyToOne(() => Command, (command) => command.orders)
   command: Command;
 
-  @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
+    cascade: true,
+  })
   orderItems: OrderItem[];
 
   @CreateDateColumn()
@@ -54,35 +56,6 @@ export class Order extends BaseEntity {
 
   @DeleteDateColumn()
   deletedAt: Date;
-
-  static async addItemToOrder(
-    order: Order,
-    item: IItems,
-    employee: Employee,
-    entityManager: EntityManager,
-  ) {
-    const itemSearch = await entityManager.findOne(Item, {
-      where: { id: item.id, company: { id: employee.company.id } },
-    });
-
-    if (!itemSearch) {
-      throw new HttpException('Item não Cadastrado.', HttpStatus.BAD_REQUEST);
-    }
-
-    if (!itemSearch.avaliable) {
-      throw new HttpException(
-        `Item ${itemSearch.name} não está disponível`,
-        HttpStatus.PRECONDITION_FAILED,
-      );
-    }
-
-    const orderItem = new OrderItem();
-    orderItem.item = itemSearch;
-    orderItem.order = order;
-    orderItem.quantity = item.quantity;
-
-    await entityManager.save(orderItem);
-  }
 }
 
 @EventSubscriber()

@@ -19,7 +19,7 @@ export class OrderDto {
   constructor(order: Order) {
     this.id = order.id;
     this.status = order.status;
-    this.command = order.command ? new CommandDto(order.command) : undefined;
+    this.command = order.command ? new CommandDto(order.command) : null;
     this.orderItems = order?.orderItems?.map((orderItem) => new OrderItemDto(orderItem));
     this.canceled = order.canceled;
   }

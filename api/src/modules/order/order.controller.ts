@@ -39,10 +39,14 @@ export class OrderController {
     return this.orderService.findAll(employeeLogged, entityManager);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.orderService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(
+    @Param('id') id: string,
+    @EmployeeLogged() employeeLogged: Employee,
+    @EntityManagerParam() entityManager: EntityManager,
+  ) {
+    return this.orderService.findOne(+id, employeeLogged, entityManager);
+  }
 
   @Patch(':id')
   update(
