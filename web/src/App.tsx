@@ -23,7 +23,7 @@ export default function App() {
 	return (
 		<Provider store={store}>
 			<ThemeProvider theme={theme(colorMode)}>
-				<ToastContainer theme={colorMode} position="top-left" />
+				<ToastContainer theme={colorMode} position="bottom-center" />
 				<BrowserRouter>
 					<NavigateSetter />
 					<CssBaseline />

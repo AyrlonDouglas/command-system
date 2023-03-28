@@ -43,9 +43,7 @@ export class Order extends BaseEntity {
   @ManyToOne(() => Command, (command) => command.orders)
   command: Command;
 
-  @OneToMany(() => OrderItem, (orderItem) => orderItem.order, {
-    cascade: true,
-  })
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
   orderItems: OrderItem[];
 
   @CreateDateColumn()

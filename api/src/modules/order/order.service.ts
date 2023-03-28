@@ -49,7 +49,6 @@ export class OrderService {
         entityManager,
       );
     }
-
     const orderDataUpdated = await this.findOne(orderData.id, employeeLogged, entityManager);
 
     return new OrderDto(orderDataUpdated);
@@ -88,7 +87,7 @@ export class OrderService {
 
     if (order.status !== 'waiting') {
       throw new HttpException(
-        'Pedidos confirmados não podem ser alterados.',
+        'Pedidos com status diferente de aguardando não podem ser alterados.',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -162,7 +161,15 @@ export class OrderService {
     return new OrderDto(orderData);
   }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} order`;
-  // }
+  async remove(id: number, employeeLogged: Employee, entityManager: EntityManager) {
+    const order = await entityManager.findOne(Order, {
+      where: { id, command: { employee: { company: { id: employeeLogged.company.id } } } },
+    });
+
+    if (!order) {
+      throw new HttpException(`Pedido ${id} não existe`, HttpStatus.BAD_REQUEST);
+    }
+
+    return entityManager.delete(Order, id);
+  }
 }

@@ -5,7 +5,8 @@ import { routesApp } from "../../../helper/constants/routes";
 import { createUpdateOrderProps } from "../../../helper/interfaces/Order";
 import { navigateSetter } from "../../../routes/NavigateSetter";
 import { api } from "../../../service/axios";
-// import { setModalPrimaryOpen, setModalSecondaryOpen } from "../layout/slice";
+import { setModalSecondaryOpen } from "../layout/slice";
+
 import {
 	getOrdersRequest,
 	getOrdersSuccess,
@@ -14,6 +15,8 @@ import {
 	createOrderSuccess,
 	updateOrderRequest,
 	updateOrderSuccess,
+	removeOrderRequest,
+	removeOrderSuccess,
 } from "./slice";
 
 function* getOrders() {
@@ -65,7 +68,30 @@ function* updateOrder({ payload }: { type: string; payload: createUpdateOrderPro
 		if (isAxiosError(error)) {
 			toast.error(error.response?.data.message);
 		} else {
-			toast.error("Não foi possível criar o pedido");
+			toast.error("Não foi possível editar o pedido");
+		}
+
+		yield put(ordersFail(error));
+	}
+}
+
+function* removeOrder({ payload }: { type: string; payload: number }) {
+	const id = payload;
+	try {
+		yield call(api.delete, `/order/${id}`);
+
+		toast.success(`Pedido ${id} removido.`);
+
+		yield put(setModalSecondaryOpen(false));
+
+		navigateSetter(routesApp.orders.list);
+
+		yield put(removeOrderSuccess({ id }));
+	} catch (error) {
+		if (isAxiosError(error)) {
+			toast.error(error.response?.data.message);
+		} else {
+			toast.error(`Não foi possível remover o pedido ${id}.`);
 		}
 
 		yield put(ordersFail(error));
@@ -76,4 +102,5 @@ export default function* orderSaga() {
 	yield takeLatest(getOrdersRequest().type, getOrders);
 	yield takeLatest(createOrderRequest("").type, createOrder);
 	yield takeLatest(updateOrderRequest("").type, updateOrder);
+	yield takeLatest(removeOrderRequest("").type, removeOrder);
 }

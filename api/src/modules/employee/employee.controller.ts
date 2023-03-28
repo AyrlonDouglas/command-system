@@ -14,6 +14,7 @@ import { ChangePassDto } from './dto/change-pass.dto';
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
+  @Permissions([{ entity: 'EMPLOYEE', action: 'CREATE' }])
   @Post()
   create(@Body() createEmployeeDto: CreateEmployeeDto, @EmployeeLogged() employeeLogged: Employee) {
     return this.employeeService.create(createEmployeeDto, employeeLogged);
@@ -25,6 +26,7 @@ export class EmployeeController {
     return this.employeeService.findAll(employeeLogged);
   }
 
+  @Permissions([{ entity: 'EMPLOYEE', action: 'VIEW' }])
   @Get(':id')
   findOne(@Param('id') id: string, @EmployeeLogged() employeeLogged: Employee) {
     return this.employeeService.findOne(+id, employeeLogged);
@@ -35,6 +37,7 @@ export class EmployeeController {
     return this.employeeService.changePass(changePassDto, employeeLogged);
   }
 
+  @Permissions([{ entity: 'EMPLOYEE', action: 'EDIT' }])
   @Patch(':id')
   update(
     @Param('id') id: string,

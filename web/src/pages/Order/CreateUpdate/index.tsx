@@ -32,7 +32,11 @@ import InputSelectControlled from "../../../components/Input/SelectControlled";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getCommandsRequest } from "../../../store/ducks/commands/slice";
 import { getItemsRequest } from "../../../store/ducks/items/slice";
-import { createOrderRequest, updateOrderRequest } from "../../../store/ducks/orders/slice";
+import {
+	createOrderRequest,
+	removeOrderRequest,
+	updateOrderRequest,
+} from "../../../store/ducks/orders/slice";
 
 // validator
 import { useForm } from "react-hook-form";
@@ -41,6 +45,8 @@ import * as yup from "yup";
 
 // const
 import { optionsOrderStatus } from "../../../helper/constants/orderStatus";
+import DialogRemovalConfirmation from "../../../components/Dialog/RemovalConfirmation";
+import { setModalSecondaryOpen } from "../../../store/ducks/layout/slice";
 
 const schema = yup.object().shape({
 	commandId: yup.number().required("Selecione uma comanda"),
@@ -64,6 +70,8 @@ export default function CreateUpdate() {
 	const { idOrder } = useParams();
 	const dispatch = useAppDispatch();
 	const [openItems, setOpenItems] = useState(false);
+	const openDeleteConfirmation = useAppSelector((state) => state.layout.modals.secondary);
+	const [removeOpen, setRemoveOpen] = useState(false);
 	const {
 		items: itemsState,
 		commands: commandsState,
@@ -320,13 +328,24 @@ export default function CreateUpdate() {
 				</Grid>
 			</Page.Content>
 			<Page.Content container justifyContent={"flex-end"}>
-				<Grid>
-					<Button variant="outlined" onClick={() => navigate(routesApp.orders.list)}>
+				<Grid xs={12} sm={6} md={4}>
+					<Button fullWidth variant="outlined" onClick={() => navigate(routesApp.orders.list)}>
 						Voltar
 					</Button>
 				</Grid>
-				<Grid>
+				<Grid xs={12} sm={6} md={4}>
 					<Button
+						fullWidth
+						variant="contained"
+						onClick={() => dispatch(setModalSecondaryOpen(true))}
+						color="error"
+					>
+						Remover
+					</Button>
+				</Grid>
+				<Grid xs={12} sm={6} md={4}>
+					<Button
+						fullWidth
 						variant="contained"
 						onClick={handleSubmit(onSubmit)}
 						disabled={!!Object.values(errors).length}
@@ -335,6 +354,12 @@ export default function CreateUpdate() {
 					</Button>
 				</Grid>
 			</Page.Content>
+			<DialogRemovalConfirmation
+				open={openDeleteConfirmation.isOpen}
+				title={`Você tem certeza que deseja remover o pedido ${idOrder}?`}
+				handleClose={() => dispatch(setModalSecondaryOpen(false))}
+				onConfirmation={() => dispatch(removeOrderRequest(idOrder))}
+			/>
 			<DialogItems
 				open={openItems}
 				onClose={() => {

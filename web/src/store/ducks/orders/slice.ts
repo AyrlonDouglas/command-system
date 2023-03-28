@@ -42,6 +42,13 @@ export const orderSlice = createSlice({
 			];
 			state.error = null;
 		},
+		removeOrderRequest: (state, action) => {
+			state.loading = true;
+		},
+		removeOrderSuccess: (state, action) => {
+			state.loading = false;
+			state.data = state.data.filter((order) => order.id !== action.payload.id);
+		},
 	},
 });
 
@@ -53,5 +60,7 @@ export const {
 	createOrderSuccess,
 	updateOrderRequest,
 	updateOrderSuccess,
+	removeOrderRequest,
+	removeOrderSuccess,
 } = orderSlice.actions;
 export default orderSlice.reducer;

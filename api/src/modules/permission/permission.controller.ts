@@ -13,12 +13,14 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { EntityManager } from 'typeorm';
 import EntityManagerParam from 'src/helper/decorators/entityManager.decorator';
+import { Permissions } from 'src/helper/decorators/permission.decorator';
 @ApiBearerAuth()
 @ApiTags('Permission')
 @Controller('permission')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
+  @Permissions([{ entity: 'PERMISSION', action: 'CREATE' }])
   @Post()
   create(
     @Body() createPermissionDto: CreatePermissionDto,
@@ -27,6 +29,7 @@ export class PermissionController {
     return this.permissionService.create(createPermissionDto, entityManager);
   }
 
+  @Permissions([{ entity: 'PERMISSION', action: 'VIEW' }])
   @Get()
   findAll() {
     return this.permissionService.findAll();

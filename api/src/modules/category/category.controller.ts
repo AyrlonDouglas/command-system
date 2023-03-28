@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 import EntityManagerParam from 'src/helper/decorators/entityManager.decorator';
+import { Permissions } from 'src/helper/decorators/permission.decorator';
 import { EntityManager } from 'typeorm';
 import { Employee } from '../employee/entities/employee.entity';
 import { CategoryService } from './category.service';
@@ -14,6 +15,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @Permissions([{ entity: 'CATEGORY', action: 'CREATE' }])
   @Post()
   create(
     @Body() createCategoryDto: CreateCategoryDto,
@@ -23,6 +25,7 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto, employeeLogged, entityManager);
   }
 
+  @Permissions([{ entity: 'CATEGORY', action: 'VIEW' }])
   @Get()
   findAll(
     @EmployeeLogged() employeeLogged: Employee,
@@ -36,6 +39,7 @@ export class CategoryController {
   //   return this.categoryService.findOne(+id);
   // }
 
+  @Permissions([{ entity: 'CATEGORY', action: 'EDIT' }])
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -46,6 +50,7 @@ export class CategoryController {
     return this.categoryService.update(+id, updateCategoryDto, employeeLogged, entityManager);
   }
 
+  @Permissions([{ entity: 'CATEGORY', action: 'REMOVE' }])
   @Delete(':id')
   remove(
     @Param('id') id: string,

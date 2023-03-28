@@ -7,6 +7,7 @@ import { Employee } from '../employee/entities/employee.entity';
 import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 import EntityManagerParam from 'src/helper/decorators/entityManager.decorator';
 import { EntityManager } from 'typeorm';
+import { Permissions } from 'src/helper/decorators/permission.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Item')
@@ -14,6 +15,7 @@ import { EntityManager } from 'typeorm';
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
+  @Permissions([{ entity: 'ITEM', action: 'CREATE' }])
   @Post()
   create(
     @Body() createItemDto: CreateItemDto,
@@ -23,6 +25,7 @@ export class ItemController {
     return this.itemService.create(createItemDto, employeeLogged, entityManager);
   }
 
+  @Permissions([{ entity: 'ITEM', action: 'VIEW' }])
   @Get()
   findAll(
     @EmployeeLogged() employeeLogged: Employee,
@@ -35,6 +38,8 @@ export class ItemController {
   // findOne(@Param('id') id: string) {
   //   return this.itemService.findOne(+id);
   // }
+
+  @Permissions([{ entity: 'ITEM', action: 'EDIT' }])
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -45,6 +50,7 @@ export class ItemController {
     return this.itemService.update(+id, updateItemDto, employeeLogged, entityManager);
   }
 
+  @Permissions([{ entity: 'ITEM', action: 'REMOVE' }])
   @Delete(':id')
   remove(
     @Param('id') id: string,
