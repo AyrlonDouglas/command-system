@@ -13,20 +13,23 @@ export class ItemService {
     createItemDto: CreateItemDto,
     employeeLogged: Employee,
     entityManager: EntityManager,
+    file: Express.Multer.File,
   ) {
     const category = await entityManager.findOneBy(Category, { id: createItemDto.categoryId });
+    console.log(file);
 
+    // throw new HttpException('Esta categoria não existe.', HttpStatus.BAD_GATEWAY);
     if (!category) {
       throw new HttpException('Esta categoria não existe.', HttpStatus.BAD_GATEWAY);
     }
-
     const item = new Item();
     item.name = createItemDto.name;
     item.description = createItemDto.description;
-    item.price = createItemDto.price;
+    item.price = +createItemDto.price;
     item.category = category;
     item.company = employeeLogged.company;
     item.avaliable = createItemDto.avaliable;
+    item.imageName = file.filename;
 
     const itemData = await entityManager.save(item);
 

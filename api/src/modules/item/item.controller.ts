@@ -1,13 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+// service
 import { ItemService } from './item.service';
+// dto
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+// entity
 import { Employee } from '../employee/entities/employee.entity';
+// decorator
 import EmployeeLogged from 'src/helper/decorators/employeeLogged.decorator';
 import EntityManagerParam from 'src/helper/decorators/entityManager.decorator';
-import { EntityManager } from 'typeorm';
 import { Permissions } from 'src/helper/decorators/permission.decorator';
+// libs
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { EntityManager } from 'typeorm';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { unlink } from 'fs/promises';
 
 @ApiBearerAuth()
 @ApiTags('Item')
@@ -17,12 +36,37 @@ export class ItemController {
 
   @Permissions([{ entity: 'ITEM', action: 'CREATE' }])
   @Post()
-  create(
-    @Body() createItemDto: CreateItemDto,
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: 'public/images/items',
+        filename: (req, file, cb) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, file.fieldname + '-' + uniqueSuffix + extname(file.originalname));
+        },
+      }),
+    }),
+  )
+  async create(
+    @Body() createItemDto: any,
+    @UploadedFile() file: Express.Multer.File,
     @EmployeeLogged() employeeLogged: Employee,
     @EntityManagerParam() entityManager: EntityManager,
   ) {
-    return this.itemService.create(createItemDto, employeeLogged, entityManager);
+    try {
+      const createItem = new URLSearchParams(createItemDto);
+      const createItemData = Object.fromEntries(createItem) as unknown as CreateItemDto;
+
+      createItemData.avaliable = createItemDto.avaliable === 'true' ? true : false;
+
+      return await this.itemService.create(createItemData, employeeLogged, entityManager, file);
+    } catch (error) {
+      if (file) {
+        await unlink(file.path);
+      }
+
+      throw error;
+    }
   }
 
   @Permissions([{ entity: 'ITEM', action: 'VIEW' }])

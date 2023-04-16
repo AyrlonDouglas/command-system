@@ -35,7 +35,7 @@ export class Item extends BaseEntity {
   avaliable: boolean;
 
   @Column({ nullable: true })
-  imagePath: string;
+  imageName: string;
 
   @ManyToOne(() => Category, (category) => category.items)
   category: Category;

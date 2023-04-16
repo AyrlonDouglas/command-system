@@ -5,6 +5,7 @@ export interface CreateOrUpdateItemProps {
 		price: number;
 		categoryId: number;
 		avaliable: boolean;
+		file?: File;
 		id?: number;
 	};
 	type: string;

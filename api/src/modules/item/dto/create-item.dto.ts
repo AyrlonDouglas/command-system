@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  isNumberString,
-  IsString,
-  IsCurrency,
-  IsNumber,
-} from 'class-validator';
-import { Category } from 'src/modules/category/entities/category.entity';
+import { IsString, IsNumber } from 'class-validator';
 
 export class CreateItemDto {
   @ApiProperty({ example: 'rice', description: 'item name' })
@@ -25,12 +19,6 @@ export class CreateItemDto {
   @ApiProperty({ example: 1, description: 'item category id' })
   @IsNumber()
   categoryId: number;
-
-  @ApiProperty({
-    example: 'src/assets/images',
-    description: 'Image path of image food',
-  })
-  imagePath: string;
 
   @ApiProperty({
     example: true,

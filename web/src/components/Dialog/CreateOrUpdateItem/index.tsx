@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, DetailedHTMLProps, InputHTMLAttributes } from "react";
 //MUI
 import {
 	Button,
@@ -7,7 +7,15 @@ import {
 	DialogContent,
 	DialogTitle,
 	Unstable_Grid2 as Grid,
+	Box,
+	Typography,
+	FormHelperText,
+	IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+
+// ICONS
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 //COMPONENTS
 import InputTextFieldControlled from "../../Input/TextFieldControlled";
@@ -31,12 +39,15 @@ import AutocompleteControlled from "../../Input/AutocompleteControlled";
 
 //IMAGE
 
+//
+
 const schema = yup.object().shape({
 	name: yup.string().required("Preencha o nome"),
 	description: yup.string().required("Preencha a descrição"),
 	price: yup.number().required("Preencha o preço").typeError("Preencha um preço válido"),
 	avaliable: yup.boolean().required("Preencha se o item está disponível"),
 	categoryId: yup.number().required("Escolha uma categoria"),
+	file: yup.mixed().notRequired(),
 });
 
 interface DialogCreateOrEditItemProps {
@@ -53,7 +64,9 @@ export default function DialogCreateOrUpdateItem({
 	const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
 	const categoriesState = useAppSelector((state) => state.categories);
 	const itemsState = useAppSelector((state) => state.items);
-
+	const fileInputRef = useRef<HTMLInputElement>(null);
+	const [imageUrl, setImageUrl] = useState("");
+	const imageRef = useRef<HTMLImageElement | null>(null);
 	const dispatch = useAppDispatch();
 
 	const itemFiltered = itemsState.data.filter((item) => item.id === idItem)[0];
@@ -79,6 +92,7 @@ export default function DialogCreateOrUpdateItem({
 		setValue,
 		// trigger,
 		reset,
+		watch,
 	} = useForm({
 		resolver: yupResolver(schema),
 		defaultValues: {
@@ -88,6 +102,7 @@ export default function DialogCreateOrUpdateItem({
 			imagePath: "" as string,
 			avaliable: true,
 			categoryId: undefined as number | undefined,
+			file: undefined as File | undefined,
 		},
 	});
 
@@ -97,14 +112,32 @@ export default function DialogCreateOrUpdateItem({
 			return;
 		}
 
+		let form: typeof defaultValues | FormData = data;
+
+		if (data && data.file) {
+			const formData = new FormData();
+
+			for (const [key, value] of Object.entries(data)) {
+				if (key === "file") {
+					formData.append(key, data.file, data.file.name);
+				} else {
+					formData.append(key, value.toString());
+				}
+			}
+
+			form = formData;
+		}
+
+		console.log("form", form);
+
 		if (!idItem) {
-			dispatch(createItemRequest(data));
-			onClose();
+			dispatch(createItemRequest(form));
+			// onClose();
 			return;
 		}
 
 		if (idItem && dataChanged()) {
-			dispatch(updateItemRequest({ ...data, id: itemFiltered.id }));
+			dispatch(updateItemRequest({ ...form, id: itemFiltered.id }));
 			onClose();
 			return;
 		}
@@ -124,13 +157,47 @@ export default function DialogCreateOrUpdateItem({
 		handleClose();
 		reset();
 	};
+
 	const onCloseDeleteConfirmation = () => {
 		setOpenDeleteConfirmation(false);
 	};
+
 	const onConfirmationDelete = () => {
 		dispatch(removeItemRequest(idItem));
 		setOpenDeleteConfirmation(false);
 		onClose();
+	};
+
+	const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		let file: File | undefined = undefined;
+
+		event.preventDefault();
+
+		if (event.target && event.target.files) {
+			file = event?.target?.files[0];
+		}
+
+		setValue("file", file);
+
+		if (file) {
+			const imageUrl = URL.createObjectURL(file);
+			setImageUrl(imageUrl);
+
+			if (imageRef.current) {
+				imageRef.current.src = imageUrl;
+			}
+		}
+	};
+
+	const handleButtonClickToFile = () => {
+		if (fileInputRef?.current) {
+			fileInputRef.current.click();
+		}
+	};
+
+	const removeFile = () => {
+		setValue("file", defaultValues?.file);
+		setImageUrl("");
 	};
 	return (
 		<Dialog open={open} onClose={onClose}>
@@ -160,8 +227,6 @@ export default function DialogCreateOrUpdateItem({
 								options={categoriesState.data.map(({ id, name }) => ({ id, text: name }))}
 								loading={categoriesState.loading}
 							/>
-
-
 						</Grid>
 						<Grid xs={12} sx={{ display: "flex", alignItems: "center" }}>
 							<InputSwitchControlled
@@ -169,6 +234,51 @@ export default function DialogCreateOrUpdateItem({
 								label="Item disponível ?"
 								nameField="avaliable"
 							/>
+						</Grid>
+						<Grid xs={12} container>
+							<Grid>
+								<Button
+									onClick={handleButtonClickToFile}
+									variant="outlined"
+									endIcon={<UploadFileIcon />}
+								>
+									Imagem
+								</Button>
+							</Grid>
+
+							{!!imageUrl && (
+								<Grid container xs={12}>
+									<Grid xs={6} sx={{ position: "relative" }}>
+										<IconButton
+											sx={{
+												position: "absolute",
+												top: 10,
+												right: 10,
+											}}
+											onClick={() => removeFile()}
+										>
+											<CloseIcon color="error" />
+										</IconButton>
+										<Box
+											component={"img"}
+											sx={{ width: "100%" }}
+											src={imageUrl}
+											alt="Uploaded preview"
+											ref={imageRef}
+										/>
+									</Grid>
+								</Grid>
+							)}
+							<Grid>
+								{!!getValues("file")?.name && <Typography>{getValues("file")?.name}</Typography>}
+							</Grid>
+							{!!errors["file"] && (
+								<Grid xs={12}>
+									<FormHelperText error={!!errors["file"]}>
+										{errors["file"]?.message}
+									</FormHelperText>
+								</Grid>
+							)}
 						</Grid>
 					</Grid>
 				</DialogContent>
@@ -187,6 +297,13 @@ export default function DialogCreateOrUpdateItem({
 						{idItem ? "Atualizar" : "Adicionar"}
 					</Button>
 				</DialogActions>
+				<input
+					ref={fileInputRef}
+					type="file"
+					accept="image/*"
+					hidden
+					onChange={(e) => handleFileInputChange(e)}
+				/>
 			</form>
 			<DialogRemovalConfirmation
 				open={openDeleteConfirmation}
