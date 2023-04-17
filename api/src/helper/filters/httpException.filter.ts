@@ -28,7 +28,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       type: string,
       message: string,
       _status = status,
-      errorMessages?: string | string[],
+      description?: string,
+      // errorMessages?: string | string[],
     ) => {
       response.status(_status).json({
         statusCode: _status,
@@ -36,7 +37,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
         method: request.method,
         type,
         message,
-        errorMessages,
+        description,
+        // errorMessages,
         timestamp: new Date().getTime(),
         ...(['development', 'test'].includes(process.env.NODE_ENV) ? { stack } : {}),
       });
@@ -45,7 +47,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (status === 503) {
       response.status(status).json(exception.getResponse());
     } else {
-      responseMessage(exception.name, exception.message, exception.status);
+      responseMessage(
+        exception.name,
+        exception.message,
+        exception.status,
+        exception.options.description,
+      );
     }
   }
 }

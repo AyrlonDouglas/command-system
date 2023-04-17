@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 // service
@@ -27,6 +28,7 @@ import { EntityManager } from 'typeorm';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { unlink } from 'fs/promises';
+import { Response } from 'express';
 
 @ApiBearerAuth()
 @ApiTags('Item')
@@ -102,5 +104,15 @@ export class ItemController {
     @EntityManagerParam() entityManager: EntityManager,
   ) {
     return this.itemService.remove(+id, employeeLogged, entityManager);
+  }
+
+  @Permissions([{ entity: 'ITEM', action: 'VIEW' }])
+  @Get('picture/:id')
+  async findItemPicture(
+    @Param('id') id: string,
+    @EmployeeLogged() employeeLogged: Employee,
+    @EntityManagerParam() entityManager: EntityManager,
+  ) {
+    return this.itemService.findItemPicture(+id, employeeLogged, entityManager);
   }
 }

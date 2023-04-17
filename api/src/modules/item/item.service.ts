@@ -6,6 +6,8 @@ import { CreateItemDto } from './dto/create-item.dto';
 import { ItemDto } from './dto/item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { Item } from './entities/item.entity';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class ItemService {
@@ -16,12 +18,11 @@ export class ItemService {
     file: Express.Multer.File,
   ) {
     const category = await entityManager.findOneBy(Category, { id: createItemDto.categoryId });
-    console.log(file);
 
-    // throw new HttpException('Esta categoria não existe.', HttpStatus.BAD_GATEWAY);
     if (!category) {
       throw new HttpException('Esta categoria não existe.', HttpStatus.BAD_GATEWAY);
     }
+
     const item = new Item();
     item.name = createItemDto.name;
     item.description = createItemDto.description;
@@ -42,12 +43,17 @@ export class ItemService {
       relations: { category: true },
       select: { category: { id: true, name: true } },
     });
+
     return items.map((item) => new ItemDto(item));
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} item`;
-  // }
+  async findOne(id: number, employeeLoged: Employee, entityManager: EntityManager) {
+    const item = entityManager.findOne(Item, {
+      where: { id, company: { id: employeeLoged.company.id } },
+    });
+
+    return item;
+  }
 
   async update(
     id: number,
@@ -55,9 +61,7 @@ export class ItemService {
     employeeLoged: Employee,
     entityManager: EntityManager,
   ) {
-    const item = await entityManager.findOne(Item, {
-      where: { id, company: { id: employeeLoged.company.id } },
-    });
+    const item = await this.findOne(id, employeeLoged, entityManager);
 
     if (!item) {
       throw new HttpException('O item não existe', HttpStatus.PRECONDITION_FAILED);
@@ -81,14 +85,34 @@ export class ItemService {
   }
 
   async remove(id: number, employeeLoged: Employee, entityManager: EntityManager) {
-    const item = await entityManager.findOne(Item, {
-      where: { id, company: { id: employeeLoged.company.id } },
-    });
+    const item = await this.findOne(id, employeeLoged, entityManager);
 
     if (!item) {
       throw new HttpException('Item não existe', HttpStatus.PRECONDITION_FAILED);
     }
 
     return entityManager.remove(item);
+  }
+
+  async findItemPicture(id: number, employeeLoged: Employee, entityManager: EntityManager) {
+    const item = await this.findOne(id, employeeLoged, entityManager);
+
+    let buffer = null;
+    let extension = null;
+
+    if (item && item.imageName) {
+      const pathImage = path.resolve(__dirname, '../../../public/images/items', item.imageName);
+
+      buffer = await fs.readFile(pathImage).catch((err) => {
+        throw new HttpException(
+          'Algum erro aconteceu ao buscar a imagem do item',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          { description: err?.message },
+        );
+      });
+      extension = path.extname(item.imageName);
+    }
+
+    return { buffer, extension };
   }
 }
