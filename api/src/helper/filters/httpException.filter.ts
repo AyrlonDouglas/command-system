@@ -51,7 +51,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         exception.name,
         exception.message,
         exception.status,
-        exception.options.description,
+        exception?.options?.description,
       );
     }
   }

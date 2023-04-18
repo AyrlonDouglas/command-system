@@ -38,8 +38,8 @@ export class PermissionService {
     return permissionsResolved.map((permission) => new PermissionDto(permission));
   }
 
-  async findAll() {
-    const permissions = await Permission.find();
+  async findAll(entityManager: EntityManager) {
+    const permissions = await entityManager.find(Permission);
 
     return permissions.map((permission) => new PermissionDto(permission));
   }
