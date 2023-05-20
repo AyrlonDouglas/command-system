@@ -70,9 +70,6 @@ export class EmployeeSubscriber implements EntitySubscriberInterface {
     const company = await event.manager.findOne(Company, {
       where: { id: event.entity.company.id },
     });
-    //  Company.findOne({
-    //   where: { id: event.entity.company.id },
-    // });
 
     company.registeredEmployees += 1;
     await event.manager.save(company);

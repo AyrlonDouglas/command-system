@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Button, Unstable_Grid2 as Grid, Divider, Typography } from "@mui/material";
 
 //COMPONENTS
-import PageTitle from "../../../components/common/PageTitle";
 import CardFood from "../../../components/Card/Food";
 import DialogCreateOrUpdateItem from "../../../components/Dialog/CreateOrUpdateItem";
 import InputSearch from "../../../components/Input/Search";
@@ -125,13 +124,7 @@ export default function ItemsList() {
 								</Grid>
 								{itemByCategory.items.map((item) => (
 									<Grid key={item.id} xs={12} sm={6} md={4}>
-										<CardFood
-											item={item}
-											imagePath={ImageDefault}
-											key={item.name}
-											canEdit
-											onClick={onClickCard}
-										/>
+										<CardFood item={item} key={item.name} canEdit onClick={onClickCard} />
 									</Grid>
 								))}
 							</Grid>

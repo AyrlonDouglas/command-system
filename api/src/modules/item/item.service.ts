@@ -1,13 +1,19 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+// entity
 import { EntityManager } from 'typeorm';
 import { Category } from '../category/entities/category.entity';
 import { Employee } from '../employee/entities/employee.entity';
+import { Item } from './entities/item.entity';
+// dto
 import { CreateItemDto } from './dto/create-item.dto';
 import { ItemDto } from './dto/item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import { Item } from './entities/item.entity';
+// libs
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { extname } from 'path';
+import { v4 as uuidv4 } from 'uuid';
+import * as sharp from 'sharp';
 
 @Injectable()
 export class ItemService {
@@ -26,30 +32,49 @@ export class ItemService {
     const item = new Item();
     item.name = createItemDto.name;
     item.description = createItemDto.description;
-    item.price = +createItemDto.price;
+    item.price = createItemDto.price;
     item.category = category;
     item.company = employeeLogged.company;
     item.avaliable = createItemDto.avaliable;
-    item.imageName = file.filename;
+
+    if (file) {
+      const fileSaved = await this.saveItemPicture(employeeLogged, file);
+      item.imageName = fileSaved.fileName;
+    }
 
     const itemData = await entityManager.save(item);
+
+    // // const image = await this.findItemPicture(itemSaved.id, employeeLogged, entityManager);
+    // //TODO ajustar para não utilizar any
+    // const itemData = { ...itemSaved, image } as any;
 
     return new ItemDto(itemData);
   }
 
-  async findAll(employeeLoged: Employee, entityManager: EntityManager) {
+  async findAll(employeeLogged: Employee, entityManager: EntityManager) {
     const items = await entityManager.find(Item, {
-      where: { company: { id: employeeLoged.company.id } },
+      where: { company: { id: employeeLogged.company.id } },
       relations: { category: true },
       select: { category: { id: true, name: true } },
     });
 
-    return items.map((item) => new ItemDto(item));
+    const itemsData = [];
+
+    for (const item of items) {
+      if (item.imageName) {
+        const image = await this.findItemPicture(item.id, employeeLogged, entityManager);
+        itemsData.push({ ...item, image });
+      } else {
+        itemsData.push(item);
+      }
+    }
+
+    return itemsData.map((item) => new ItemDto(item));
   }
 
-  async findOne(id: number, employeeLoged: Employee, entityManager: EntityManager) {
+  async findOne(id: number, employeeLogged: Employee, entityManager: EntityManager) {
     const item = entityManager.findOne(Item, {
-      where: { id, company: { id: employeeLoged.company.id } },
+      where: { id, company: { id: employeeLogged.company.id } },
     });
 
     return item;
@@ -58,10 +83,10 @@ export class ItemService {
   async update(
     id: number,
     updateItemDto: UpdateItemDto,
-    employeeLoged: Employee,
+    employeeLogged: Employee,
     entityManager: EntityManager,
   ) {
-    const item = await this.findOne(id, employeeLoged, entityManager);
+    const item = await this.findOne(id, employeeLogged, entityManager);
 
     if (!item) {
       throw new HttpException('O item não existe', HttpStatus.PRECONDITION_FAILED);
@@ -84,8 +109,8 @@ export class ItemService {
     return new ItemDto(itemData);
   }
 
-  async remove(id: number, employeeLoged: Employee, entityManager: EntityManager) {
-    const item = await this.findOne(id, employeeLoged, entityManager);
+  async remove(id: number, employeeLogged: Employee, entityManager: EntityManager) {
+    const item = await this.findOne(id, employeeLogged, entityManager);
 
     if (!item) {
       throw new HttpException('Item não existe', HttpStatus.PRECONDITION_FAILED);
@@ -94,11 +119,10 @@ export class ItemService {
     return entityManager.remove(item);
   }
 
-  async findItemPicture(id: number, employeeLoged: Employee, entityManager: EntityManager) {
-    const item = await this.findOne(id, employeeLoged, entityManager);
+  async findItemPicture(id: number, employeeLogged: Employee, entityManager: EntityManager) {
+    const item = await this.findOne(id, employeeLogged, entityManager);
 
     let buffer = null;
-    let extension = null;
 
     if (item && item.imageName) {
       const pathImage = path.resolve(__dirname, '../../../public/images/items', item.imageName);
@@ -110,9 +134,24 @@ export class ItemService {
           { description: err?.message },
         );
       });
-      extension = path.extname(item.imageName);
     }
 
-    return { buffer, extension };
+    return buffer;
+  }
+
+  async saveItemPicture(employeeLogged: Employee, file: Express.Multer.File) {
+    const uniqueSuffix = uuidv4();
+
+    const fileName = `${employeeLogged.company.prefix}-${uniqueSuffix}${extname(
+      file.originalname,
+    )}`;
+
+    return await sharp(file.buffer)
+      .resize(800) // Redimensionar para uma largura máxima de 800 pixels
+      .jpeg({ quality: 80 }) // Comprimir como JPEG com qualidade de 80%
+      .toFile(`public/images/items/${fileName}`)
+      .then((res) => {
+        return { res, fileName };
+      });
   }
 }

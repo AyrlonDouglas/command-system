@@ -8,7 +8,10 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Req,
   Res,
+  Header,
+  // Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 // service
@@ -25,8 +28,7 @@ import { Permissions } from 'src/helper/decorators/permission.decorator';
 // libs
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { EntityManager } from 'typeorm';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+// import { diskStorage } from 'multer';
 import { unlink } from 'fs/promises';
 import { Response } from 'express';
 
@@ -38,18 +40,13 @@ export class ItemController {
 
   @Permissions([{ entity: 'ITEM', action: 'CREATE' }])
   @Post()
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: 'public/images/items',
-        filename: (req, file, cb) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(null, file.fieldname + '-' + uniqueSuffix + extname(file.originalname));
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file'))
   async create(
+    /**
+     * //TODO: ajustar a interface do createItemDto, ele recvebe um formatData,
+     *  com o file e outras propriedades
+     * //TODO: limitar tamanho máximo da imagem recebida
+     */
     @Body() createItemDto: any,
     @UploadedFile() file: Express.Multer.File,
     @EmployeeLogged() employeeLogged: Employee,
@@ -63,6 +60,7 @@ export class ItemController {
 
       return await this.itemService.create(createItemData, employeeLogged, entityManager, file);
     } catch (error) {
+      // FIXME: file.path não é o caminho nome certo da imagem!!!
       if (file) {
         await unlink(file.path);
       }
@@ -108,11 +106,14 @@ export class ItemController {
 
   @Permissions([{ entity: 'ITEM', action: 'VIEW' }])
   @Get('picture/:id')
+  @Header('content-type', 'image/jpeg')
   async findItemPicture(
     @Param('id') id: string,
     @EmployeeLogged() employeeLogged: Employee,
     @EntityManagerParam() entityManager: EntityManager,
+    @Res() res: Response,
   ) {
-    return this.itemService.findItemPicture(+id, employeeLogged, entityManager);
+    const imageBuffer = await this.itemService.findItemPicture(+id, employeeLogged, entityManager);
+    return res.end(imageBuffer);
   }
 }

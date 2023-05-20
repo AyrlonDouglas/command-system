@@ -17,6 +17,8 @@ export interface ItemsDataProps {
 	description: string;
 	price: number;
 	avaliable: boolean;
+	imageName: string;
+	image?: Buffer;
 	category: {
 		id: number;
 		name: string;

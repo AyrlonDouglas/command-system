@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 //MUI
 import { Unstable_Grid2 as Grid, Typography, CardActionArea } from "@mui/material";
 
 // REDUX E SAGA
+import { useAppDispatch } from "../../../store/hooks";
+import { getItemPictureRequest } from "../../../store/ducks/items/slice";
 // COMPONENTS
 import { GridContainer, ImageFood } from "./styles";
 import DialogCreateOrUpdateItem from "../../Dialog/CreateOrUpdateItem";
@@ -11,15 +13,41 @@ import { ItemsDataProps } from "../../../helper/interfaces/Item";
 
 interface CardFoodProps {
 	item: ItemsDataProps;
-	imagePath?: string;
 	canEdit: boolean;
 	onClick: (id: number) => void;
 }
 
-export default function CardFood({ item, canEdit, imagePath, onClick }: CardFoodProps) {
+export default function CardFood({ item, onClick }: CardFoodProps) {
 	const [openModalEditItem, setOpenModalEditItem] = useState(false);
+	const [itemPicture, setItemPicture] = useState<Buffer>();
+	const [urlItemicture, setUrlItemPicture] = useState("");
+	const [imageSrc, setImageSrc] = useState("");
+	const dispatch = useAppDispatch();
 
 	const handleCloseEditItem = () => setOpenModalEditItem(false);
+
+	useEffect(() => {
+		dispatch(getItemPictureRequest(item.id));
+
+		if (item.image) {
+			const obj = item.image;
+
+			console.log(typeof obj);
+
+			// const imageSrc = "data:image/jpeg;base64" + item.image.console.log("imageSrc,", imageSrc);
+			// setImageSrc(imageSrc);
+		}
+	}, []);
+
+	// const handleRenderImage = (item: ItemsDataProps) => {
+	// 	if (!item.image?.buffer) return false;
+	// 	return (
+	// 		<Grid xs={3} sx={{ padding: "0.5rem" }}>
+	// 			<img src={URL.createObjectURL(new Blob([imageBuffer]))} alt="Imagem" />
+	// 			{/* <ImageFood imagepath={imagePath} /> */}
+	// 		</Grid>
+	// 	);
+	// };
 
 	return (
 		<CardActionArea
@@ -30,7 +58,7 @@ export default function CardFood({ item, canEdit, imagePath, onClick }: CardFood
 		>
 			<Grid sx={{ height: "100%" }}>
 				<GridContainer container flexDirection={"row"}>
-					<Grid sx={{ padding: "0rem 0.5rem 0" }} xs={imagePath ? 9 : 12}>
+					<Grid sx={{ padding: "0rem 0.5rem 0" }} xs={itemPicture ? 9 : 12}>
 						<Typography sx={{ textTransform: "capitalize" }} variant="body2">
 							{item.name}
 						</Typography>
@@ -63,18 +91,15 @@ export default function CardFood({ item, canEdit, imagePath, onClick }: CardFood
 							</Grid>
 						</Grid>
 					</Grid>
-					{imagePath ? (
-						<Grid xs={3} sx={{ padding: "0.5rem" }}>
-							<ImageFood imagepath={imagePath} />
-						</Grid>
-					) : null}
+					<Grid xs={3} sx={{ padding: "0.5rem" }}>
+						<img src={imageSrc} alt="Imagem" />
+					</Grid>
 				</GridContainer>
 
 				<DialogCreateOrUpdateItem
 					open={openModalEditItem}
 					handleClose={handleCloseEditItem}
 					idItem={item.id}
-					canEdit
 				/>
 			</Grid>
 		</CardActionArea>

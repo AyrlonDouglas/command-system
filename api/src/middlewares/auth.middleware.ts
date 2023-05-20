@@ -13,14 +13,14 @@ export class AuthMiddleware implements NestMiddleware {
   async use(req: RequestMiddleware, res: Response, next: NextFunction) {
     const accessToken = req.headers['authorization']?.toString().split(' ')[1];
     if (!accessToken) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Sessão expirada', HttpStatus.UNAUTHORIZED);
     }
     const payload: Employee = await this.jwtService
       .verifyAsync(accessToken, {
         secret: process.env.JWTKEY,
       })
       .catch(() => {
-        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        throw new HttpException('Sessão expirada', HttpStatus.UNAUTHORIZED);
       });
 
     const employee = await Employee.findOne({
@@ -29,7 +29,7 @@ export class AuthMiddleware implements NestMiddleware {
     });
 
     if (!employee?.isActive) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Sessão expirada', HttpStatus.UNAUTHORIZED);
     }
 
     req.employeeLogged = employee;

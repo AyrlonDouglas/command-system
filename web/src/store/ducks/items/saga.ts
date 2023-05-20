@@ -13,6 +13,9 @@ import {
 	genericItemFail,
 	removeItemRequest,
 	removeItemSuccess,
+	getItemPictureSuccess,
+	getItemPictureFail,
+	getItemPictureRequest,
 } from "./slice";
 
 function* getItems() {
@@ -86,9 +89,36 @@ function* removeItem({ payload }: { payload: number; type: string }) {
 	}
 }
 
+function* getItemPicture({ payload }: { payload: number; type: string }) {
+	try {
+		const response: AxiosResponse = yield call(api.get, `/item/picture/${payload}`);
+
+		// console.log(response.data);
+
+		// console.log(response.data.arrayBuffer());
+
+		const file = new Blob([response.data], { type: "image/jpeg" });
+		const fileURL = URL.createObjectURL(file);
+		window.open(fileURL);
+
+		// console.log("te", response.data);
+
+		yield put(getItemPictureSuccess({ picture: response.data, id: payload }));
+	} catch (error) {
+		if (isAxiosError(error)) {
+			toast.error(error.response?.data.message);
+		} else {
+			toast.error("Não foi possível obter imagem do item");
+		}
+
+		yield put(getItemPictureFail());
+	}
+}
+
 export default function* itemsSaga() {
 	yield takeLatest(getItemsRequest().type, getItems);
 	yield takeLatest(createItemRequest("").type, createItem);
 	yield takeLatest(updateItemRequest("").type, updateItem);
 	yield takeLatest(removeItemRequest("").type, removeItem);
+	yield takeLatest(getItemPictureRequest("").type, getItemPicture);
 }

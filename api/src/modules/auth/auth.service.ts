@@ -7,6 +7,12 @@ import { JwtService } from '@nestjs/jwt';
 import { EmployeeDto } from '../employee/dto/employee.dto';
 import { AuthPayloadDto } from './dto/auth-payload.dto';
 
+interface TokenProps {
+  id: number;
+  companyId: number;
+  role: number;
+  employeeCode: string;
+}
 @Injectable()
 export class AuthService {
   constructor(
@@ -47,19 +53,25 @@ export class AuthService {
       },
     });
 
-    if (employee && employee.isActive && (await this.comparePassword(pass, employee.password))) {
-      delete employee.password;
-      return employee;
+    if (!employee) {
+      throw new HttpException('Código e/ou senha errada.', HttpStatus.UNAUTHORIZED);
     }
 
-    if (employee && !employee.isActive) {
+    const passMatch = await this.comparePassword(pass, employee.password);
+
+    if (!passMatch) {
+      throw new HttpException('Código e/ou senha errada.', HttpStatus.UNAUTHORIZED);
+    }
+
+    if (!employee.isActive) {
       throw new HttpException(
         'Sua conta está inativada, consulte administração para saber mais',
         HttpStatus.UNAUTHORIZED,
       );
     }
 
-    throw new HttpException('Código e/ou senha errada.', HttpStatus.UNAUTHORIZED);
+    delete employee.password;
+    return employee;
   }
 
   private async comparePassword(enteredPassword: string, dbPassword: string) {
@@ -67,8 +79,8 @@ export class AuthService {
     return match;
   }
 
-  private async generateToken(body: any) {
-    const token = await this.jwtService.signAsync(body, {
+  private async generateToken(tokenProps: TokenProps) {
+    const token = await this.jwtService.signAsync(tokenProps, {
       secret: process.env.JWTKEY,
     });
 
