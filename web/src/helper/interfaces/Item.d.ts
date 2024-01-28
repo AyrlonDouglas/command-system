@@ -1,11 +1,13 @@
 export interface CreateOrUpdateItemProps {
 	payload: {
-		name: string;
-		description: string;
-		price: number;
-		categoryId: number;
-		avaliable: boolean;
-		file?: File;
+		form: {
+			name: string;
+			description: string;
+			price: number;
+			categoryId: number;
+			avaliable: boolean;
+			file?: File;
+		};
 		id?: number;
 	};
 	type: string;
@@ -17,8 +19,7 @@ export interface ItemsDataProps {
 	description: string;
 	price: number;
 	avaliable: boolean;
-	imageName: string;
-	image?: Buffer;
+	imageUrl: string;
 	category: {
 		id: number;
 		name: string;

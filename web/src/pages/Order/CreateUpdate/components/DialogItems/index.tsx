@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 
 // components
 import {
@@ -32,18 +31,18 @@ interface DialogItemsProps {
 
 export default function DialogItems(props: DialogItemsProps) {
 	const { addItem, onClose, open, selectedOptions } = props;
-	const [itemSelected, setItemSelected] = useState<null | number>(null);
+	// const [itemSelected, setItemSelected] = useState<null | number>(null);
 	const { items: itemsState } = useAppSelector((state) => state);
 
 	const {
 		handleSubmit,
 		control,
 		getValues,
-		formState: { errors, defaultValues },
+		// formState: { errors, defaultValues },
 		// resetField,
-		setValue,
+		// setValue,
 		// trigger,
-		watch,
+		// watch,
 		reset,
 	} = useForm({
 		resolver: yupResolver(schema),
@@ -75,7 +74,7 @@ export default function DialogItems(props: DialogItemsProps) {
 								label="Items"
 								loading={itemsState.loading}
 								nameField="itemId"
-								options={itemsState.data.map(({ id, name }) => ({ id, text: name }))}
+								options={itemsState.data.filter(item=>item.avaliable).map(({ id, name }) => ({ id, text: name }))}
 								noOptionsText="Não existem itens cadastrados"
 								selectedOptions={selectedOptions}
 								size="small"

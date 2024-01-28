@@ -4,4 +4,6 @@ import { CreateItemDto } from './create-item.dto';
 
 export class UpdateItemDto extends PartialType(CreateItemDto) {
   category: Category;
+  imageName?: string;
+  imageHasBeenDeleted?: boolean;
 }

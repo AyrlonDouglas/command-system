@@ -19,14 +19,12 @@ const itemsSlice = createSlice({
 
 			state.data = action.payload;
 		},
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		createItemRequest: (state, action) => {
 			state.loading = true;
 		},
 		createItemSuccess: (state, action) => {
 			state.loading = false;
 			state.error = false;
-
 			state.data = [...state.data, action.payload];
 		},
 		updateItemRequest: (state, action) => {
@@ -48,23 +46,7 @@ const itemsSlice = createSlice({
 		},
 		removeItemSuccess: (state, action) => {
 			state.loading = false;
-			state.data = state.data.filter((item) => item.name !== action.payload.name);
-		},
-		getItemPictureRequest(state, action) {
-			state.loading = true;
-		},
-		getItemPictureSuccess(state, action) {
-			const { id, picture } = action.payload;
-
-			state.loading = false;
-			state.error = false;
-
-			const index = state.data.findIndex((item) => item.id === id);
-			state.data[index].image = picture;
-		},
-		getItemPictureFail(state) {
-			state.loading = false;
-			state.error = true;
+			state.data = state.data.filter((item) => item.id !== action.payload);
 		},
 	},
 });
@@ -79,9 +61,6 @@ export const {
 	genericItemFail,
 	removeItemRequest,
 	removeItemSuccess,
-	getItemPictureFail,
-	getItemPictureRequest,
-	getItemPictureSuccess,
 } = itemsSlice.actions;
 
 export default itemsSlice.reducer;

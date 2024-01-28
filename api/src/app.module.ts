@@ -27,6 +27,8 @@ import { TableModule } from './modules/table/table.module';
 import { RoleModule } from './modules/role/role.module';
 import { RolePermissionModule } from './modules/role-permission/role-permission.module';
 import { PermissionModule } from './modules/permission/permission.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -44,6 +46,9 @@ import { PermissionModule } from './modules/permission/permission.module';
     RoleModule,
     RolePermissionModule,
     PermissionModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
   ],
   controllers: [AuthController],
   providers: [
@@ -64,6 +69,7 @@ export class AppModule implements NestModule {
         { path: '/company', method: RequestMethod.GET },
         { path: '/permission', method: RequestMethod.POST },
         { path: '/permission', method: RequestMethod.GET },
+        { path: '/images/items/(.*)', method: RequestMethod.GET },
       )
       .forRoutes('');
 

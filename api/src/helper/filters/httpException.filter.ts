@@ -31,7 +31,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       description?: string,
       // errorMessages?: string | string[],
     ) => {
-      response.status(_status).json({
+      const errorResponse = {
         statusCode: _status,
         path: request.url,
         method: request.method,
@@ -41,7 +41,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
         // errorMessages,
         timestamp: new Date().getTime(),
         ...(['development', 'test'].includes(process.env.NODE_ENV) ? { stack } : {}),
-      });
+      };
+      response.status(_status).json(errorResponse);
     };
 
     if (status === 503) {

@@ -1,8 +1,4 @@
-import {
-  SwaggerModule,
-  DocumentBuilder,
-  SwaggerCustomOptions,
-} from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 import { SwaggerTheme } from 'swagger-themes';
 

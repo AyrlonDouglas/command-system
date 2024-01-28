@@ -71,7 +71,7 @@ export default function CreateUpdate() {
 	const dispatch = useAppDispatch();
 	const [openItems, setOpenItems] = useState(false);
 	const openDeleteConfirmation = useAppSelector((state) => state.layout.modals.secondary);
-	const [removeOpen, setRemoveOpen] = useState(false);
+	// const [removeOpen, setRemoveOpen] = useState(false);
 	const {
 		items: itemsState,
 		commands: commandsState,
@@ -175,7 +175,6 @@ export default function CreateUpdate() {
 		const items = getValues("items").filter((item) => item.id !== id);
 		setValue("items", items);
 	};
-
 	return (
 		<Page.Page>
 			<Page.Title title={idOrder ? "Atualizar pedido" : "Criar pedido"} />
@@ -339,6 +338,7 @@ export default function CreateUpdate() {
 						variant="contained"
 						onClick={() => dispatch(setModalSecondaryOpen(true))}
 						color="error"
+						disabled={!idOrder}
 					>
 						Remover
 					</Button>

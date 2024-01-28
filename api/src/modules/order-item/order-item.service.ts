@@ -26,7 +26,6 @@ export class OrderItemService {
       employeeLogged,
       entityManager,
     );
-
     const item = await entityManager.findOne(Item, {
       where: { id: createOrderItemDto.itemId, company: { id: employeeLogged.company.id } },
     });

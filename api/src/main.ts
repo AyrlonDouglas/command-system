@@ -7,11 +7,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   swaggerStart(app);
-
   app.useGlobalFilters(new AllExceptionsFilter());
-
   app.enableCors();
-
   app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(5000);

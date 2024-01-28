@@ -8,17 +8,13 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
-  Req,
-  Res,
-  Header,
-  // Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 // service
 import { ItemService } from './item.service';
 // dto
 import { CreateItemDto } from './dto/create-item.dto';
-import { UpdateItemDto } from './dto/update-item.dto';
+// import { UpdateItemDto } from './dto/update-item.dto';
 // entity
 import { Employee } from '../employee/entities/employee.entity';
 // decorator
@@ -28,9 +24,7 @@ import { Permissions } from 'src/helper/decorators/permission.decorator';
 // libs
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { EntityManager } from 'typeorm';
-// import { diskStorage } from 'multer';
 import { unlink } from 'fs/promises';
-import { Response } from 'express';
 
 @ApiBearerAuth()
 @ApiTags('Item')
@@ -39,11 +33,11 @@ export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
   @Permissions([{ entity: 'ITEM', action: 'CREATE' }])
-  @Post()
   @UseInterceptors(FileInterceptor('file'))
+  @Post()
   async create(
     /**
-     * //TODO: ajustar a interface do createItemDto, ele recvebe um formatData,
+     * //TODO: ajustar a interface do createItemDto, ele recebe um formatData,
      *  com o file e outras propriedades
      * //TODO: limitar tamanho máximo da imagem recebida
      */
@@ -55,9 +49,7 @@ export class ItemController {
     try {
       const createItem = new URLSearchParams(createItemDto);
       const createItemData = Object.fromEntries(createItem) as unknown as CreateItemDto;
-
       createItemData.avaliable = createItemDto.avaliable === 'true' ? true : false;
-
       return await this.itemService.create(createItemData, employeeLogged, entityManager, file);
     } catch (error) {
       // FIXME: file.path não é o caminho nome certo da imagem!!!
@@ -84,14 +76,19 @@ export class ItemController {
   // }
 
   @Permissions([{ entity: 'ITEM', action: 'EDIT' }])
+  @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateItemDto: UpdateItemDto,
+    @Body() updateItemDto: any,
+    @UploadedFile() file: Express.Multer.File,
     @EmployeeLogged() employeeLogged: Employee,
     @EntityManagerParam() entityManager: EntityManager,
   ) {
-    return this.itemService.update(+id, updateItemDto, employeeLogged, entityManager);
+    const updateItem = new URLSearchParams(updateItemDto);
+    const updateItemData = Object.fromEntries(updateItem) as unknown as any;
+    updateItemData.avaliable = updateItemData.avaliable === 'true' ? true : false;
+    return this.itemService.update({ id: +id, updateItemDto, employeeLogged, entityManager, file });
   }
 
   @Permissions([{ entity: 'ITEM', action: 'REMOVE' }])
@@ -102,18 +99,5 @@ export class ItemController {
     @EntityManagerParam() entityManager: EntityManager,
   ) {
     return this.itemService.remove(+id, employeeLogged, entityManager);
-  }
-
-  @Permissions([{ entity: 'ITEM', action: 'VIEW' }])
-  @Get('picture/:id')
-  @Header('content-type', 'image/jpeg')
-  async findItemPicture(
-    @Param('id') id: string,
-    @EmployeeLogged() employeeLogged: Employee,
-    @EntityManagerParam() entityManager: EntityManager,
-    @Res() res: Response,
-  ) {
-    const imageBuffer = await this.itemService.findItemPicture(+id, employeeLogged, entityManager);
-    return res.end(imageBuffer);
   }
 }

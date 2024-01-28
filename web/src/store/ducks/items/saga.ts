@@ -13,9 +13,6 @@ import {
 	genericItemFail,
 	removeItemRequest,
 	removeItemSuccess,
-	getItemPictureSuccess,
-	getItemPictureFail,
-	getItemPictureRequest,
 } from "./slice";
 
 function* getItems() {
@@ -36,8 +33,7 @@ function* getItems() {
 
 function* createItem({ payload }: CreateOrUpdateItemProps) {
 	try {
-		const response: AxiosResponse = yield call(api.post, "/item", payload);
-
+		const response: AxiosResponse = yield call(api.post, "/item", payload.form);
 		yield put(createItemSuccess(response.data));
 		toast.success(`Item ${response.data.name} criado!`);
 	} catch (error) {
@@ -54,12 +50,10 @@ function* createItem({ payload }: CreateOrUpdateItemProps) {
 function* updateItem({ payload }: CreateOrUpdateItemProps) {
 	try {
 		const id = payload.id;
-
 		delete payload.id;
-		const response: AxiosResponse = yield call(api.patch, `/item/${id}`, payload);
-
+		const response: AxiosResponse = yield call(api.patch, `/item/${id}`, payload.form);
 		yield put(updateItemSuccess(response.data));
-		toast.success(`Item ${payload.name} atualizado!`);
+		toast.success(`Item ${response.data.name} atualizado!`);
 	} catch (error) {
 		if (isAxiosError(error)) {
 			toast.error(error.response?.data.message);
@@ -76,8 +70,7 @@ function* removeItem({ payload }: { payload: number; type: string }) {
 		const response: AxiosResponse = yield call(api.delete, `/item/${payload}`);
 
 		toast.success(`Item ${response.data.name} removido`);
-
-		yield put(removeItemSuccess(response.data));
+		yield put(removeItemSuccess(payload));
 	} catch (error) {
 		if (isAxiosError(error)) {
 			toast.error(error.response?.data.message);
@@ -89,36 +82,9 @@ function* removeItem({ payload }: { payload: number; type: string }) {
 	}
 }
 
-function* getItemPicture({ payload }: { payload: number; type: string }) {
-	try {
-		const response: AxiosResponse = yield call(api.get, `/item/picture/${payload}`);
-
-		// console.log(response.data);
-
-		// console.log(response.data.arrayBuffer());
-
-		const file = new Blob([response.data], { type: "image/jpeg" });
-		const fileURL = URL.createObjectURL(file);
-		window.open(fileURL);
-
-		// console.log("te", response.data);
-
-		yield put(getItemPictureSuccess({ picture: response.data, id: payload }));
-	} catch (error) {
-		if (isAxiosError(error)) {
-			toast.error(error.response?.data.message);
-		} else {
-			toast.error("Não foi possível obter imagem do item");
-		}
-
-		yield put(getItemPictureFail());
-	}
-}
-
 export default function* itemsSaga() {
-	yield takeLatest(getItemsRequest().type, getItems);
-	yield takeLatest(createItemRequest("").type, createItem);
-	yield takeLatest(updateItemRequest("").type, updateItem);
-	yield takeLatest(removeItemRequest("").type, removeItem);
-	yield takeLatest(getItemPictureRequest("").type, getItemPicture);
+	yield takeLatest(getItemsRequest.type, getItems);
+	yield takeLatest(createItemRequest.type, createItem);
+	yield takeLatest(updateItemRequest.type, updateItem);
+	yield takeLatest(removeItemRequest.type, removeItem);
 }

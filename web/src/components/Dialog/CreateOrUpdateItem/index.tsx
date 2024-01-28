@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, DetailedHTMLProps, InputHTMLAttributes } from "react";
+import React, { useEffect, useState, useRef } from "react";
 //MUI
 import {
 	Button,
@@ -37,10 +37,6 @@ import { toast } from "react-toastify";
 import DialogRemovalConfirmation from "../RemovalConfirmation";
 import AutocompleteControlled from "../../Input/AutocompleteControlled";
 
-//IMAGE
-
-//
-
 const schema = yup.object().shape({
 	name: yup.string().required("Preencha o nome"),
 	description: yup.string().required("Preencha a descrição"),
@@ -65,7 +61,7 @@ export default function DialogCreateOrUpdateItem({
 	const categoriesState = useAppSelector((state) => state.categories);
 	const itemsState = useAppSelector((state) => state.items);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const [imageUrl, setImageUrl] = useState("");
+	const [imageUrl, setImageUrl] = useState<string | null>(null);
 	const imageRef = useRef<HTMLImageElement | null>(null);
 	const dispatch = useAppDispatch();
 
@@ -78,9 +74,16 @@ export default function DialogCreateOrUpdateItem({
 			setValue("description", itemFiltered.description);
 			setValue("name", itemFiltered.name);
 			setValue("price", itemFiltered.price);
+
+			if (itemFiltered.imageUrl) {
+				setImageUrl(`${import.meta.env.VITE_HOST_URL}/${itemFiltered.imageUrl}`);
+			}
 		}
 
-		return () => reset();
+		return () => {
+			setImageUrl(null);
+			reset();
+		};
 	}, [open]);
 
 	const {
@@ -92,17 +95,17 @@ export default function DialogCreateOrUpdateItem({
 		setValue,
 		// trigger,
 		reset,
-		watch,
+		// watch,
 	} = useForm({
 		resolver: yupResolver(schema),
 		defaultValues: {
 			name: "" as string,
 			description: "" as string,
 			price: "" as number | string,
-			imagePath: "" as string,
 			avaliable: true,
 			categoryId: undefined as number | undefined,
 			file: undefined as File | undefined,
+			imageHasBeenDeleted: false,
 		},
 	});
 
@@ -111,7 +114,6 @@ export default function DialogCreateOrUpdateItem({
 			toast.warning("Algum dado deve ser mudado para atualizar.");
 			return;
 		}
-
 		let form: typeof defaultValues | FormData = data;
 
 		if (data && data.file) {
@@ -128,16 +130,14 @@ export default function DialogCreateOrUpdateItem({
 			form = formData;
 		}
 
-		console.log("form", form);
-
 		if (!idItem) {
-			dispatch(createItemRequest(form));
-			// onClose();
+			dispatch(createItemRequest({ form }));
+			onClose();
 			return;
 		}
 
 		if (idItem && dataChanged()) {
-			dispatch(updateItemRequest({ ...form, id: itemFiltered.id }));
+			dispatch(updateItemRequest({ form, id: itemFiltered.id }));
 			onClose();
 			return;
 		}
@@ -149,13 +149,15 @@ export default function DialogCreateOrUpdateItem({
 			getValues().categoryId !== itemFiltered.category.id ||
 			getValues().description !== itemFiltered.description ||
 			getValues().name !== itemFiltered.name ||
-			getValues().price !== itemFiltered.price
+			getValues().price !== itemFiltered.price ||
+			imageUrl?.replace(`${import.meta.env.VITE_HOST_URL}/`, "") !== itemFiltered.imageUrl
 		);
 	};
 
 	const onClose = () => {
 		handleClose();
 		reset();
+		setImageUrl("");
 	};
 
 	const onCloseDeleteConfirmation = () => {
@@ -196,6 +198,10 @@ export default function DialogCreateOrUpdateItem({
 	};
 
 	const removeFile = () => {
+		if (itemFiltered.imageUrl) {
+			setValue("imageHasBeenDeleted", true);
+		}
+
 		setValue("file", defaultValues?.file);
 		setImageUrl("");
 	};

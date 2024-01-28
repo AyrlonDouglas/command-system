@@ -9,11 +9,10 @@ import { CreateItemDto } from './dto/create-item.dto';
 import { ItemDto } from './dto/item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 // libs
-import * as fs from 'fs/promises';
-import * as path from 'path';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import * as sharp from 'sharp';
+import * as fs from 'fs/promises';
 
 @Injectable()
 export class ItemService {
@@ -44,10 +43,6 @@ export class ItemService {
 
     const itemData = await entityManager.save(item);
 
-    // // const image = await this.findItemPicture(itemSaved.id, employeeLogged, entityManager);
-    // //TODO ajustar para não utilizar any
-    // const itemData = { ...itemSaved, image } as any;
-
     return new ItemDto(itemData);
   }
 
@@ -58,18 +53,7 @@ export class ItemService {
       select: { category: { id: true, name: true } },
     });
 
-    const itemsData = [];
-
-    for (const item of items) {
-      if (item.imageName) {
-        const image = await this.findItemPicture(item.id, employeeLogged, entityManager);
-        itemsData.push({ ...item, image });
-      } else {
-        itemsData.push(item);
-      }
-    }
-
-    return itemsData.map((item) => new ItemDto(item));
+    return items.map((item) => new ItemDto(item));
   }
 
   async findOne(id: number, employeeLogged: Employee, entityManager: EntityManager) {
@@ -80,12 +64,14 @@ export class ItemService {
     return item;
   }
 
-  async update(
-    id: number,
-    updateItemDto: UpdateItemDto,
-    employeeLogged: Employee,
-    entityManager: EntityManager,
-  ) {
+  async update(params: {
+    id: number;
+    updateItemDto: UpdateItemDto;
+    employeeLogged: Employee;
+    entityManager: EntityManager;
+    file: Express.Multer.File;
+  }) {
+    const { employeeLogged, entityManager, id, updateItemDto, file } = params;
     const item = await this.findOne(id, employeeLogged, entityManager);
 
     if (!item) {
@@ -98,6 +84,20 @@ export class ItemService {
       });
       delete updateItemDto.categoryId;
     }
+
+    if (file) {
+      updateItemDto.imageName = (await this.saveItemPicture(employeeLogged, file)).fileName;
+
+      if (item.imageName) {
+        await this.removeItemPicture(item.imageName);
+      }
+    }
+
+    if (!file && item.imageName && updateItemDto.imageHasBeenDeleted) {
+      await this.removeItemPicture(item.imageName);
+      updateItemDto.imageName = null;
+    }
+    delete updateItemDto.imageHasBeenDeleted;
 
     await entityManager.update(Item, { id }, updateItemDto);
 
@@ -116,27 +116,10 @@ export class ItemService {
       throw new HttpException('Item não existe', HttpStatus.PRECONDITION_FAILED);
     }
 
-    return entityManager.remove(item);
-  }
-
-  async findItemPicture(id: number, employeeLogged: Employee, entityManager: EntityManager) {
-    const item = await this.findOne(id, employeeLogged, entityManager);
-
-    let buffer = null;
-
-    if (item && item.imageName) {
-      const pathImage = path.resolve(__dirname, '../../../public/images/items', item.imageName);
-
-      buffer = await fs.readFile(pathImage).catch((err) => {
-        throw new HttpException(
-          'Algum erro aconteceu ao buscar a imagem do item',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          { description: err?.message },
-        );
-      });
-    }
-
-    return buffer;
+    return entityManager.remove(item).then(async (result) => {
+      item.imageName && (await this.removeItemPicture(item.imageName));
+      return result;
+    });
   }
 
   async saveItemPicture(employeeLogged: Employee, file: Express.Multer.File) {
@@ -153,5 +136,10 @@ export class ItemService {
       .then((res) => {
         return { res, fileName };
       });
+  }
+
+  async removeItemPicture(imageName: string) {
+    const pathToFile = join(__dirname, '..', '..', '..', 'public', 'images', 'items', imageName);
+    await fs.unlink(pathToFile);
   }
 }

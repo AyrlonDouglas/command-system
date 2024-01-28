@@ -14,7 +14,6 @@ import { ToastContainer } from "react-toastify";
 import Sidebar from "./components/Sidebar";
 import BackdropLoading from "./components/Backdrop";
 import NavigateSetter from "./routes/NavigateSetter";
-
 export default function App() {
 	const color = localStorage.getItem(LOCAL.colorMode) || "light";
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
