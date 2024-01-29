@@ -1,8 +1,8 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 // entity
 import { EntityManager } from 'typeorm';
-import { Category } from '../category/entities/category.entity';
-import { Employee } from '../employee/entities/employee.entity';
+import { Category } from '@modules/category/entities/category.entity';
+import { Employee } from '@modules/employee/entities/employee.entity';
 import { Item } from './entities/item.entity';
 // dto
 import { CreateItemDto } from './dto/create-item.dto';

@@ -1,7 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Employee } from 'src/modules/employee/entities/employee.entity';
-import { Permission } from 'src/modules/permission/entities/permission.entity';
 import { Role } from 'src/modules/role/entities/role.entity';
 import { PERMISSIONS_KEY } from '../decorators/permission.decorator';
 import { PermissionProps } from '../interfaces/permissions';
