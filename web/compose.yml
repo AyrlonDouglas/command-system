@@ -1,0 +1,13 @@
+services:
+  web-CS:
+    image: node:20-alpine
+    command: sh -c 'npm install && npm run dev'
+    container_name: web-CS
+    ports:
+      - 3000:3000
+    working_dir: /app
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    tty: true
